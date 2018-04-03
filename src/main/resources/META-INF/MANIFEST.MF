@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Export-Package: com.caucho.burlap.client;version="3.2.0",com.caucho.bu
+ rlap.io;version="3.2.0",com.caucho.burlap.server;version="3.2.0",com.
+ caucho.hessian;version="3.2.0",com.caucho.hessian.client;version="3.2
+ .0",com.caucho.hessian.io;version="3.2.0",com.caucho.hessian.jmx;vers
+ ion="3.2.0",com.caucho.hessian.micro;version="3.2.0",com.caucho.hessi
+ an.mux;version="3.2.0",com.caucho.hessian.security;version="3.2.0",co
+ m.caucho.hessian.server;version="3.2.0",com.caucho.hessian.test;versi
+ on="3.2.0",com.caucho.hessian.util;version="3.2.0",com.caucho.service
+ s.client;version="3.2.0",com.caucho.services.message;version="3.2.0",
+ com.caucho.services.name;version="3.2.0",com.caucho.services.server;v
+ ersion="3.2.0"
+Unversioned-Imports: javax.crypto.*,javax.naming.*,javax.management.*,
+ org.w3c.dom.*
+Built-By: admin
+Tool: Bundlor 1.0.0.RELEASE
+Bundle-Name: Hessian Binary Web Service Protocol
+Created-By: 1.6.0_01-b06 (Sun Microsystems Inc.)
+Bundle-Vendor: SpringSource
+Ant-Version: Apache Ant 1.6.5
+Build-Jdk: 1.6.0_33
+Bundle-Version: 3.2.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.springsource.com.caucho
+Archiver-Version: Plexus Archiver
+
