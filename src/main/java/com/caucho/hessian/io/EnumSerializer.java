@@ -55,47 +55,47 @@ import java.lang.reflect.Method;
  * Serializing an object for known object types.
  */
 public class EnumSerializer extends AbstractSerializer {
-  private Method _name;
-  
-  public EnumSerializer(Class cl)
-  {
-    try {
-      _name = cl.getMethod("name", new Class[0]);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-  
-  public void writeObject(Object obj, AbstractHessianOutput out)
-    throws IOException
-  {
-    if (out.addRef(obj))
-      return;
+    private Method _name;
 
-    Class cl = obj.getClass();
-
-    String name = null;
-    try {
-      name = (String) _name.invoke(obj, (Object[]) null);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    public EnumSerializer(Class cl)
+    {
+        try {
+            _name = cl.getMethod("name", new Class[0]);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    int ref = out.writeObjectBegin(cl.getName());
+    public void writeObject(Object obj, AbstractHessianOutput out)
+        throws IOException
+    {
+        if (out.addRef(obj))
+            return;
 
-    if (ref < -1) {
-      out.writeString("name");
-      out.writeString(name);
-      out.writeMapEnd();
-    }
-    else {
-      if (ref == -1) {
-	out.writeClassFieldLength(1);
-	out.writeString("name");
-	out.writeObjectBegin(cl.getName());
-      }
+        Class cl = obj.getClass();
 
-      out.writeString(name);
+        String name = null;
+        try {
+            name = (String) _name.invoke(obj, (Object[]) null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        int ref = out.writeObjectBegin(cl.getName());
+
+        if (ref < -1) {
+            out.writeString("name");
+            out.writeString(name);
+            out.writeMapEnd();
+        }
+        else {
+            if (ref == -1) {
+                out.writeClassFieldLength(1);
+                out.writeString("name");
+                out.writeObjectBegin(cl.getName());
+            }
+
+            out.writeString(name);
+        }
     }
-  }
 }

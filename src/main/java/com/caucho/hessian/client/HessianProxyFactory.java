@@ -110,27 +110,26 @@ import java.util.logging.Logger;
  * password are set.
  */
 public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
-    protected static Logger log
-            = Logger.getLogger(HessianProxyFactory.class.getName());
+    protected static Logger       log                    = Logger.getLogger(HessianProxyFactory.class.getName());
 
-    private SerializerFactory _serializerFactory;
+    private SerializerFactory     _serializerFactory;
     private HessianRemoteResolver _resolver;
 
-    private String _user;
-    private String _password;
-    private String _basicAuth;
+    private String                _user;
+    private String                _password;
+    private String                _basicAuth;
 
-    private boolean _isOverloadEnabled = false;
+    private boolean               _isOverloadEnabled     = false;
 
-    private boolean _isHessian2Reply = false;
-    private boolean _isHessian2Request = false;
+    private boolean               _isHessian2Reply       = false;
+    private boolean               _isHessian2Request     = false;
 
-    private boolean _isChunkedPost = false;
-    private boolean _isDebug = false;
+    private boolean               _isChunkedPost         = false;
+    private boolean               _isDebug               = false;
 
-    private long _readTimeout = -1;
+    private long                  _readTimeout           = -1;
 
-    private String _connectionFactoryName = "jms/ConnectionFactory";
+    private String                _connectionFactoryName = "jms/ConnectionFactory";
 
     /**
      * Creates the new proxy factory.
@@ -264,7 +263,7 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
      * Creates the URL connection.
      */
     protected URLConnection openConnection(URL url)
-            throws IOException {
+        throws IOException {
         URLConnection conn = url.openConnection();
 
         conn.setDoOutput(true);
@@ -296,7 +295,7 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
      * @return a proxy to the object with the specified interface.
      */
     public Object create(String url)
-            throws MalformedURLException, ClassNotFoundException {
+        throws MalformedURLException, ClassNotFoundException {
         HessianMetaInfoAPI metaInfo;
 
         metaInfo = (HessianMetaInfoAPI) create(HessianMetaInfoAPI.class, url);
@@ -328,9 +327,9 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
      * @return a proxy to the object with the specified interface.
      */
     public Object create(Class api, String urlName)
-            throws MalformedURLException {
+        throws MalformedURLException {
         return create(api, urlName,
-                Thread.currentThread().getContextClassLoader());
+            Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -347,7 +346,7 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
      * @return a proxy to the object with the specified interface.
      */
     public Object create(Class api, String urlName, ClassLoader loader)
-            throws MalformedURLException {
+        throws MalformedURLException {
         if (api == null)
             throw new NullPointerException("api must not be null for HessianProxyFactory.create()");
         InvocationHandler handler = null;
@@ -367,9 +366,9 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
         }
 
         return Proxy.newProxyInstance(loader,
-                new Class[]{api,
-                        HessianRemoteObject.class},
-                handler);
+            new Class[] { api,
+                    HessianRemoteObject.class },
+            handler);
     }
 
     public AbstractHessianInput getHessianInput(InputStream is) {
@@ -413,7 +412,7 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
      */
     public Object getObjectInstance(Object obj, Name name,
                                     Context nameCtx, Hashtable<?, ?> environment)
-            throws Exception {
+        throws Exception {
         Reference ref = (Reference) obj;
 
         String api = null;
@@ -503,4 +502,3 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
             return '/';
     }
 }
-

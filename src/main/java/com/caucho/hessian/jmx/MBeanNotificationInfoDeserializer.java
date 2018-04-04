@@ -58,42 +58,42 @@ import java.io.IOException;
  * Deserializing an MBeanNotificationInfo valued object
  */
 public class MBeanNotificationInfoDeserializer extends AbstractDeserializer {
-  public Class getType()
-  {
-    return MBeanNotificationInfo.class;
-  }
-  
-  public Object readMap(AbstractHessianInput in)
-    throws IOException
-  {
-    String name = null;
-    String description = null;
-    String []types = null;
-    
-    while (! in.isEnd()) {
-      String key = in.readString();
-
-      if ("name".equals(key))
-	name = in.readString();
-      else if ("description".equals(key))
-	description = in.readString();
-      else if ("types".equals(key))
-	types = (String[]) in.readObject(String[].class);
-      else {
-	in.readObject();
-      }
+    public Class getType()
+    {
+        return MBeanNotificationInfo.class;
     }
 
-    in.readMapEnd();
+    public Object readMap(AbstractHessianInput in)
+        throws IOException
+    {
+        String name = null;
+        String description = null;
+        String[] types = null;
 
-    try {
-      MBeanNotificationInfo info;
+        while (!in.isEnd()) {
+            String key = in.readString();
 
-      info = new MBeanNotificationInfo(types, name, description);
-      
-      return info;
-    } catch (Exception e) {
-      throw new IOException(String.valueOf(e));
+            if ("name".equals(key))
+                name = in.readString();
+            else if ("description".equals(key))
+                description = in.readString();
+            else if ("types".equals(key))
+                types = (String[]) in.readObject(String[].class);
+            else {
+                in.readObject();
+            }
+        }
+
+        in.readMapEnd();
+
+        try {
+            MBeanNotificationInfo info;
+
+            info = new MBeanNotificationInfo(types, name, description);
+
+            return info;
+        } catch (Exception e) {
+            throw new IOException(String.valueOf(e));
+        }
     }
-  }
 }

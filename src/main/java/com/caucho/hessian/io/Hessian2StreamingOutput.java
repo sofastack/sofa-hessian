@@ -56,53 +56,53 @@ import java.io.OutputStream;
  */
 public class Hessian2StreamingOutput
 {
-  private Hessian2Output _out;
-  
-  /**
-   * Creates a new Hessian output stream, initialized with an
-   * underlying output stream.
-   *
-   * @param os the underlying output stream.
-   */
-  public Hessian2StreamingOutput(OutputStream os)
-  {
-    _out = new Hessian2Output(os);
-  }
-  
-  public void setCloseStreamOnClose(boolean isClose)
-  {
-    _out.setCloseStreamOnClose(isClose);
-  }
-  
-  public boolean isCloseStreamOnClose()
-  {
-    return _out.isCloseStreamOnClose();
-  }
+    private Hessian2Output _out;
 
-  /**
-   * Writes any object to the output stream.
-   */
-  public void writeObject(Object object)
-    throws IOException
-  {
-    _out.writeStreamingObject(object);
-  }
+    /**
+     * Creates a new Hessian output stream, initialized with an
+     * underlying output stream.
+     *
+     * @param os the underlying output stream.
+     */
+    public Hessian2StreamingOutput(OutputStream os)
+    {
+        _out = new Hessian2Output(os);
+    }
 
-  /**
-   * Flushes the output.
-   */
-  public void flush()
-    throws IOException
-  {
-    _out.flush();
-  }
+    public void setCloseStreamOnClose(boolean isClose)
+    {
+        _out.setCloseStreamOnClose(isClose);
+    }
 
-  /**
-   * Close the output.
-   */
-  public void close()
-    throws IOException
-  {
-    _out.close();
-  }
+    public boolean isCloseStreamOnClose()
+    {
+        return _out.isCloseStreamOnClose();
+    }
+
+    /**
+     * Writes any object to the output stream.
+     */
+    public void writeObject(Object object)
+        throws IOException
+    {
+        _out.writeStreamingObject(object);
+    }
+
+    /**
+     * Flushes the output.
+     */
+    public void flush()
+        throws IOException
+    {
+        _out.flush();
+    }
+
+    /**
+     * Close the output.
+     */
+    public void close()
+        throws IOException
+    {
+        _out.close();
+    }
 }

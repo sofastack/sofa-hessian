@@ -45,7 +45,7 @@ public class GenericExample {
         genericObject.putField("name", "xxx");
         genericObject.putField("age", 25);
         GenericArray nickList = new GenericArray("java.lang.String");
-        nickList.setObjects(new String[]{"xa", "xb", "xc"});
+        nickList.setObjects(new String[] { "xa", "xb", "xc" });
         genericObject.putField("nickNames", nickList);
 
         // Do serializer

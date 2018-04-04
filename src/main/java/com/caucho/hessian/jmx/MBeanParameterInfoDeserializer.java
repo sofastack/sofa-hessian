@@ -58,45 +58,45 @@ import java.io.IOException;
  * Deserializing an MBeanParameterInfo valued object
  */
 public class MBeanParameterInfoDeserializer extends AbstractDeserializer {
-  public Class getType()
-  {
-    return MBeanParameterInfo.class;
-  }
-  
-  public Object readMap(AbstractHessianInput in)
-    throws IOException
-  {
-    String name = null;
-    String type = null;
-    String description = null;
-    boolean isRead = false;
-    boolean isWrite = false;
-    boolean isIs = false;
-    
-    while (! in.isEnd()) {
-      String key = in.readString();
-
-      if ("name".equals(key))
-	name = in.readString();
-      else if ("type".equals(key))
-	type = in.readString();
-      else if ("description".equals(key))
-	description = in.readString();
-      else {
-	in.readObject();
-      }
+    public Class getType()
+    {
+        return MBeanParameterInfo.class;
     }
 
-    in.readMapEnd();
+    public Object readMap(AbstractHessianInput in)
+        throws IOException
+    {
+        String name = null;
+        String type = null;
+        String description = null;
+        boolean isRead = false;
+        boolean isWrite = false;
+        boolean isIs = false;
 
-    try {
-      MBeanParameterInfo info;
+        while (!in.isEnd()) {
+            String key = in.readString();
 
-      info = new MBeanParameterInfo(name, type, description);
+            if ("name".equals(key))
+                name = in.readString();
+            else if ("type".equals(key))
+                type = in.readString();
+            else if ("description".equals(key))
+                description = in.readString();
+            else {
+                in.readObject();
+            }
+        }
 
-      return info;
-    } catch (Exception e) {
-      throw new IOException(String.valueOf(e));
+        in.readMapEnd();
+
+        try {
+            MBeanParameterInfo info;
+
+            info = new MBeanParameterInfo(name, type, description);
+
+            return info;
+        } catch (Exception e) {
+            throw new IOException(String.valueOf(e));
+        }
     }
-  }
 }

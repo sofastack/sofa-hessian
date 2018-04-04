@@ -55,18 +55,18 @@ import com.caucho.hessian.io.HessianServiceException;
  * This exception is required for MicroBurlapInput.
  */
 public class BurlapServiceException extends HessianServiceException {
-  /**
-   * Zero-arg constructor.
-   */
-  public BurlapServiceException()
-  {
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public BurlapServiceException(String message, String code, Object detail)
-  {
-    super(message, code, detail);
-  }
+    /**
+     * Zero-arg constructor.
+     */
+    public BurlapServiceException()
+    {
+    }
+
+    /**
+     * Create the exception.
+     */
+    public BurlapServiceException(String message, String code, Object detail)
+    {
+        super(message, code, detail);
+    }
 }

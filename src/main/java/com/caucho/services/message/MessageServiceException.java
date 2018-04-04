@@ -55,56 +55,56 @@ import java.io.IOException;
  * This exception is required for MicroHessianInput.
  */
 public class MessageServiceException extends IOException {
-  private Throwable _rootCause;
-  
-  /**
-   * Zero-arg constructor.
-   */
-  public MessageServiceException()
-  {
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public MessageServiceException(String message)
-  {
-    super(message);
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public MessageServiceException(String message, Throwable rootCause)
-  {
-    super(message);
+    private Throwable _rootCause;
 
-    _rootCause = rootCause;
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public MessageServiceException(Throwable rootCause)
-  {
-    super(String.valueOf(rootCause));
+    /**
+     * Zero-arg constructor.
+     */
+    public MessageServiceException()
+    {
+    }
 
-    _rootCause = rootCause;
-  }
+    /**
+     * Create the exception.
+     */
+    public MessageServiceException(String message)
+    {
+        super(message);
+    }
 
-  /**
-   * Returns the underlying cause.
-   */
-  public Throwable getRootCause()
-  {
-    return getCause();
-  }
+    /**
+     * Create the exception.
+     */
+    public MessageServiceException(String message, Throwable rootCause)
+    {
+        super(message);
 
-  /**
-   * Returns the underlying cause.
-   */
-  public Throwable getCause()
-  {
-    return _rootCause;
-  }
+        _rootCause = rootCause;
+    }
+
+    /**
+     * Create the exception.
+     */
+    public MessageServiceException(Throwable rootCause)
+    {
+        super(String.valueOf(rootCause));
+
+        _rootCause = rootCause;
+    }
+
+    /**
+     * Returns the underlying cause.
+     */
+    public Throwable getRootCause()
+    {
+        return getCause();
+    }
+
+    /**
+     * Returns the underlying cause.
+     */
+    public Throwable getCause()
+    {
+        return _rootCause;
+    }
 }

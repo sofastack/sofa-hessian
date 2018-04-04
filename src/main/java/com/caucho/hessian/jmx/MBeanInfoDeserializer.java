@@ -62,52 +62,52 @@ import java.io.IOException;
  * Deserializing an MBeanInfo valued object
  */
 public class MBeanInfoDeserializer extends AbstractDeserializer {
-  public Class getType()
-  {
-    return MBeanInfo.class;
-  }
-  
-  public Object readMap(AbstractHessianInput in)
-    throws IOException
-  {
-    String className = null;
-    String description = null;
-    MBeanAttributeInfo []attributes = null;
-    MBeanConstructorInfo []constructors = null;
-    MBeanOperationInfo []operations = null;
-    MBeanNotificationInfo []notifications = null;
-    
-    while (! in.isEnd()) {
-      String key = in.readString();
-
-      if ("className".equals(key))
-	className = in.readString();
-      else if ("description".equals(key))
-	description = in.readString();
-      else if ("attributes".equals(key)) {
-	attributes = (MBeanAttributeInfo []) in.readObject(MBeanAttributeInfo[].class);
-      }
-      /*
-      else if ("isWrite".equals(key))
-	isWrite = in.readBoolean();
-      else if ("isIs".equals(key))
-	isIs = in.readBoolean();
-      */
-      else
-	in.readObject();
+    public Class getType()
+    {
+        return MBeanInfo.class;
     }
 
-    in.readMapEnd();
+    public Object readMap(AbstractHessianInput in)
+        throws IOException
+    {
+        String className = null;
+        String description = null;
+        MBeanAttributeInfo[] attributes = null;
+        MBeanConstructorInfo[] constructors = null;
+        MBeanOperationInfo[] operations = null;
+        MBeanNotificationInfo[] notifications = null;
 
-    try {
-      MBeanInfo info;
-      
-      info = new MBeanInfo(className, description, attributes,
-			   constructors, operations, notifications);
+        while (!in.isEnd()) {
+            String key = in.readString();
 
-      return info;
-    } catch (Exception e) {
-      throw new IOException(String.valueOf(e));
+            if ("className".equals(key))
+                className = in.readString();
+            else if ("description".equals(key))
+                description = in.readString();
+            else if ("attributes".equals(key)) {
+                attributes = (MBeanAttributeInfo[]) in.readObject(MBeanAttributeInfo[].class);
+            }
+            /*
+            else if ("isWrite".equals(key))
+            isWrite = in.readBoolean();
+            else if ("isIs".equals(key))
+            isIs = in.readBoolean();
+            */
+            else
+                in.readObject();
+        }
+
+        in.readMapEnd();
+
+        try {
+            MBeanInfo info;
+
+            info = new MBeanInfo(className, description, attributes,
+                constructors, operations, notifications);
+
+            return info;
+        } catch (Exception e) {
+            throw new IOException(String.valueOf(e));
+        }
     }
-  }
 }

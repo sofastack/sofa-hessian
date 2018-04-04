@@ -33,99 +33,99 @@ import static org.junit.Assert.assertEquals;
  */
 public class LongArrayTest {
 
-	@Test
-	public void oneArray() throws IOException {
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		Hessian2Output h2out = new Hessian2Output(bout);
+    @Test
+    public void oneArray() throws IOException {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        Hessian2Output h2out = new Hessian2Output(bout);
 
-		Map map = new HashMap();
-		map.put("1", new long[]{1L, 2L});
+        Map map = new HashMap();
+        map.put("1", new long[] { 1L, 2L });
 
-		h2out.writeObject(map);
+        h2out.writeObject(map);
 
-		h2out.flush();
-		byte[] body = bout.toByteArray();
+        h2out.flush();
+        byte[] body = bout.toByteArray();
 
-		ByteArrayInputStream input = new ByteArrayInputStream(body, 0, body.length);
-		Hessian2Input hin = new Hessian2Input(input);
+        ByteArrayInputStream input = new ByteArrayInputStream(body, 0, body.length);
+        Hessian2Input hin = new Hessian2Input(input);
 
-		Map copy = (Map) hin.readObject();
+        Map copy = (Map) hin.readObject();
 
-		long[] a1 = (long[]) map.get("1");
-		long[] a2 = (long[]) copy.get("1");
-		assertEquals(a1.length, a2.length);
-		for (int i = 0; i < a1.length; ++i)
-			assertEquals(a1[i], a2[i]);
-	}
+        long[] a1 = (long[]) map.get("1");
+        long[] a2 = (long[]) copy.get("1");
+        assertEquals(a1.length, a2.length);
+        for (int i = 0; i < a1.length; ++i)
+            assertEquals(a1[i], a2[i]);
+    }
 
-	@Test
-	public void twoArray() throws IOException {
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		Hessian2Output h2out = new Hessian2Output(bout);
+    @Test
+    public void twoArray() throws IOException {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        Hessian2Output h2out = new Hessian2Output(bout);
 
-		Map map = new HashMap();
-		map.put("1", new long[]{1L, 2L});
-		map.put("2", new long[]{3L, 4L});
+        Map map = new HashMap();
+        map.put("1", new long[] { 1L, 2L });
+        map.put("2", new long[] { 3L, 4L });
 
-		h2out.writeObject(map);
+        h2out.writeObject(map);
 
-		h2out.flush();
-		byte[] body = bout.toByteArray();
+        h2out.flush();
+        byte[] body = bout.toByteArray();
 
-		ByteArrayInputStream input = new ByteArrayInputStream(body, 0, body.length);
-		Hessian2Input hin = new Hessian2Input(input);
+        ByteArrayInputStream input = new ByteArrayInputStream(body, 0, body.length);
+        Hessian2Input hin = new Hessian2Input(input);
 
-		Map copy = (Map) hin.readObject();
+        Map copy = (Map) hin.readObject();
 
-		long[] a1 = (long[]) map.get("1");
-		long[] a2 = (long[]) copy.get("1");
-		assertEquals(a1.length, a2.length);
-		for (int i = 0; i < a1.length; ++i)
-			assertEquals(a1[i], a2[i]);
+        long[] a1 = (long[]) map.get("1");
+        long[] a2 = (long[]) copy.get("1");
+        assertEquals(a1.length, a2.length);
+        for (int i = 0; i < a1.length; ++i)
+            assertEquals(a1[i], a2[i]);
 
-		a1 = (long[]) map.get("2");
-		a2 = (long[]) copy.get("2");
-		assertEquals(a1.length, a2.length);
-		for (int i = 0; i < a1.length; ++i)
-			assertEquals(a1[i], a2[i]);
-	}
+        a1 = (long[]) map.get("2");
+        a2 = (long[]) copy.get("2");
+        assertEquals(a1.length, a2.length);
+        for (int i = 0; i < a1.length; ++i)
+            assertEquals(a1[i], a2[i]);
+    }
 
-	@Test
-	public void threeArray() throws IOException {
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		Hessian2Output h2out = new Hessian2Output(bout);
+    @Test
+    public void threeArray() throws IOException {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        Hessian2Output h2out = new Hessian2Output(bout);
 
-		Map map = new HashMap();
-		map.put("1", new long[]{1L, 2L});
-		map.put("2", new long[]{3L, 4L, 5L});
-		map.put("3", new long[]{3L, 4L, 5L, 6L});
+        Map map = new HashMap();
+        map.put("1", new long[] { 1L, 2L });
+        map.put("2", new long[] { 3L, 4L, 5L });
+        map.put("3", new long[] { 3L, 4L, 5L, 6L });
 
-		h2out.writeObject(map);
+        h2out.writeObject(map);
 
-		h2out.flush();
-		byte[] body = bout.toByteArray();
+        h2out.flush();
+        byte[] body = bout.toByteArray();
 
-		ByteArrayInputStream input = new ByteArrayInputStream(body, 0, body.length);
-		Hessian2Input hin = new Hessian2Input(input);
+        ByteArrayInputStream input = new ByteArrayInputStream(body, 0, body.length);
+        Hessian2Input hin = new Hessian2Input(input);
 
-		Map copy = (Map) hin.readObject();
+        Map copy = (Map) hin.readObject();
 
-		long[] a1 = (long[]) map.get("1");
-		long[] a2 = (long[]) copy.get("1");
-		assertEquals(a1.length, a2.length);
-		for (int i = 0; i < a1.length; ++i)
-			assertEquals(a1[i], a2[i]);
+        long[] a1 = (long[]) map.get("1");
+        long[] a2 = (long[]) copy.get("1");
+        assertEquals(a1.length, a2.length);
+        for (int i = 0; i < a1.length; ++i)
+            assertEquals(a1[i], a2[i]);
 
-		a1 = (long[]) map.get("2");
-		a2 = (long[]) copy.get("2");
-		assertEquals(a1.length, a2.length);
-		for (int i = 0; i < a1.length; ++i)
-			assertEquals(a1[i], a2[i]);
+        a1 = (long[]) map.get("2");
+        a2 = (long[]) copy.get("2");
+        assertEquals(a1.length, a2.length);
+        for (int i = 0; i < a1.length; ++i)
+            assertEquals(a1[i], a2[i]);
 
-		a1 = (long[]) map.get("3");
-		a2 = (long[]) copy.get("3");
-		assertEquals(a1.length, a2.length);
-		for (int i = 0; i < a1.length; ++i)
-			assertEquals(a1[i], a2[i]);
-	}
+        a1 = (long[]) map.get("3");
+        a2 = (long[]) copy.get("3");
+        assertEquals(a1.length, a2.length);
+        for (int i = 0; i < a1.length; ++i)
+            assertEquals(a1[i], a2[i]);
+    }
 }

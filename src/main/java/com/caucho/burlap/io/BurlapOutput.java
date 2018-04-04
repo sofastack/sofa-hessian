@@ -80,13 +80,13 @@ import java.util.TimeZone;
  */
 public class BurlapOutput extends AbstractBurlapOutput {
     // the output stream
-    protected OutputStream os;
+    protected OutputStream  os;
     // map of references
     private IdentityHashMap _refs;
 
-    private Date date;
-    private Calendar utcCalendar;
-    private Calendar localCalendar;
+    private Date            date;
+    private Calendar        utcCalendar;
+    private Calendar        localCalendar;
 
     /**
      * Creates a new Burlap output stream, initialized with an
@@ -120,7 +120,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * Writes a complete method call.
      */
     public void call(String method, Object[] args)
-            throws IOException {
+        throws IOException {
         startCall(method);
 
         if (args != null) {
@@ -144,7 +144,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param method the method name to call.
      */
     public void startCall(String method)
-            throws IOException {
+        throws IOException {
         print("<burlap:call><method>");
         print(method);
         print("</method>");
@@ -160,7 +160,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public void startCall()
-            throws IOException {
+        throws IOException {
         print("<burlap:call>");
     }
 
@@ -174,12 +174,11 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param method the method name to call.
      */
     public void writeMethod(String method)
-            throws IOException {
+        throws IOException {
         print("<method>");
         print(method);
         print("</method>");
     }
-
 
     /**
      * Completes.
@@ -189,7 +188,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public void completeCall()
-            throws IOException {
+        throws IOException {
         print("</burlap:call>");
     }
 
@@ -203,7 +202,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre>
      */
     public void startReply()
-            throws IOException {
+        throws IOException {
         print("<burlap:reply>");
     }
 
@@ -217,7 +216,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre>
      */
     public void completeReply()
-            throws IOException {
+        throws IOException {
         print("</burlap:reply>");
     }
 
@@ -229,7 +228,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public void writeHeader(String name)
-            throws IOException {
+        throws IOException {
         print("<header>");
         printString(name);
         print("</header>");
@@ -257,7 +256,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param code the fault code, a three digit
      */
     public void writeFault(String code, String message, Object detail)
-            throws IOException {
+        throws IOException {
         print("<fault>");
         writeString("code");
         writeString(code);
@@ -276,7 +275,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * Writes any object to the output stream.
      */
     public void writeObject(Object object)
-            throws IOException {
+        throws IOException {
         if (object == null) {
             writeNull();
             return;
@@ -305,7 +304,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public boolean writeListBegin(int length, String type)
-            throws IOException {
+        throws IOException {
         print("<list><type>");
 
         if (type != null)
@@ -322,7 +321,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * Writes the tail of the list to the stream.
      */
     public void writeListEnd()
-            throws IOException {
+        throws IOException {
         print("</list>");
     }
 
@@ -339,7 +338,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public void writeMapBegin(String type)
-            throws IOException {
+        throws IOException {
         print("<map><type>");
         if (type != null)
             print(type);
@@ -351,7 +350,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * Writes the tail of the map to the stream.
      */
     public void writeMapEnd()
-            throws IOException {
+        throws IOException {
         print("</map>");
     }
 
@@ -367,7 +366,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public void writeRemote(String type, String url)
-            throws IOException {
+        throws IOException {
         print("<remote><type>");
         print(type);
         print("</type><string>");
@@ -387,7 +386,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param value the boolean value to write.
      */
     public void writeBoolean(boolean value)
-            throws IOException {
+        throws IOException {
         if (value)
             print("<boolean>1</boolean>");
         else
@@ -405,7 +404,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param value the integer value to write.
      */
     public void writeInt(int value)
-            throws IOException {
+        throws IOException {
         print("<int>");
         print(value);
         print("</int>");
@@ -422,7 +421,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param value the long value to write.
      */
     public void writeLong(long value)
-            throws IOException {
+        throws IOException {
         print("<long>");
         print(value);
         print("</long>");
@@ -439,7 +438,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param value the double value to write.
      */
     public void writeDouble(double value)
-            throws IOException {
+        throws IOException {
         print("<double>");
         print(value);
         print("</double>");
@@ -455,7 +454,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param time the date in milliseconds from the epoch in UTC
      */
     public void writeUTCDate(long time)
-            throws IOException {
+        throws IOException {
         print("<date>");
         if (utcCalendar == null) {
             utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -478,7 +477,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public void writeNull()
-            throws IOException {
+        throws IOException {
         print("<null></null>");
     }
 
@@ -499,7 +498,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param value the string value to write.
      */
     public void writeString(String value)
-            throws IOException {
+        throws IOException {
         if (value == null) {
             print("<null></null>");
         } else {
@@ -528,7 +527,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param length
      */
     public void writeString(char[] buffer, int offset, int length)
-            throws IOException {
+        throws IOException {
         if (buffer == null) {
             print("<null></null>");
         } else {
@@ -555,7 +554,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param buffer
      */
     public void writeBytes(byte[] buffer)
-            throws IOException {
+        throws IOException {
         if (buffer == null)
             print("<null></null>");
         else
@@ -581,7 +580,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param length
      */
     public void writeBytes(byte[] buffer, int offset, int length)
-            throws IOException {
+        throws IOException {
         if (buffer == null) {
             print("<null></null>");
         } else {
@@ -593,7 +592,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
                     print('\n');
 
                 int v = (((buffer[offset + i] & 0xff) << 16) +
-                        ((buffer[offset + i + 1] & 0xff) << 8) +
+                    ((buffer[offset + i + 1] & 0xff) << 8) +
                         (buffer[offset + i + 2] & 0xff));
 
                 print(encode(v >> 18));
@@ -627,7 +626,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * Writes a byte buffer to the stream.
      */
     public void writeByteBufferStart()
-            throws IOException {
+        throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -639,7 +638,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public void writeByteBufferPart(byte[] buffer, int offset, int length)
-            throws IOException {
+        throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -651,7 +650,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * </pre></code>
      */
     public void writeByteBufferEnd(byte[] buffer, int offset, int length)
-            throws IOException {
+        throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -682,7 +681,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param value the integer value to write.
      */
     public void writeRef(int value)
-            throws IOException {
+        throws IOException {
         print("<ref>");
         print(value);
         print("</ref>");
@@ -694,7 +693,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @return true if we're writing a ref.
      */
     public boolean addRef(Object object)
-            throws IOException {
+        throws IOException {
         if (_refs == null)
             _refs = new IdentityHashMap();
 
@@ -716,7 +715,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * Removes a reference.
      */
     public boolean removeRef(Object obj)
-            throws IOException {
+        throws IOException {
         if (_refs != null) {
             _refs.remove(obj);
 
@@ -729,7 +728,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * Replaces a reference from one object to another.
      */
     public boolean replaceRef(Object oldRef, Object newRef)
-            throws IOException {
+        throws IOException {
         Integer value = (Integer) _refs.remove(oldRef);
 
         if (value != null) {
@@ -745,7 +744,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param v the string to print.
      */
     public void printString(String v)
-            throws IOException {
+        throws IOException {
         printString(v, 0, v.length());
     }
 
@@ -755,7 +754,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param v the string to print.
      */
     public void printString(String v, int offset, int length)
-            throws IOException {
+        throws IOException {
         for (int i = 0; i < length; i++) {
             char ch = v.charAt(i + offset);
 
@@ -790,7 +789,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param v the string to print.
      */
     public void printString(char[] v, int offset, int length)
-            throws IOException {
+        throws IOException {
         for (int i = 0; i < length; i++) {
             char ch = v[i + offset];
 
@@ -813,7 +812,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param calendar the calendar to print.
      */
     public void printDate(Calendar calendar)
-            throws IOException {
+        throws IOException {
         int year = calendar.get(Calendar.YEAR);
 
         os.write((char) ('0' + (year / 1000 % 10)));
@@ -858,7 +857,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param v the char to print.
      */
     protected void print(char v)
-            throws IOException {
+        throws IOException {
         os.write(v);
     }
 
@@ -868,7 +867,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param v the integer to print.
      */
     protected void print(int v)
-            throws IOException {
+        throws IOException {
         print(String.valueOf(v));
     }
 
@@ -878,7 +877,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param v the long to print.
      */
     protected void print(long v)
-            throws IOException {
+        throws IOException {
         print(String.valueOf(v));
     }
 
@@ -888,7 +887,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param v the double to print.
      */
     protected void print(double v)
-            throws IOException {
+        throws IOException {
         print(String.valueOf(v));
     }
 
@@ -899,7 +898,7 @@ public class BurlapOutput extends AbstractBurlapOutput {
      * @param s the ascii string to print.
      */
     protected void print(String s)
-            throws IOException {
+        throws IOException {
         int len = s.length();
         for (int i = 0; i < len; i++) {
             int ch = s.charAt(i);

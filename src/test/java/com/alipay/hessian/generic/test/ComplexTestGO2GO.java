@@ -299,7 +299,7 @@ public class ComplexTestGO2GO {
             assertTrue(times == 2);
             times = 0;
         } else if ((mapValue == null && mapValueGeneric != null)
-                   || (mapValue != null && mapValueGeneric == null)) {
+            || (mapValue != null && mapValueGeneric == null)) {
             fail("not equals!");
         }
 
@@ -324,7 +324,7 @@ public class ComplexTestGO2GO {
 
             assertTrue(times == 2);
         } else if ((listValue != null && listValueGeneric == null)
-                   || (listValue == null && listValueGeneric != null)) {
+            || (listValue == null && listValueGeneric != null)) {
             fail("not equals!");
         }
 

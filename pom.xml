@@ -126,14 +126,6 @@
                 </executions>
                 <configuration>
                     <configFile>${user.dir}/formatter.xml</configFile>
-                    <excludes>
-                        <exclude>src/main/java/com/caucho</exclude>
-                        <exclude>src/main/java/com/alipay/hessian/clhm/**</exclude>
-                    </excludes>
-                    <includes>
-                        <include>src/main/java/com/alipay/**</include>
-                        <include>**/src/test/java/**</include>
-                    </includes>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>

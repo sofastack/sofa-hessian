@@ -63,6 +63,6 @@ public class Pet implements Serializable {
 
     public String toString() {
         return "(" + type + " " + name + " owner: " + (owner == null ? "none" : owner.getName())
-               + ")";
+            + ")";
     }
 }

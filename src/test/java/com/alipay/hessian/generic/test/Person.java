@@ -116,6 +116,6 @@ public class Person implements Serializable {
     @Override
     public String toString() {
         return name + " " + age + " " + gender + " " + scores + " " + pet + " friend: "
-               + (friend == null ? "none" : friend.name);
+            + (friend == null ? "none" : friend.name);
     }
 }

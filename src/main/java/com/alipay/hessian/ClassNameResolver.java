@@ -33,14 +33,14 @@ public class ClassNameResolver {
     /**
      * 锁
      */
-    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+    private ReentrantReadWriteLock           lock      = new ReentrantReadWriteLock();
+    private ReentrantReadWriteLock.ReadLock  readLock  = lock.readLock();
     private ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
     /**
      * 过滤器列表
      */
-    List<ClassNameFilter> filters = null;
+    List<ClassNameFilter>                    filters   = null;
 
     /**
      * 增加类名过滤器

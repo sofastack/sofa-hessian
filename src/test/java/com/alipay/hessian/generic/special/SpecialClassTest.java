@@ -264,7 +264,6 @@ public class SpecialClassTest {
         assertTrue(o == Color.BLANK);
     }
 
-
     /**
      * 检测Calendar的序列化情况
      * @throws Exception

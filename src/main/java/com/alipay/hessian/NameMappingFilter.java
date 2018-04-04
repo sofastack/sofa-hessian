@@ -28,9 +28,9 @@ public class NameMappingFilter implements ClassNameFilter {
     /**
      * 保留映射关系 旧类-->新类
      */
-    private final ConcurrentLinkedHashMap<String, String> objectMap
-            = new ConcurrentLinkedHashMap.Builder<String, String>()
-            .initialCapacity(100).maximumWeightedCapacity(100).build();
+    private final ConcurrentLinkedHashMap<String, String> objectMap = new ConcurrentLinkedHashMap.Builder<String, String>()
+                                                                        .initialCapacity(100)
+                                                                        .maximumWeightedCapacity(100).build();
 
     /**
      * Register mapping.

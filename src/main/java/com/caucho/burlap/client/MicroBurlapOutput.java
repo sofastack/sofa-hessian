@@ -80,9 +80,9 @@ import java.util.Vector;
  */
 public class MicroBurlapOutput {
     private OutputStream os;
-    private Date date;
-    private Calendar utcCalendar;
-    private Calendar localCalendar;
+    private Date         date;
+    private Calendar     utcCalendar;
+    private Calendar     localCalendar;
 
     /**
      * Creates a new Burlap output stream, initialized with an
@@ -108,7 +108,7 @@ public class MicroBurlapOutput {
      * Writes a complete method call.
      */
     public void call(String method, Object[] args)
-            throws IOException {
+        throws IOException {
         startCall(method);
 
         if (args != null) {
@@ -130,7 +130,7 @@ public class MicroBurlapOutput {
      * @param method the method name to call.
      */
     public void startCall(String method)
-            throws IOException {
+        throws IOException {
         print("<burlap:call><method>");
         print(method);
         print("</method>");
@@ -144,7 +144,7 @@ public class MicroBurlapOutput {
      * </pre></code>
      */
     public void completeCall()
-            throws IOException {
+        throws IOException {
         print("</burlap:call>");
     }
 
@@ -159,7 +159,7 @@ public class MicroBurlapOutput {
      * @param value the boolean value to write.
      */
     public void writeBoolean(boolean value)
-            throws IOException {
+        throws IOException {
         print("<boolean>");
         printInt(value ? 1 : 0);
         print("</boolean>");
@@ -176,7 +176,7 @@ public class MicroBurlapOutput {
      * @param value the integer value to write.
      */
     public void writeInt(int value)
-            throws IOException {
+        throws IOException {
         print("<int>");
         printInt(value);
         print("</int>");
@@ -193,7 +193,7 @@ public class MicroBurlapOutput {
      * @param value the long value to write.
      */
     public void writeLong(long value)
-            throws IOException {
+        throws IOException {
         print("<long>");
         printLong(value);
         print("</long>");
@@ -208,7 +208,7 @@ public class MicroBurlapOutput {
      * </pre></code>
      */
     public void writeNull()
-            throws IOException {
+        throws IOException {
         print("<null></null>");
     }
 
@@ -229,7 +229,7 @@ public class MicroBurlapOutput {
      * @param value the string value to write.
      */
     public void writeString(String value)
-            throws IOException {
+        throws IOException {
         if (value == null) {
             print("<null></null>");
         } else {
@@ -258,7 +258,7 @@ public class MicroBurlapOutput {
      * @param length
      */
     public void writeBytes(byte[] buffer, int offset, int length)
-            throws IOException {
+        throws IOException {
         if (buffer == null) {
             print("<null></null>");
         } else {
@@ -278,7 +278,7 @@ public class MicroBurlapOutput {
      * @param time the date in milliseconds from the epoch in UTC
      */
     public void writeUTCDate(long time)
-            throws IOException {
+        throws IOException {
         print("<date>");
         if (utcCalendar == null) {
             utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -302,7 +302,7 @@ public class MicroBurlapOutput {
      * @param time the date in milliseconds from the epoch in local timezone
      */
     public void writeLocalDate(long time)
-            throws IOException {
+        throws IOException {
         print("<date>");
         if (localCalendar == null) {
             localCalendar = Calendar.getInstance();
@@ -326,7 +326,7 @@ public class MicroBurlapOutput {
      * @param value the integer value to write.
      */
     public void writeRef(int value)
-            throws IOException {
+        throws IOException {
         print("<ref>");
         printInt(value);
         print("</ref>");
@@ -350,7 +350,7 @@ public class MicroBurlapOutput {
      * Unknown objects will call <code>writeCustomObject</code>.
      */
     public void writeObject(Object object)
-            throws IOException {
+        throws IOException {
         if (object == null)
             writeNull();
         else if (object instanceof String)
@@ -398,7 +398,7 @@ public class MicroBurlapOutput {
      * @param object the object to write.
      */
     public void writeCustomObject(Object object)
-            throws IOException {
+        throws IOException {
         throw new IOException("unexpected object: " + object);
     }
 
@@ -418,7 +418,7 @@ public class MicroBurlapOutput {
      * </pre></code>
      */
     public void writeListBegin(int length, String type)
-            throws IOException {
+        throws IOException {
         print("<list><type>");
         if (type != null)
             print(type);
@@ -431,7 +431,7 @@ public class MicroBurlapOutput {
      * Writes the tail of the list to the stream.
      */
     public void writeListEnd()
-            throws IOException {
+        throws IOException {
         print("</list>");
     }
 
@@ -450,7 +450,7 @@ public class MicroBurlapOutput {
      * </pre></code>
      */
     public void writeMapBegin(String type)
-            throws IOException {
+        throws IOException {
         print("<map><type>");
         if (type != null)
             print(type);
@@ -461,7 +461,7 @@ public class MicroBurlapOutput {
      * Writes the tail of the map to the stream.
      */
     public void writeMapEnd()
-            throws IOException {
+        throws IOException {
         print("</map>");
     }
 
@@ -477,7 +477,7 @@ public class MicroBurlapOutput {
      * </pre></code>
      */
     public void writeRemote(String type, String url)
-            throws IOException {
+        throws IOException {
         print("<remote><type>");
         if (type != null)
             print(type);
@@ -492,7 +492,7 @@ public class MicroBurlapOutput {
      * @param v the integer to print.
      */
     public void printInt(int v)
-            throws IOException {
+        throws IOException {
         print(String.valueOf(v));
     }
 
@@ -502,7 +502,7 @@ public class MicroBurlapOutput {
      * @param v the long to print.
      */
     public void printLong(long v)
-            throws IOException {
+        throws IOException {
         print(String.valueOf(v));
     }
 
@@ -512,7 +512,7 @@ public class MicroBurlapOutput {
      * @param v the string to print.
      */
     public void printString(String v)
-            throws IOException {
+        throws IOException {
         int len = v.length();
 
         for (int i = 0; i < len; i++) {
@@ -553,12 +553,12 @@ public class MicroBurlapOutput {
      * @param data the bytes to print.
      */
     public void printBytes(byte[] data, int offset, int length)
-            throws IOException {
+        throws IOException {
         int i;
 
         for (; length >= 3; length -= 3) {
             int chunk = (((data[offset] & 0xff) << 16) +
-                    ((data[offset + 1] & 0xff) << 8) +
+                ((data[offset + 1] & 0xff) << 8) +
                     (data[offset + 2] & 0xff));
 
             os.write(base64encode(chunk >> 18));
@@ -608,7 +608,7 @@ public class MicroBurlapOutput {
      * @param calendar the calendar to print.
      */
     public void printDate(Calendar calendar)
-            throws IOException {
+        throws IOException {
         int year = calendar.get(Calendar.YEAR);
 
         os.write((char) ('0' + (year / 1000 % 10)));
@@ -648,7 +648,7 @@ public class MicroBurlapOutput {
      * @param s the ascii string to print.
      */
     public void print(String s)
-            throws IOException {
+        throws IOException {
         int len = s.length();
         for (int i = 0; i < len; i++) {
             int ch = s.charAt(i);

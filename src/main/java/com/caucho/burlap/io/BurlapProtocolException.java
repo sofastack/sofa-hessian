@@ -55,34 +55,34 @@ import com.caucho.hessian.io.HessianProtocolException;
  * This exception is required for MicroBurlapInput.
  */
 public class BurlapProtocolException extends HessianProtocolException {
-  /**
-   * Zero-arg constructor.
-   */
-  public BurlapProtocolException()
-  {
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public BurlapProtocolException(String message)
-  {
-    super(message);
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public BurlapProtocolException(String message, Throwable rootCause)
-  {
-    super(message, rootCause);
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public BurlapProtocolException(Throwable rootCause)
-  {
-    super(rootCause);
-  }
+    /**
+     * Zero-arg constructor.
+     */
+    public BurlapProtocolException()
+    {
+    }
+
+    /**
+     * Create the exception.
+     */
+    public BurlapProtocolException(String message)
+    {
+        super(message);
+    }
+
+    /**
+     * Create the exception.
+     */
+    public BurlapProtocolException(String message, Throwable rootCause)
+    {
+        super(message, rootCause);
+    }
+
+    /**
+     * Create the exception.
+     */
+    public BurlapProtocolException(Throwable rootCause)
+    {
+        super(rootCause);
+    }
 }

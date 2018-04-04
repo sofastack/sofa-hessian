@@ -68,16 +68,16 @@ import javax.servlet.ServletException;
  * </pre></code>
  */
 public interface Service {
-  /**
-   * Initialize the service instance.
-   *
-   * @param config the configuration for the service.
-   */
-  public void init(ServletConfig config)
-    throws ServletException;
-  
-  /**
-   * Cleanup the service instance.
-   */
-  public void destroy();
+    /**
+     * Initialize the service instance.
+     *
+     * @param config the configuration for the service.
+     */
+    public void init(ServletConfig config)
+        throws ServletException;
+
+    /**
+     * Cleanup the service instance.
+     */
+    public void destroy();
 }

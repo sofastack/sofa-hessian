@@ -28,7 +28,7 @@ public class ConcurrentLinkedHashMapTest {
     @Test
     public void testAll() {
         ConcurrentLinkedHashMap<Integer, Integer> map = new ConcurrentLinkedHashMap.Builder<Integer, Integer>()
-                .initialCapacity(1).maximumWeightedCapacity(3).build();
+            .initialCapacity(1).maximumWeightedCapacity(3).build();
 
         map.put(1, 1);
         map.put(2, 2);
