@@ -23,7 +23,7 @@ install:
   - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -U -e
   
 script:
-  - sh ./.alipay/check_format.sh
+  - sh ./check_format.sh
   - mvn cobertura:cobertura
 
 after_success:

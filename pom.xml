@@ -98,7 +98,7 @@
                 </executions>
                 <configuration>
                     <quiet>true</quiet>
-                    <header>${user.dir}/.alipay/HEADER</header>
+                    <header>${user.dir}/HEADER</header>
                     <excludes>
                         <exclude>src/main/java/com/caucho</exclude>
                         <exclude>src/main/java/com/alipay/hessian/clhm/**</exclude>
@@ -125,7 +125,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configFile>${user.dir}/.alipay/formatter.xml</configFile>
+                    <configFile>${user.dir}/formatter.xml</configFile>
                     <excludes>
                         <exclude>src/main/java/com/caucho</exclude>
                         <exclude>src/main/java/com/alipay/hessian/clhm/**</exclude>

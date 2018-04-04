@@ -50,7 +50,6 @@ package com.caucho.hessian.security;
 
 import java.security.*;
 import java.security.cert.*;
-import java.util.*;
 import javax.crypto.*;
 
 import java.io.*;

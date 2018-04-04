@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 
 /**
  * Created by qiwei.lqw on 2016/7/5.

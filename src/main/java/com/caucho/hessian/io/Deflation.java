@@ -48,7 +48,6 @@
 
 package com.caucho.hessian.io;
 
-import java.util.*;
 import java.util.zip.*;
 import java.io.*;
 

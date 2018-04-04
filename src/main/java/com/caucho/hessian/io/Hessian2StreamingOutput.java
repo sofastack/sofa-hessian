@@ -50,7 +50,6 @@ package com.caucho.hessian.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
 
 /**
  * Output stream for Hessian 2 streaming requests.

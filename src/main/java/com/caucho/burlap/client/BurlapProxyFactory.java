@@ -228,7 +228,7 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
    * </pre>
    *
    * @param api the interface the proxy class needs to implement
-   * @param url the URL where the client object is located.
+   * @param urlName the URL where the client object is located.
    *
    * @return a proxy to the object with the specified interface.
    */
