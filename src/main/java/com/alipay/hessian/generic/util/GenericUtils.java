@@ -116,7 +116,7 @@ public class GenericUtils {
     }
 
     private static Object innerToConvertObject(Object value, Map<Object, Object> map)
-                                                                                     throws Exception {
+        throws Exception {
 
         // 判null
         if (value == null) {
@@ -159,7 +159,7 @@ public class GenericUtils {
     }
 
     private static Object doConvertToObject(GenericObject genericObject, Map<Object, Object> map)
-                                                                                                 throws Exception {
+        throws Exception {
 
         // 如果map中缓存转换结果,直接返回
         Object object = map.get(genericObject);
@@ -212,7 +212,7 @@ public class GenericUtils {
     }
 
     private static void setFieldValue(Object object, Field field, Object value)
-                                                                               throws IllegalAccessException {
+        throws IllegalAccessException {
 
         // byte 域写入的可能是 int类型, setField 时需要进行转换
         if ((field.getType() == byte.class || field.getType() == Byte.class)
@@ -243,9 +243,9 @@ public class GenericUtils {
     }
 
     private static Object handleCalendarHandle(GenericObject genericObject, Map<Object, Object> map)
-                                                                                                    throws InstantiationException,
-                                                                                                    IllegalAccessException,
-                                                                                                    ClassNotFoundException {
+        throws InstantiationException,
+        IllegalAccessException,
+        ClassNotFoundException {
         Object type = genericObject.getField("type");
         Date date = (Date) genericObject.getField("date");
 
@@ -299,7 +299,7 @@ public class GenericUtils {
     }
 
     private static Object doConvertToMap(GenericMap genericMap, Map<Object, Object> map)
-                                                                                        throws Exception {
+        throws Exception {
 
         // 如果map中缓存转换结果,直接返回
         Object object = map.get(genericMap);
@@ -329,7 +329,7 @@ public class GenericUtils {
     }
 
     private static Object doConvertToArray(GenericArray genericArray, Map<Object, Object> map)
-                                                                                              throws Exception {
+        throws Exception {
 
         // 如果map中缓存转换结果,直接返回
         Object object = map.get(genericArray);
@@ -352,7 +352,7 @@ public class GenericUtils {
     }
 
     private static Object doConvertToClass(GenericClass genericClass, Map<Object, Object> map)
-                                                                                              throws ClassNotFoundException {
+        throws ClassNotFoundException {
         // 如果map中缓存转换结果,直接返回
         Object object = map.get(genericClass);
         if (object != null) {
@@ -380,7 +380,7 @@ public class GenericUtils {
     }
 
     private static Object innerConvertToGenericObject(Object value, Map<Object, Object> map)
-                                                                                            throws Exception {
+        throws Exception {
         // 判null
         if (value == null) {
             return null;
@@ -464,7 +464,7 @@ public class GenericUtils {
     }
 
     private static Object doConvertToGenericObjec(Object object, Map<Object, Object> map)
-                                                                                         throws Exception {
+        throws Exception {
 
         // 如果map中缓存转换结果,直接返回
         Object cachedObject = map.get(object);
@@ -525,7 +525,7 @@ public class GenericUtils {
     }
 
     private static Object doConvertToGenericMap(Map valueMap, Map<Object, Object> map)
-                                                                                      throws Exception {
+        throws Exception {
 
         // 如果map中缓存转换结果,直接返回
         Object cachedObject = map.get(valueMap);
@@ -552,7 +552,7 @@ public class GenericUtils {
     }
 
     private static Object doConvertToGenericArray(Object array, Map<Object, Object> map)
-                                                                                        throws Exception {
+        throws Exception {
 
         // 检测是否是数组对象
         Class clazz = array.getClass();
@@ -718,7 +718,7 @@ public class GenericUtils {
     }
 
     private static Object handleCollectionOrMapToObject(Object value, Map<Object, Object> map)
-                                                                                              throws Exception {
+        throws Exception {
 
         // 1. 判null
         if (value == null) {
@@ -765,7 +765,7 @@ public class GenericUtils {
     }
 
     private static Object handleCollectionOrMapToGenericObjec(Object value, Map<Object, Object> map)
-                                                                                                    throws Exception {
+        throws Exception {
 
         // 1. 判null
         if (value == null) {

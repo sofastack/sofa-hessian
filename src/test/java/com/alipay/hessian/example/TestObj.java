@@ -25,9 +25,9 @@ import java.util.List;
  * @author <a href="mailto:zhanggeng.zg@antfin.com">zhanggeng</a>
  */
 public class TestObj implements Serializable {
-    
-    private String name;
-    private int age;
+
+    private String       name;
+    private int          age;
     private List<String> nickNames;
 
     public String getName() {

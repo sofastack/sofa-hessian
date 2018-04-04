@@ -52,34 +52,34 @@ package com.caucho.hessian;
  * Base runtime exception for Hessian exceptions. 
  */
 public class HessianException extends RuntimeException {
-  /**
-   * Zero-arg constructor.
-   */
-  public HessianException()
-  {
-  }
+    /**
+     * Zero-arg constructor.
+     */
+    public HessianException()
+    {
+    }
 
-  /**
-   * Create the exception.
-   */
-  public HessianException(String message)
-  {
-    super(message);
-  }
+    /**
+     * Create the exception.
+     */
+    public HessianException(String message)
+    {
+        super(message);
+    }
 
-  /**
-   * Create the exception.
-   */
-  public HessianException(String message, Throwable rootCause)
-  {
-    super(message, rootCause);
-  }
+    /**
+     * Create the exception.
+     */
+    public HessianException(String message, Throwable rootCause)
+    {
+        super(message, rootCause);
+    }
 
-  /**
-   * Create the exception.
-   */
-  public HessianException(Throwable rootCause)
-  {
-    super(rootCause);
-  }
+    /**
+     * Create the exception.
+     */
+    public HessianException(Throwable rootCause)
+    {
+        super(rootCause);
+    }
 }

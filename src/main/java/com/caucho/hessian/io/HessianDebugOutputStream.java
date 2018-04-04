@@ -57,43 +57,43 @@ import java.io.PrintWriter;
  */
 public class HessianDebugOutputStream extends OutputStream
 {
-  private OutputStream _os;
-  
-  private HessianDebugState _state;
-  
-  /**
-   * Creates an uninitialized Hessian input stream.
-   */
-  public HessianDebugOutputStream(OutputStream os, PrintWriter dbg)
-  {
-    _os = os;
+    private OutputStream      _os;
 
-    _state = new HessianDebugState(dbg);
-  }
+    private HessianDebugState _state;
 
-  /**
-   * Reads a character.
-   */
-  public void write(int ch)
-    throws IOException
-  {
-    _os.write(ch);
+    /**
+     * Creates an uninitialized Hessian input stream.
+     */
+    public HessianDebugOutputStream(OutputStream os, PrintWriter dbg)
+    {
+        _os = os;
 
-    _state.next(ch);
-  }
+        _state = new HessianDebugState(dbg);
+    }
 
-  /**
-   * closes the stream.
-   */
-  public void close()
-    throws IOException
-  {
-    OutputStream os = _os;
-    _os = null;
+    /**
+     * Reads a character.
+     */
+    public void write(int ch)
+        throws IOException
+    {
+        _os.write(ch);
 
-    if (os != null)
-      os.close();
+        _state.next(ch);
+    }
 
-    _state.println();
-  }
+    /**
+     * closes the stream.
+     */
+    public void close()
+        throws IOException
+    {
+        OutputStream os = _os;
+        _os = null;
+
+        if (os != null)
+            os.close();
+
+        _state.println();
+    }
 }

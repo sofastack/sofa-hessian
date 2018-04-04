@@ -26,12 +26,12 @@ package com.alipay.hessian.clhm;
 @ThreadSafe
 public interface Weigher<V> {
 
-  /**
-   * Measures an object's weight to determine how many units of capacity that
-   * the value consumes. A value must consume a minimum of one unit.
-   *
-   * @param value the object to weigh
-   * @return the object's weight
-   */
-  int weightOf(V value);
+    /**
+     * Measures an object's weight to determine how many units of capacity that
+     * the value consumes. A value must consume a minimum of one unit.
+     *
+     * @param value the object to weigh
+     * @return the object's weight
+     */
+    int weightOf(V value);
 }

@@ -52,56 +52,56 @@ package com.caucho.hessian.client;
  * Wrapper for protocol exceptions thrown in the proxy.
  */
 public class HessianRuntimeException extends RuntimeException {
-  private Throwable rootCause;
+    private Throwable rootCause;
 
-  /**
-   * Zero-arg constructor.
-   */
-  public HessianRuntimeException()
-  {
-  }
+    /**
+     * Zero-arg constructor.
+     */
+    public HessianRuntimeException()
+    {
+    }
 
-  /**
-   * Create the exception.
-   */
-  public HessianRuntimeException(String message)
-  {
-    super(message);
-  }
+    /**
+     * Create the exception.
+     */
+    public HessianRuntimeException(String message)
+    {
+        super(message);
+    }
 
-  /**
-   * Create the exception.
-   */
-  public HessianRuntimeException(String message, Throwable rootCause)
-  {
-    super(message);
+    /**
+     * Create the exception.
+     */
+    public HessianRuntimeException(String message, Throwable rootCause)
+    {
+        super(message);
 
-    this.rootCause = rootCause;
-  }
+        this.rootCause = rootCause;
+    }
 
-  /**
-   * Create the exception.
-   */
-  public HessianRuntimeException(Throwable rootCause)
-  {
-    super(String.valueOf(rootCause));
+    /**
+     * Create the exception.
+     */
+    public HessianRuntimeException(Throwable rootCause)
+    {
+        super(String.valueOf(rootCause));
 
-    this.rootCause = rootCause;
-  }
+        this.rootCause = rootCause;
+    }
 
-  /**
-   * Returns the underlying cause.
-   */
-  public Throwable getRootCause()
-  {
-    return this.rootCause;
-  }
+    /**
+     * Returns the underlying cause.
+     */
+    public Throwable getRootCause()
+    {
+        return this.rootCause;
+    }
 
-  /**
-   * Returns the underlying cause.
-   */
-  public Throwable getCause()
-  {
-    return getRootCause();
-  }
+    /**
+     * Returns the underlying cause.
+     */
+    public Throwable getCause()
+    {
+        return getRootCause();
+    }
 }

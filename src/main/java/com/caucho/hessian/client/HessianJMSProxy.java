@@ -66,109 +66,108 @@ import java.util.logging.Logger;
  * generally use HessianProxyFactory to create proxy clients.
  */
 public class HessianJMSProxy implements InvocationHandler {
-  protected static Logger log
-    = Logger.getLogger(HessianJMSProxy.class.getName());
+    protected static Logger     log = Logger.getLogger(HessianJMSProxy.class.getName());
 
-  private HessianProxyFactory _factory;
+    private HessianProxyFactory _factory;
 
-  private MessageProducer _producer;
-  private Session _jmsSession;
-  private Connection _jmsConnection;
-  private String _outboundName;
- 
-  HessianJMSProxy(HessianProxyFactory factory, 
-                  String outboundName, String connectionFactoryName)
-    throws NamingException, JMSException
-  {
-    _factory = factory;
-    _outboundName = outboundName;
+    private MessageProducer     _producer;
+    private Session             _jmsSession;
+    private Connection          _jmsConnection;
+    private String              _outboundName;
 
-    Context context = (Context) new InitialContext().lookup("java:comp/env");
+    HessianJMSProxy(HessianProxyFactory factory,
+                    String outboundName, String connectionFactoryName)
+                                                                      throws NamingException, JMSException
+    {
+        _factory = factory;
+        _outboundName = outboundName;
 
-    ConnectionFactory connectionFactory = 
-      (ConnectionFactory) context.lookup(connectionFactoryName);
+        Context context = (Context) new InitialContext().lookup("java:comp/env");
 
-    Destination outboundDestination = 
-      (Destination) context.lookup(outboundName);
+        ConnectionFactory connectionFactory =
+                (ConnectionFactory) context.lookup(connectionFactoryName);
 
-    _jmsConnection = connectionFactory.createConnection();
-    _jmsSession = 
-        _jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Destination outboundDestination =
+                (Destination) context.lookup(outboundName);
 
-    _producer = _jmsSession.createProducer(outboundDestination);
-  }
+        _jmsConnection = connectionFactory.createConnection();
+        _jmsSession =
+                _jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-  public String getOutboundName()
-  {
-    return _outboundName;
-  }
-
-  /**
-   * Handles the object invocation.
-   *
-   * @param proxy the proxy object to invoke
-   * @param method the method to call
-   * @param args the arguments to the proxy object
-   */
-  public Object invoke(Object proxy, Method method, Object []args)
-    throws Throwable
-  {
-    String methodName = method.getName();
-    Class []params = method.getParameterTypes();
-
-    // equals and hashCode are special cased
-    if (methodName.equals("equals") &&
-        params.length == 1 && params[0].equals(Object.class)) {
-      Object value = args[0];
-      if (value == null || ! Proxy.isProxyClass(value.getClass()))
-        return new Boolean(false);
-
-      InvocationHandler handler = Proxy.getInvocationHandler(value);
-
-      if (! (handler instanceof HessianJMSProxy))
-        return new Boolean(false);
-
-      String otherOutboundName = ((HessianJMSProxy) handler).getOutboundName();
-
-      return new Boolean(_outboundName.equals(otherOutboundName));
+        _producer = _jmsSession.createProducer(outboundDestination);
     }
-    else if (methodName.equals("hashCode") && params.length == 0)
-      return new Integer(_outboundName.hashCode());
-    else if (methodName.equals("getHessianType"))
-      return proxy.getClass().getInterfaces()[0].getName();
-    else if (methodName.equals("getHessianURL"))
-      return _outboundName;
-    else if (methodName.equals("toString") && params.length == 0)
-      return "[HessianJMSProxy " + _outboundName + "]";
 
-    try {
-      if (! _factory.isOverloadEnabled()) {
-      }
-      else if (args != null)
-        methodName = methodName + "__" + args.length;
-      else
-        methodName = methodName + "__0";
-
-      sendRequest(methodName, args);
-
-      return null;
-    } catch (Exception e) {
-      throw new HessianRuntimeException(e);
+    public String getOutboundName()
+    {
+        return _outboundName;
     }
-  }
 
-  private void sendRequest(String methodName, Object []args)
-    throws JMSException, IOException
-  {
-    BytesMessage message = _jmsSession.createBytesMessage();
+    /**
+     * Handles the object invocation.
+     *
+     * @param proxy the proxy object to invoke
+     * @param method the method to call
+     * @param args the arguments to the proxy object
+     */
+    public Object invoke(Object proxy, Method method, Object[] args)
+        throws Throwable
+    {
+        String methodName = method.getName();
+        Class[] params = method.getParameterTypes();
 
-    BytesMessageOutputStream os = new BytesMessageOutputStream(message);
+        // equals and hashCode are special cased
+        if (methodName.equals("equals") &&
+            params.length == 1 && params[0].equals(Object.class)) {
+            Object value = args[0];
+            if (value == null || !Proxy.isProxyClass(value.getClass()))
+                return new Boolean(false);
 
-    AbstractHessianOutput out = _factory.getHessianOutput(os);
+            InvocationHandler handler = Proxy.getInvocationHandler(value);
 
-    out.call(methodName, args);
-    out.flush();
+            if (!(handler instanceof HessianJMSProxy))
+                return new Boolean(false);
 
-    _producer.send(message);
-  }
+            String otherOutboundName = ((HessianJMSProxy) handler).getOutboundName();
+
+            return new Boolean(_outboundName.equals(otherOutboundName));
+        }
+        else if (methodName.equals("hashCode") && params.length == 0)
+            return new Integer(_outboundName.hashCode());
+        else if (methodName.equals("getHessianType"))
+            return proxy.getClass().getInterfaces()[0].getName();
+        else if (methodName.equals("getHessianURL"))
+            return _outboundName;
+        else if (methodName.equals("toString") && params.length == 0)
+            return "[HessianJMSProxy " + _outboundName + "]";
+
+        try {
+            if (!_factory.isOverloadEnabled()) {
+            }
+            else if (args != null)
+                methodName = methodName + "__" + args.length;
+            else
+                methodName = methodName + "__0";
+
+            sendRequest(methodName, args);
+
+            return null;
+        } catch (Exception e) {
+            throw new HessianRuntimeException(e);
+        }
+    }
+
+    private void sendRequest(String methodName, Object[] args)
+        throws JMSException, IOException
+    {
+        BytesMessage message = _jmsSession.createBytesMessage();
+
+        BytesMessageOutputStream os = new BytesMessageOutputStream(message);
+
+        AbstractHessianOutput out = _factory.getHessianOutput(os);
+
+        out.call(methodName, args);
+        out.flush();
+
+        _producer.send(message);
+    }
 }

@@ -43,7 +43,7 @@ public final class GenericArraySerializer extends AbstractSerializer {
             return;
         }
         GenericArray genericArray;
-        if(obj instanceof GenericObject[]) {
+        if (obj instanceof GenericObject[]) {
             genericArray = new GenericArray(Object.class.getName());
             genericArray.setObjects((GenericObject[]) obj);
         } else {

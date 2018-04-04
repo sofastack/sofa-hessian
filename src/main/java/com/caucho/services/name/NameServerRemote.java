@@ -78,25 +78,25 @@ import java.rmi.RemoteException;
  * </pre>
  */
 public interface NameServerRemote {
-  /**
-   * Lookup an object from the name server.
-   *
-   * @param name the relative path name
-   *
-   * @return the matching object or null if no object maches
-   *
-   * @exception NameServiceException if there's an error
-   */
-  public Object lookup(String name)
-    throws NameServiceException, RemoteException;
+    /**
+     * Lookup an object from the name server.
+     *
+     * @param name the relative path name
+     *
+     * @return the matching object or null if no object maches
+     *
+     * @exception NameServiceException if there's an error
+     */
+    public Object lookup(String name)
+        throws NameServiceException, RemoteException;
 
-  /**
-   * Lists all the object name components directly below the current context.
-   * The names are the relative compent name.
-   *
-   * <p>For example, if the name server context is "/dir-1", the returned
-   * values will be ["1", "2"].
-   */
-  public String []list()
-    throws NameServiceException, RemoteException;
+    /**
+     * Lists all the object name components directly below the current context.
+     * The names are the relative compent name.
+     *
+     * <p>For example, if the name server context is "/dir-1", the returned
+     * values will be ["1", "2"].
+     */
+    public String[] list()
+        throws NameServiceException, RemoteException;
 }

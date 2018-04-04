@@ -43,19 +43,19 @@ public class ClassNameResolverTest {
         ClassNameResolver resolver = new ClassNameResolver();
         resolver.addFilter(blackListFilter);
         resolver.addFilter(mappingFilter);
-        
+
         boolean error = false;
         try {
             resolver.resolve("java.lang.Thread");
-        } catch (Exception e){
+        } catch (Exception e) {
             error = true;
         }
         Assert.assertTrue(error);
-        
+
         Assert.assertEquals("yy", resolver.resolve("xx"));
         Assert.assertEquals("xx", resolver.resolve("yy"));
     }
-    
+
     @Test
     public void addFilter() throws Exception {
         ClassNameResolver resolver = new ClassNameResolver();
@@ -152,13 +152,13 @@ public class ClassNameResolverTest {
             resolver.addFilter(filter1);
             resolver.addFilter(filter2);
             Assert.assertTrue(resolver.filters.size() == 2);
-           
+
             Assert.assertEquals(resolver.resolve("xxx"), "axxxb");
         } finally {
             resolver.filters = old;
         }
     }
-    
+
     @Test
     public void multipleThreadSet() {
         final ClassNameResolver resolver = new ClassNameResolver();

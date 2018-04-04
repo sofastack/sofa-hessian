@@ -16,7 +16,6 @@
  */
 package com.alipay.hessian.generic.special;
 
-import com.alipay.hessian.generic.bean.BasicBean;
 import com.alipay.hessian.generic.util.GenericUtils;
 import org.junit.Test;
 

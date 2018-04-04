@@ -147,7 +147,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
     }
 
     private void writeDefinition(ObjectDefinition definition, AbstractHessianOutput out)
-                                                                                        throws IOException {
+        throws IOException {
         String[] _fieldNames = definition.getFieldNames();
 
         out.writeClassFieldLength(_fieldNames.length);
@@ -205,7 +205,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         } else if (long.class.equals(type) || Long.class.equals(type)) {
             return LongFieldSerializer.SER;
         } else if (double.class.equals(type) || float.class.equals(type)
-                   || Double.class.equals(type) || Float.class.equals(type)) {
+            || Double.class.equals(type) || Float.class.equals(type)) {
             return DoubleFieldSerializer.SER;
         } else if (boolean.class.equals(type) || Boolean.class.equals(type)) {
             return BooleanFieldSerializer.SER;
@@ -219,7 +219,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new FieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-                                                                                  throws IOException {
+            throws IOException {
             Object value = obj.getField(field);
             out.writeObject(value);
         }
@@ -229,7 +229,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new BooleanFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-                                                                                  throws IOException {
+            throws IOException {
             boolean value = (Boolean) obj.getField(field);
             out.writeBoolean(value);
         }
@@ -239,7 +239,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new IntFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-                                                                                  throws IOException {
+            throws IOException {
             int value = ((Number) obj.getField(field)).intValue();
             out.writeInt(value);
         }
@@ -249,7 +249,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new LongFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-                                                                                  throws IOException {
+            throws IOException {
             long value = ((Number) obj.getField(field)).longValue();
             out.writeLong(value);
         }
@@ -259,7 +259,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new DoubleFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-                                                                                  throws IOException {
+            throws IOException {
             double value = ((Number) obj.getField(field)).doubleValue();
             out.writeDouble(value);
         }
@@ -269,7 +269,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new StringFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-                                                                                  throws IOException {
+            throws IOException {
             String value = (String) obj.getField(field);
             out.writeString(value);
         }

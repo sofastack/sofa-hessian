@@ -37,45 +37,44 @@ import java.util.logging.Logger;
 /**
  * An output stream that writes to a BytesMessage.
  */
-public class BytesMessageOutputStream extends OutputStream 
+public class BytesMessageOutputStream extends OutputStream
 {
-  protected static Logger log
-    = Logger.getLogger(BytesMessageOutputStream.class.getName());
+    protected static Logger log = Logger.getLogger(BytesMessageOutputStream.class.getName());
 
-  private BytesMessage _message;
+    private BytesMessage    _message;
 
-  public BytesMessageOutputStream(BytesMessage message)
-  {
-    _message = message;
-  }
-
-  public void write(int b) 
-    throws IOException
-  {
-    try {
-      _message.writeByte((byte) b);
-    } catch (JMSException e) {
-      throw new IOException(e.toString());
+    public BytesMessageOutputStream(BytesMessage message)
+    {
+        _message = message;
     }
-  }
 
-  public void write(byte[] buffer, int offset, int length) 
-    throws IOException
-  {
-    try {
-      _message.writeBytes(buffer, offset, length);
-    } catch (JMSException e) {
-      throw new IOException(e.toString());
+    public void write(int b)
+        throws IOException
+    {
+        try {
+            _message.writeByte((byte) b);
+        } catch (JMSException e) {
+            throw new IOException(e.toString());
+        }
     }
-  }
 
-  public void write(byte[] buffer)
-    throws IOException
-  {
-    try {
-      _message.writeBytes(buffer);
-    } catch (JMSException e) {
-      throw new IOException(e.toString());
+    public void write(byte[] buffer, int offset, int length)
+        throws IOException
+    {
+        try {
+            _message.writeBytes(buffer, offset, length);
+        } catch (JMSException e) {
+            throw new IOException(e.toString());
+        }
     }
-  }
+
+    public void write(byte[] buffer)
+        throws IOException
+    {
+        try {
+            _message.writeBytes(buffer);
+        } catch (JMSException e) {
+            throw new IOException(e.toString());
+        }
+    }
 }

@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
  * returned by calling the named nil-ary method. class-name.class : The Class
  * object for the specified class should be used as the lock object.
  */
-@Target( { ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.CLASS)
 @interface GuardedBy {
-  String value();
+    String value();
 }

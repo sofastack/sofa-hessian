@@ -48,40 +48,38 @@
 
 package com.caucho.hessian.io;
 
-import java.io.IOException;
-
 /**
  * Exception during field reading.
  */
 public class HessianFieldException extends HessianProtocolException {
-  /**
-   * Zero-arg constructor.
-   */
-  public HessianFieldException()
-  {
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public HessianFieldException(String message)
-  {
-    super(message);
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public HessianFieldException(String message, Throwable cause)
-  {
-    super(message, cause);
-  }
-  
-  /**
-   * Create the exception.
-   */
-  public HessianFieldException(Throwable cause)
-  {
-    super(cause);
-  }
+    /**
+     * Zero-arg constructor.
+     */
+    public HessianFieldException()
+    {
+    }
+
+    /**
+     * Create the exception.
+     */
+    public HessianFieldException(String message)
+    {
+        super(message);
+    }
+
+    /**
+     * Create the exception.
+     */
+    public HessianFieldException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
+
+    /**
+     * Create the exception.
+     */
+    public HessianFieldException(Throwable cause)
+    {
+        super(cause);
+    }
 }

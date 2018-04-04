@@ -54,7 +54,7 @@ package com.caucho.hessian.io;
  */
 public class StackTraceElementDeserializer extends JavaDeserializer {
     public StackTraceElementDeserializer() {
-        super (StackTraceElement.class);
+        super(StackTraceElement.class);
     }
 
     @Override

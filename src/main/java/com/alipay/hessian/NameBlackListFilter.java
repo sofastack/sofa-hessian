@@ -32,7 +32,7 @@ public class NameBlackListFilter implements ClassNameFilter {
     /**
      * 黑名单 包名前缀
      */
-    protected List<String> blackPrefixList;
+    protected List<String>                   blackPrefixList;
 
     /**
      * 类名是否在黑名单中结果缓存。{className:true/false}
@@ -68,9 +68,8 @@ public class NameBlackListFilter implements ClassNameFilter {
         if (blackPrefixList != null && !blackPrefixList.isEmpty()) {
             int min = Math.min(256, maxCacheSize);
             int max = Math.min(10240, maxCacheSize);
-            ConcurrentLinkedHashMap.Builder<String, Boolean> builder
-                    = new ConcurrentLinkedHashMap.Builder<String, Boolean>()
-                    .initialCapacity(min).maximumWeightedCapacity(max);
+            ConcurrentLinkedHashMap.Builder<String, Boolean> builder = new ConcurrentLinkedHashMap.Builder<String, Boolean>()
+                .initialCapacity(min).maximumWeightedCapacity(max);
             this.resultOfInBlackList = builder.build();
         } else {
             this.resultOfInBlackList = null;

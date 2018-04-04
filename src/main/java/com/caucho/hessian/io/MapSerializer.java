@@ -57,27 +57,27 @@ import java.util.Map;
  * Serializing a JDK 1.2 java.util.Map.
  */
 public class MapSerializer extends AbstractSerializer {
-  public void writeObject(Object obj, AbstractHessianOutput out)
-    throws IOException
-  {
-    if (out.addRef(obj))
-      return;
+    public void writeObject(Object obj, AbstractHessianOutput out)
+        throws IOException
+    {
+        if (out.addRef(obj))
+            return;
 
-    Map map = (Map) obj;
+        Map map = (Map) obj;
 
-    Class cl = obj.getClass();
-    if (cl.equals(HashMap.class))
-      out.writeMapBegin(null);
-    else
-      out.writeMapBegin(obj.getClass().getName());
+        Class cl = obj.getClass();
+        if (cl.equals(HashMap.class))
+            out.writeMapBegin(null);
+        else
+            out.writeMapBegin(obj.getClass().getName());
 
-    Iterator iter = map.entrySet().iterator();
-    while (iter.hasNext()) {
-      Map.Entry entry = (Map.Entry) iter.next();
+        Iterator iter = map.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
 
-      out.writeObject(entry.getKey());
-      out.writeObject(entry.getValue());
+            out.writeObject(entry.getKey());
+            out.writeObject(entry.getValue());
+        }
+        out.writeMapEnd();
     }
-    out.writeMapEnd();
-  }
 }

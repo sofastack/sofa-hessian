@@ -52,6 +52,7 @@ package com.caucho.burlap.io;
  * Interface for any burlap remote object.
  */
 public interface BurlapRemoteObject {
-  public String getBurlapType();
-  public String getBurlapURL();
+    public String getBurlapType();
+
+    public String getBurlapURL();
 }

@@ -16,8 +16,6 @@
  */
 package com.caucho.hessian.test;
 
-import java.io.IOException;
-
 /**
 *
  */

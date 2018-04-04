@@ -314,7 +314,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
         for (int i = 0; i < 16; i++) {
             sb.append("" + (i / 10) + (i % 10)
-                      + " 456789012345678901234567890123456789012345678901234567890123\n");
+                + " 456789012345678901234567890123456789012345678901234567890123\n");
         }
 
         sb.setLength(1023);
@@ -327,7 +327,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
         for (int i = 0; i < 16; i++) {
             sb.append("" + (i / 10) + (i % 10)
-                      + " 456789012345678901234567890123456789012345678901234567890123\n");
+                + " 456789012345678901234567890123456789012345678901234567890123\n");
         }
 
         sb.setLength(1024);
@@ -340,7 +340,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
         for (int i = 0; i < 64 * 16; i++) {
             sb.append("" + (i / 100) + (i / 10 % 10) + (i % 10)
-                      + " 56789012345678901234567890123456789012345678901234567890123\n");
+                + " 56789012345678901234567890123456789012345678901234567890123\n");
         }
 
         sb.setLength(65536);
@@ -375,7 +375,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
         for (int i = 0; i < 16; i++) {
             sb.append("" + (i / 10) + (i % 10)
-                      + " 456789012345678901234567890123456789012345678901234567890123\n");
+                + " 456789012345678901234567890123456789012345678901234567890123\n");
         }
 
         sb.setLength(1023);
@@ -388,7 +388,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
         for (int i = 0; i < 16; i++) {
             sb.append("" + (i / 10) + (i % 10)
-                      + " 456789012345678901234567890123456789012345678901234567890123\n");
+                + " 456789012345678901234567890123456789012345678901234567890123\n");
         }
 
         sb.setLength(1024);
@@ -401,7 +401,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
         for (int i = 0; i < 64 * 16; i++) {
             sb.append("" + (i / 100) + (i / 10 % 10) + (i % 10)
-                      + " 56789012345678901234567890123456789012345678901234567890123\n");
+                + " 56789012345678901234567890123456789012345678901234567890123\n");
         }
 
         sb.setLength(65536);
