@@ -9,9 +9,9 @@
 SOFA-Hessian is an internal improvement version based on native Hessian v3.1.3. At present, It has been used internally for many years in Ant Financial. We have fixed some bugs, enhanced some functions, and add some features, includes: 
 
 - Add generic serialization.
-- Add `ClassNameResolver` & `ClassNameFilter` for mapping, converting or filtering of the class name.
+- Add `ClassNameResolver` & `ClassNameFilter` for the mapping, converting or filtering of the class name.
 - Add serialization blacklist from Ant Security Team.
-- Improves map locking of the cache in `SerializerFactory` .
+- Improves map locking of the cache in `SerializerFactory`.
 - See more at [Improvements](https://github.com/alipay/sofa-hessian/wiki/Improvements).
 
 
