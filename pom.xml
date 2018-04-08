@@ -9,7 +9,7 @@
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>An internal improved version of Hessian powered by Ant Financial.</description>
-    <url>http://github.com/alipay/alipay-hessian</url>
+    <url>http://github.com/alipay/sofa-hessian</url>
 
     <organization>
         <name>Ant Financial</name>
@@ -40,9 +40,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com:alipay/alipay-hessian.git</connection>
-        <developerConnection>scm:git:ssh://github.com:alipay/alipay-hessian.git</developerConnection>
-        <url>http://github.com/alipay/alipay-hessian/tree/master</url>
+        <connection>scm:git:git://github.com:alipay/sofa-hessian.git</connection>
+        <developerConnection>scm:git:ssh://github.com:alipay/sofa-hessian.git</developerConnection>
+        <url>http://github.com/alipay/sofa-hessian/tree/master</url>
     </scm>
     
     <properties>
