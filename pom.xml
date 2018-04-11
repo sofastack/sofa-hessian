@@ -40,8 +40,8 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com:alipay/sofa-hessian.git</connection>
-        <developerConnection>scm:git:ssh://github.com:alipay/sofa-hessian.git</developerConnection>
+        <connection>scm:git:git://github.com/alipay/sofa-hessian.git</connection>
+        <developerConnection>scm:git:ssh://github.com/alipay/sofa-hessian.git</developerConnection>
         <url>http://github.com/alipay/sofa-hessian/tree/master</url>
     </scm>
     
