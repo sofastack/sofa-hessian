@@ -24,8 +24,8 @@ install:
   
 script:
   - sh ./check_format.sh
-  - mvn test
+  - mvn clean test -X
 
 after_success:
-  - mvn clean cobertura:cobertura
+  - cobertura:cobertura
   - bash <(curl -s https://codecov.io/bash)
