@@ -39,7 +39,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
                                                                                      .getName());
     private static final GenericObjectSerializer INSTANCE                    = new GenericObjectSerializer();
     private static final AtomicLong              COUNT                       = new AtomicLong(0);
-    private static final boolean                 WRITE_DEFINITION_EVERYTIME  = Boolean
+    private static boolean                       WRITE_DEFINITION_EVERYTIME  = Boolean
                                                                                  .parseBoolean(System
                                                                                      .getProperty(
                                                                                          "generic_hessian_write_definition_everytime",
@@ -142,8 +142,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         Set<String> fieldNames = obj.getFieldNames();
         String[] _fieldNames = new String[fieldNames.size()];
         fieldNames.toArray(_fieldNames);
-        ObjectDefinition definition = new ObjectDefinition(obj.getType(), _fieldNames);
-        return definition;
+        return new ObjectDefinition(obj.getType(), _fieldNames);
     }
 
     private void writeDefinition(ObjectDefinition definition, AbstractHessianOutput out)

@@ -21,10 +21,10 @@ before_install:
 
 install:
   - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -U -e
-  
-script:
   - sh ./check_format.sh
-  - mvn cobertura:cobertura
+    
+script:
+  - mvn test cobertura:cobertura
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

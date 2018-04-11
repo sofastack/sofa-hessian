@@ -28,11 +28,12 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * @author xuanbei
@@ -46,10 +47,6 @@ public class PersonTest {
             WRITE_DEFINITION_EVERYTIME_FIELD = GenericObjectSerializer.class
                 .getDeclaredField("WRITE_DEFINITION_EVERYTIME");
             WRITE_DEFINITION_EVERYTIME_FIELD.setAccessible(true);
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(WRITE_DEFINITION_EVERYTIME_FIELD,
-                WRITE_DEFINITION_EVERYTIME_FIELD.getModifiers() & ~Modifier.FINAL);
         } catch (Throwable t) {
 
         }
