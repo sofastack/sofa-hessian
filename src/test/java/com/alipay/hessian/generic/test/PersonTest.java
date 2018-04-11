@@ -51,7 +51,7 @@ public class PersonTest {
             modifiersField.setInt(WRITE_DEFINITION_EVERYTIME_FIELD,
                 WRITE_DEFINITION_EVERYTIME_FIELD.getModifiers() & ~Modifier.FINAL);
         } catch (Throwable t) {
-
+            t.printStackTrace();
         }
     }
 
@@ -69,7 +69,7 @@ public class PersonTest {
 
     @Test
     public void testWriteDefinitionWithDiffDefinition() throws Exception {
-        setWriteDefinitionEverytimeField(true);
+        setWriteDefinitionEverytimeField(false);
         testDiffDefinition();
     }
 
@@ -200,7 +200,7 @@ public class PersonTest {
             assertEquals(null, p2.getListValue());
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println(Thread.currentThread().getName() + "current WriteDefinitionEverytimeField to "
+            System.out.println(Thread.currentThread().getName() + " current WriteDefinitionEverytimeField to "
                     + WRITE_DEFINITION_EVERYTIME_FIELD.get(null));
             throw e;
         }
@@ -209,9 +209,10 @@ public class PersonTest {
     
     private void setWriteDefinitionEverytimeField(boolean write){
         try {
-            System.out.println(Thread.currentThread().getName() + "setWriteDefinitionEverytimeField to " + write);
+            System.out.println(Thread.currentThread().getName() + " setWriteDefinitionEverytimeField to " + write);
             WRITE_DEFINITION_EVERYTIME_FIELD.set(GenericObjectSerializer.class, write);
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     } 
     
