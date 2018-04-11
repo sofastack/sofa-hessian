@@ -69,7 +69,7 @@ public class PersonTest {
 
     @Test
     public void testWriteDefinitionWithDiffDefinition() throws Exception {
-        setWriteDefinitionEverytimeField(false);
+        setWriteDefinitionEverytimeField(true);
         testDiffDefinition();
     }
 
