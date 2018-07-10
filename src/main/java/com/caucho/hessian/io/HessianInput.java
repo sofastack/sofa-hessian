@@ -48,6 +48,8 @@
 
 package com.caucho.hessian.io;
 
+import com.alipay.hessian.ClassNameResolver;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1037,6 +1039,12 @@ public class HessianInput extends AbstractHessianInput {
             case 'M': {
                 String type = readType();
 
+                // add by zhiyuan @2018-7-10
+                ClassNameResolver resolver = getSerializerFactory().getClassNameResolver();
+                if (resolver != null) {
+                    type = resolver.resolve(type);
+                }
+
                 // hessian/3386
                 if ("".equals(type)) {
                     Deserializer reader;
@@ -1169,6 +1177,12 @@ public class HessianInput extends AbstractHessianInput {
 
             case 'M': {
                 String type = readType();
+
+                // add by zhiyuan @2018-7-10
+                ClassNameResolver resolver = getSerializerFactory().getClassNameResolver();
+                if (resolver != null) {
+                    type = resolver.resolve(type);
+                }
 
                 return _serializerFactory.readMap(this, type);
             }

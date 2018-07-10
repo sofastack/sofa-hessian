@@ -32,7 +32,7 @@ public class InternalNameBlackListFilterTest {
         String className = null;
         boolean pass = true;
         try {
-            filter.resolve("org.apache.commons.beanutils.xxx");
+            filter.resolve("java.util.ServiceLoader$LazyIterator.xxx");
         } catch (Exception e) {
             pass = false;
         }

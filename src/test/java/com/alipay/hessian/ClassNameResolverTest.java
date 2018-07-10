@@ -46,7 +46,7 @@ public class ClassNameResolverTest {
 
         boolean error = false;
         try {
-            resolver.resolve("java.lang.Thread");
+            resolver.resolve("java.security.SignedObject");
         } catch (Exception e) {
             error = true;
         }

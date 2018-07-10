@@ -21,18 +21,18 @@ import java.util.*;
 /**
  * Cons-cell for testing
  */
-public class TestCons implements java.io.Serializable {
+public class SimpleTestCons implements java.io.Serializable {
     private Object _first;
     private Object _rest;
 
-    public TestCons() {
+    public SimpleTestCons() {
     }
 
-    public TestCons(Object first) {
+    public SimpleTestCons(Object first) {
         _first = first;
     }
 
-    public TestCons(Object first, Object rest) {
+    public SimpleTestCons(Object first, Object rest) {
         _first = first;
         _rest = rest;
     }
@@ -72,15 +72,15 @@ public class TestCons implements java.io.Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName()).append("[");
 
-        if (_first instanceof TestCons)
-            sb.append(((TestCons) _first).toString(map));
+        if (_first instanceof SimpleTestCons)
+            sb.append(((SimpleTestCons) _first).toString(map));
         else
             sb.append(_first);
 
         sb.append(",");
 
-        if (_rest instanceof TestCons)
-            sb.append(((TestCons) _rest).toString(map));
+        if (_rest instanceof SimpleTestCons)
+            sb.append(((SimpleTestCons) _rest).toString(map));
         else
             sb.append(_rest);
 

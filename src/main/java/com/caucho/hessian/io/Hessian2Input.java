@@ -2209,6 +2209,12 @@ public class Hessian2Input
             case 'M': {
                 String type = readType();
 
+                // add by zhiyuan @2018-7-10
+                ClassNameResolver resolver = getSerializerFactory().getClassNameResolver();
+                if (resolver != null) {
+                    type = resolver.resolve(type);
+                }
+
                 // hessian/3bb3
                 if ("".equals(type)) {
                     Deserializer reader;
@@ -2643,6 +2649,11 @@ public class Hessian2Input
 
             case 'M': {
                 String type = readType();
+                // add by zhiyuan @2018-7-10
+                ClassNameResolver resolver = findSerializerFactory().getClassNameResolver();
+                if (resolver != null) {
+                    type = resolver.resolve(type);
+                }
 
                 return findSerializerFactory().readMap(this, type);
             }
