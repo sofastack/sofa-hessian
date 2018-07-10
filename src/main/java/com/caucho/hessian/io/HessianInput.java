@@ -140,6 +140,19 @@ public class HessianInput extends AbstractHessianInput {
     }
 
     /**
+     * Gets the serializer factory, creating a default if necessary.
+     */
+    public final SerializerFactory findSerializerFactory()
+    {
+        SerializerFactory factory = _serializerFactory;
+
+        if (factory == null)
+            _serializerFactory = factory = new SerializerFactory();
+
+        return factory;
+    }
+
+    /**
      * Initialize the hessian stream with the underlying input stream.
      */
     public void init(InputStream is)
@@ -1040,7 +1053,7 @@ public class HessianInput extends AbstractHessianInput {
                 String type = readType();
 
                 // add by zhiyuan @2018-7-10
-                ClassNameResolver resolver = getSerializerFactory().getClassNameResolver();
+                ClassNameResolver resolver = findSerializerFactory().getClassNameResolver();
                 if (resolver != null) {
                     type = resolver.resolve(type);
                 }
@@ -1179,7 +1192,7 @@ public class HessianInput extends AbstractHessianInput {
                 String type = readType();
 
                 // add by zhiyuan @2018-7-10
-                ClassNameResolver resolver = getSerializerFactory().getClassNameResolver();
+                ClassNameResolver resolver = findSerializerFactory().getClassNameResolver();
                 if (resolver != null) {
                     type = resolver.resolve(type);
                 }
