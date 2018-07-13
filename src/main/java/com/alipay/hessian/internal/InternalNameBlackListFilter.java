@@ -79,7 +79,9 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
                                                                   "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
                                                                   "org.springframework.transaction.jta.JtaTransactionManager",
                                                                   "org.yaml.snakeyaml.tokens.DirectiveToken",
-                                                                  "sun.rmi.server.UnicastRef");
+                                                                  "sun.rmi.server.UnicastRef",
+                                                                  "javax.management.ImmutableDescriptor",
+                                                                  "org.springframework.jndi.JndiObjectTargetSource");
 
     /**
      * 构造函数
