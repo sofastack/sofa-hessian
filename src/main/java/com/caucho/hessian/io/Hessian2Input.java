@@ -2200,6 +2200,12 @@ public class Hessian2Input
         if (cl == null || cl == Object.class)
             return readObject();
 
+        // add by zhiyuan @2018-7-10 if in blacklist will throw exception
+        ClassNameResolver resolver = findSerializerFactory().getClassNameResolver();
+        if (resolver != null) {
+            resolver.resolve(cl.getCanonicalName());
+        }
+
         int tag = _offset < _length ? (_buffer[_offset++] & 0xff) : read();
 
         switch (tag) {
@@ -2208,6 +2214,9 @@ public class Hessian2Input
 
             case 'M': {
                 String type = readType();
+                if (resolver != null) {
+                    type = resolver.resolve(type);
+                }
 
                 // hessian/3bb3
                 if ("".equals(type)) {
@@ -2643,6 +2652,11 @@ public class Hessian2Input
 
             case 'M': {
                 String type = readType();
+                // add by zhiyuan @2018-7-10
+                ClassNameResolver resolver = findSerializerFactory().getClassNameResolver();
+                if (resolver != null) {
+                    type = resolver.resolve(type);
+                }
 
                 return findSerializerFactory().readMap(this, type);
             }
