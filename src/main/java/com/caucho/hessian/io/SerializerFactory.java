@@ -162,6 +162,14 @@ public class SerializerFactory extends AbstractSerializerFactory
         if (serializer != null)
             return serializer;
 
+        if (classNameResolver != null) {
+            try {
+                classNameResolver.resolve(cl.getName());
+            } catch (Exception e) {
+                throw new HessianProtocolException(e);
+            }
+        }
+
         for (int i = 0; serializer == null && _factories != null && i < _factories.size(); i++) {
             AbstractSerializerFactory factory;
 
@@ -264,6 +272,14 @@ public class SerializerFactory extends AbstractSerializerFactory
 
         if (deserializer != null)
             return deserializer;
+
+        if (classNameResolver != null) {
+            try {
+                classNameResolver.resolve(cl.getName());
+            } catch (Exception e) {
+                throw new HessianProtocolException(e);
+            }
+        }
 
         for (int i = 0; deserializer == null && _factories != null && i < _factories.size(); i++) {
             AbstractSerializerFactory factory;
@@ -427,6 +443,14 @@ public class SerializerFactory extends AbstractSerializerFactory
         deserializer = (Deserializer) _staticTypeMap.get(type);
         if (deserializer != null)
             return deserializer;
+
+        if (classNameResolver != null) {
+            try {
+                type = classNameResolver.resolve(type);
+            } catch (Exception e) {
+                throw new HessianProtocolException(e);
+            }
+        }
 
         if (type.startsWith("[")) {
             Deserializer subDeserializer = getDeserializer(type.substring(1));
