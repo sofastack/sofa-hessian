@@ -458,16 +458,7 @@ public class Hessian2Output
             return;
         }
 
-        Serializer serializer;
-
-        // add by zhanggeng @2017-7-23
-        Class clazz = object.getClass();
-        ClassNameResolver resolver = findSerializerFactory().getClassNameResolver();
-        if (resolver != null) {
-            resolver.resolve(clazz.getName());
-        }
-
-        serializer = findSerializerFactory().getSerializer(clazz);
+        Serializer serializer = findSerializerFactory().getSerializer(object.getClass());
 
         serializer.writeObject(object, this);
     }
