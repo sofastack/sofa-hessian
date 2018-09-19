@@ -16,8 +16,8 @@
  */
 package com.caucho.hessian.test;
 
-import com.alipay.hessian.generic.model.GenericObject;
 import com.alipay.hessian.generic.io.GenericSerializerFactory;
+import com.alipay.hessian.generic.model.GenericObject;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 
@@ -31,7 +31,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by qiwei.lqw on 2016/7/5.

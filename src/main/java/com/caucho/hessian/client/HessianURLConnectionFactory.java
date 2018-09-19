@@ -62,59 +62,58 @@ import java.util.logging.Level;
  * factory is java.net
  */
 public class HessianURLConnectionFactory implements HessianConnectionFactory {
-  private static final Logger log
-    = Logger.getLogger(HessianURLConnectionFactory.class.getName());
-  
-  private HessianProxyFactory _proxyFactory;
+    private static final Logger log = Logger.getLogger(HessianURLConnectionFactory.class.getName());
 
-  public void setHessianProxyFactory(HessianProxyFactory factory)
-  {
-    _proxyFactory = factory;
-  }
-  
-  /**
-   * Opens a new or recycled connection to the HTTP server.
-   */
-  public HessianConnection open(URL url)
-    throws IOException
-  {
-    if (log.isLoggable(Level.FINER))
-      log.finer(this + " open(" + url + ")");
+    private HessianProxyFactory _proxyFactory;
 
-    URLConnection conn = url.openConnection();
-
-    // HttpURLConnection httpConn = (HttpURLConnection) conn;
-    // httpConn.setRequestMethod("POST");
-    // conn.setDoInput(true);
-
-    long connectTimeout = _proxyFactory.getConnectTimeout();
-
-    if (connectTimeout >= 0)
-      conn.setConnectTimeout((int) connectTimeout);
-
-    conn.setDoOutput(true);
-
-    long readTimeout = _proxyFactory.getReadTimeout();
-
-    if (readTimeout > 0) {
-      try {
-        conn.setReadTimeout((int) readTimeout);
-      } catch (Throwable e) {
-      }
+    public void setHessianProxyFactory(HessianProxyFactory factory)
+    {
+        _proxyFactory = factory;
     }
 
-    /*
-    // Used chunked mode when available, i.e. JDK 1.5.
-    if (_proxyFactory.isChunkedPost() && conn instanceof HttpURLConnection) {
-      try {
-        HttpURLConnection httpConn = (HttpURLConnection) conn;
+    /**
+     * Opens a new or recycled connection to the HTTP server.
+     */
+    public HessianConnection open(URL url)
+        throws IOException
+    {
+        if (log.isLoggable(Level.FINER))
+            log.finer(this + " open(" + url + ")");
 
-        httpConn.setChunkedStreamingMode(8 * 1024);
-      } catch (Throwable e) {
-      }
+        URLConnection conn = url.openConnection();
+
+        // HttpURLConnection httpConn = (HttpURLConnection) conn;
+        // httpConn.setRequestMethod("POST");
+        // conn.setDoInput(true);
+
+        long connectTimeout = _proxyFactory.getConnectTimeout();
+
+        if (connectTimeout >= 0)
+            conn.setConnectTimeout((int) connectTimeout);
+
+        conn.setDoOutput(true);
+
+        long readTimeout = _proxyFactory.getReadTimeout();
+
+        if (readTimeout > 0) {
+            try {
+                conn.setReadTimeout((int) readTimeout);
+            } catch (Throwable e) {
+            }
+        }
+
+        /*
+        // Used chunked mode when available, i.e. JDK 1.5.
+        if (_proxyFactory.isChunkedPost() && conn instanceof HttpURLConnection) {
+          try {
+            HttpURLConnection httpConn = (HttpURLConnection) conn;
+
+            httpConn.setChunkedStreamingMode(8 * 1024);
+          } catch (Throwable e) {
+          }
+        }
+        */
+
+        return new HessianURLConnection(url, conn);
     }
-    */
-    
-    return new HessianURLConnection(url, conn);
-  }
 }

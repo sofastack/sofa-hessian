@@ -56,63 +56,63 @@ import java.io.OutputStream;
  */
 public class Hessian2StreamingOutput
 {
-  private Hessian2Output _out;
-  
-  /**
-   * Creates a new Hessian output stream, initialized with an
-   * underlying output stream.
-   *
-   * @param os the underlying output stream.
-   */
-  public Hessian2StreamingOutput(OutputStream os)
-  {
-    _out = new Hessian2Output(os);
-  }
-  
-  public Hessian2StreamingOutput(Hessian2Output out)
-  {
-    _out = out;
-  }
+    private Hessian2Output _out;
 
-  public Hessian2Output getHessian2Output()
-  {
-    return _out;
-  }
-  
-  public void setCloseStreamOnClose(boolean isClose)
-  {
-    _out.setCloseStreamOnClose(isClose);
-  }
-  
-  public boolean isCloseStreamOnClose()
-  {
-    return _out.isCloseStreamOnClose();
-  }
+    /**
+     * Creates a new Hessian output stream, initialized with an
+     * underlying output stream.
+     *
+     * @param os the underlying output stream.
+     */
+    public Hessian2StreamingOutput(OutputStream os)
+    {
+        _out = new Hessian2Output(os);
+    }
 
-  /**
-   * Writes any object to the output stream.
-   */
-  public void writeObject(Object object)
-    throws IOException
-  {
-    _out.writeStreamingObject(object);
-  }
+    public Hessian2StreamingOutput(Hessian2Output out)
+    {
+        _out = out;
+    }
 
-  /**
-   * Flushes the output.
-   */
-  public void flush()
-    throws IOException
-  {
-    _out.flush();
-  }
+    public Hessian2Output getHessian2Output()
+    {
+        return _out;
+    }
 
-  /**
-   * Close the output.
-   */
-  public void close()
-    throws IOException
-  {
-    _out.close();
-  }
+    public void setCloseStreamOnClose(boolean isClose)
+    {
+        _out.setCloseStreamOnClose(isClose);
+    }
+
+    public boolean isCloseStreamOnClose()
+    {
+        return _out.isCloseStreamOnClose();
+    }
+
+    /**
+     * Writes any object to the output stream.
+     */
+    public void writeObject(Object object)
+        throws IOException
+    {
+        _out.writeStreamingObject(object);
+    }
+
+    /**
+     * Flushes the output.
+     */
+    public void flush()
+        throws IOException
+    {
+        _out.flush();
+    }
+
+    /**
+     * Close the output.
+     */
+    public void close()
+        throws IOException
+    {
+        _out.close();
+    }
 }

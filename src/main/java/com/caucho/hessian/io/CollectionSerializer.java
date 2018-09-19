@@ -59,65 +59,65 @@ import java.util.Iterator;
  */
 public class CollectionSerializer extends AbstractSerializer
 {
-  private boolean _sendJavaType = true;
+    private boolean _sendJavaType = true;
 
-  /**
-   * Set true if the java type of the collection should be sent.
-   */
-  public void setSendJavaType(boolean sendJavaType)
-  {
-    _sendJavaType = sendJavaType;
-  }
-
-  /**
-   * Return true if the java type of the collection should be sent.
-   */
-  public boolean getSendJavaType()
-  {
-    return _sendJavaType;
-  }
-    
-  public void writeObject(Object obj, AbstractHessianOutput out)
-    throws IOException
-  {
-    if (out.addRef(obj))
-      return;
-
-    Collection list = (Collection) obj;
-
-    Class cl = obj.getClass();
-    boolean hasEnd;
-    
-    if (cl.equals(ArrayList.class)
-        || ! Serializable.class.isAssignableFrom(cl)) {
-      hasEnd = out.writeListBegin(list.size(), null);
+    /**
+     * Set true if the java type of the collection should be sent.
+     */
+    public void setSendJavaType(boolean sendJavaType)
+    {
+        _sendJavaType = sendJavaType;
     }
-    else if (! _sendJavaType) {
-      hasEnd = false;
-      
-      // hessian/3a19
-      for (; cl != null; cl = cl.getSuperclass()) {
-        if (cl.getName().startsWith("java.")) {
-          hasEnd = out.writeListBegin(list.size(), cl.getName());
-          break;
+
+    /**
+     * Return true if the java type of the collection should be sent.
+     */
+    public boolean getSendJavaType()
+    {
+        return _sendJavaType;
+    }
+
+    public void writeObject(Object obj, AbstractHessianOutput out)
+        throws IOException
+    {
+        if (out.addRef(obj))
+            return;
+
+        Collection list = (Collection) obj;
+
+        Class cl = obj.getClass();
+        boolean hasEnd;
+
+        if (cl.equals(ArrayList.class)
+            || !Serializable.class.isAssignableFrom(cl)) {
+            hasEnd = out.writeListBegin(list.size(), null);
         }
-      }
-      
-      if (cl == null)
-        hasEnd = out.writeListBegin(list.size(), null);
-    }
-    else {
-      hasEnd = out.writeListBegin(list.size(), obj.getClass().getName());
-    }
+        else if (!_sendJavaType) {
+            hasEnd = false;
 
-    Iterator iter = list.iterator();
-    while (iter.hasNext()) {
-      Object value = iter.next();
+            // hessian/3a19
+            for (; cl != null; cl = cl.getSuperclass()) {
+                if (cl.getName().startsWith("java.")) {
+                    hasEnd = out.writeListBegin(list.size(), cl.getName());
+                    break;
+                }
+            }
 
-      out.writeObject(value);
+            if (cl == null)
+                hasEnd = out.writeListBegin(list.size(), null);
+        }
+        else {
+            hasEnd = out.writeListBegin(list.size(), obj.getClass().getName());
+        }
+
+        Iterator iter = list.iterator();
+        while (iter.hasNext()) {
+            Object value = iter.next();
+
+            out.writeObject(value);
+        }
+
+        if (hasEnd)
+            out.writeListEnd();
     }
-
-    if (hasEnd)
-      out.writeListEnd();
-  }
 }

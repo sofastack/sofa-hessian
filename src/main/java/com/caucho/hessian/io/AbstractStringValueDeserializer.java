@@ -55,54 +55,54 @@ import java.lang.reflect.Constructor;
  * Deserializes a string-valued object like BigDecimal.
  */
 abstract public class AbstractStringValueDeserializer
-  extends AbstractDeserializer
+                                                     extends AbstractDeserializer
 {
-  abstract protected Object create(String value)
-    throws IOException;
+    abstract protected Object create(String value)
+        throws IOException;
 
-  @Override
-  public Object readMap(AbstractHessianInput in)
-    throws IOException
-  {
-    String value = null;
-    
-    while (! in.isEnd()) {
-      String key = in.readString();
+    @Override
+    public Object readMap(AbstractHessianInput in)
+        throws IOException
+    {
+        String value = null;
 
-      if (key.equals("value"))
-        value = in.readString();
-      else
-        in.readObject();
+        while (!in.isEnd()) {
+            String key = in.readString();
+
+            if (key.equals("value"))
+                value = in.readString();
+            else
+                in.readObject();
+        }
+
+        in.readMapEnd();
+
+        Object object = create(value);
+
+        in.addRef(object);
+
+        return object;
     }
 
-    in.readMapEnd();
+    @Override
+    public Object readObject(AbstractHessianInput in, Object[] fields)
+        throws IOException
+    {
+        String[] fieldNames = (String[]) fields;
 
-    Object object = create(value);
+        String value = null;
 
-    in.addRef(object);
+        for (int i = 0; i < fieldNames.length; i++) {
+            if ("value".equals(fieldNames[i]))
+                value = in.readString();
+            else
+                in.readObject();
+        }
 
-    return object;
-  }
-  
-  @Override
-  public Object readObject(AbstractHessianInput in, Object []fields)
-    throws IOException
-  {
-    String []fieldNames = (String []) fields;
-    
-    String value = null;
+        Object object = create(value);
 
-    for (int i = 0; i < fieldNames.length; i++) {
-      if ("value".equals(fieldNames[i]))
-        value = in.readString();
-      else
-        in.readObject();
+        in.addRef(object);
+
+        return object;
     }
-
-    Object object = create(value);
-    
-    in.addRef(object);
-
-    return object;
-  }
 }

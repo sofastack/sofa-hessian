@@ -72,14 +72,14 @@ import java.util.HashMap;
  * RFC-822 mail headers.
  */
 public interface MessageSender {
-  /**
-   * Send a message to the server.
-   *
-   * @param headers any message headers
-   * @param message the message data
-   *
-   * @exception MessageServiceException if the message cannot be delivered
-   */
-  public void send(HashMap headers, Object message)
-    throws MessageServiceException;
+    /**
+     * Send a message to the server.
+     *
+     * @param headers any message headers
+     * @param message the message data
+     *
+     * @exception MessageServiceException if the message cannot be delivered
+     */
+    public void send(HashMap headers, Object message)
+        throws MessageServiceException;
 }

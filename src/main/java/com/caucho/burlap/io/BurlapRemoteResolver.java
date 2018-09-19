@@ -51,13 +51,14 @@ package com.caucho.burlap.io;
 import com.caucho.hessian.io.HessianRemoteResolver;
 
 import java.io.IOException;
+
 /**
  * Looks up remote objects.  The default just returns a BurlapRemote object.
  */
 public interface BurlapRemoteResolver extends HessianRemoteResolver {
-  /**
-   * Looks up a proxy object.
-   */
-  public Object lookup(String type, String url)
-    throws IOException;
+    /**
+     * Looks up a proxy object.
+     */
+    public Object lookup(String type, String url)
+        throws IOException;
 }

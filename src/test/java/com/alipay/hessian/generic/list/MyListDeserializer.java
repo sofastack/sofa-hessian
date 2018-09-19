@@ -16,7 +16,11 @@
  */
 package com.alipay.hessian.generic.list;
 
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.AbstractDeserializer;
+import com.caucho.hessian.io.AbstractHessianInput;
+import com.caucho.hessian.io.HessianFieldException;
+import com.caucho.hessian.io.IOExceptionWrapper;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;

@@ -52,56 +52,56 @@ package com.caucho.burlap.client;
  * Wrapper for protocol exceptions thrown in the proxy.
  */
 public class BurlapRuntimeException extends RuntimeException {
-  private Throwable rootCause;
+    private Throwable rootCause;
 
-  /**
-   * Zero-arg constructor.
-   */
-  public BurlapRuntimeException()
-  {
-  }
+    /**
+     * Zero-arg constructor.
+     */
+    public BurlapRuntimeException()
+    {
+    }
 
-  /**
-   * Create the exception.
-   */
-  public BurlapRuntimeException(String message)
-  {
-    super(message);
-  }
+    /**
+     * Create the exception.
+     */
+    public BurlapRuntimeException(String message)
+    {
+        super(message);
+    }
 
-  /**
-   * Create the exception.
-   */
-  public BurlapRuntimeException(String message, Throwable rootCause)
-  {
-    super(message);
+    /**
+     * Create the exception.
+     */
+    public BurlapRuntimeException(String message, Throwable rootCause)
+    {
+        super(message);
 
-    this.rootCause = rootCause;
-  }
+        this.rootCause = rootCause;
+    }
 
-  /**
-   * Create the exception.
-   */
-  public BurlapRuntimeException(Throwable rootCause)
-  {
-    super(String.valueOf(rootCause));
+    /**
+     * Create the exception.
+     */
+    public BurlapRuntimeException(Throwable rootCause)
+    {
+        super(String.valueOf(rootCause));
 
-    this.rootCause = rootCause;
-  }
+        this.rootCause = rootCause;
+    }
 
-  /**
-   * Returns the underlying cause.
-   */
-  public Throwable getRootCause()
-  {
-    return this.rootCause;
-  }
+    /**
+     * Returns the underlying cause.
+     */
+    public Throwable getRootCause()
+    {
+        return this.rootCause;
+    }
 
-  /**
-   * Returns the underlying cause.
-   */
-  public Throwable getCause()
-  {
-    return this.rootCause;
-  }
+    /**
+     * Returns the underlying cause.
+     */
+    public Throwable getCause()
+    {
+        return this.rootCause;
+    }
 }

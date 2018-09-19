@@ -54,12 +54,12 @@ import java.io.IOException;
  * Looks up remote objects.  The default just returns a BurlapRemote object.
  */
 public class AbstractBurlapResolver implements BurlapRemoteResolver {
-  /**
-   * Looks up a proxy object.
-   */
-  public Object lookup(String type, String url)
-    throws IOException
-  {
-    return new BurlapRemote(type, url);
-  }
+    /**
+     * Looks up a proxy object.
+     */
+    public Object lookup(String type, String url)
+        throws IOException
+    {
+        return new BurlapRemote(type, url);
+    }
 }

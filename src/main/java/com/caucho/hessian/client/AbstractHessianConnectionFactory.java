@@ -56,31 +56,31 @@ import java.io.IOException;
  * factory is java.net
  */
 abstract public class AbstractHessianConnectionFactory
-  implements HessianConnectionFactory
+                                                      implements HessianConnectionFactory
 {
-  private HessianProxyFactory _factory;
-  
-  /**
-   * The HessianProxyFactory contains some common network
-   * configuration like timeouts.
-   */
-  public void setHessianProxyFactory(HessianProxyFactory factory)
-  {
-    _factory = factory;
-  }
-  
-  /**
-   * The HessianProxyFactory contains some common network
-   * configuration like timeouts.
-   */
-  public HessianProxyFactory getHessianProxyFactory()
-  {
-    return _factory;
-  }
-  
-  /**
-   * Opens a new or recycled connection to the HTTP server.
-   */
-  abstract public HessianConnection open(URL url)
-    throws IOException;
+    private HessianProxyFactory _factory;
+
+    /**
+     * The HessianProxyFactory contains some common network
+     * configuration like timeouts.
+     */
+    public void setHessianProxyFactory(HessianProxyFactory factory)
+    {
+        _factory = factory;
+    }
+
+    /**
+     * The HessianProxyFactory contains some common network
+     * configuration like timeouts.
+     */
+    public HessianProxyFactory getHessianProxyFactory()
+    {
+        return _factory;
+    }
+
+    /**
+     * Opens a new or recycled connection to the HTTP server.
+     */
+    abstract public HessianConnection open(URL url)
+        throws IOException;
 }

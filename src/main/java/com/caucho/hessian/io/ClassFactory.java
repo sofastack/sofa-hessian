@@ -57,118 +57,118 @@ import java.util.regex.Pattern;
  */
 public class ClassFactory
 {
-  private static ArrayList<Allow> _staticAllowList;
-  
-  private ClassLoader _loader;
-  private boolean _isWhitelist;
-  
-  private ArrayList<Allow> _allowList;
-  
-  ClassFactory(ClassLoader loader)
-  {
-    _loader = loader;
-  }
-  
-  public Class<?> load(String className)
-    throws ClassNotFoundException
-  {
-    if (isAllow(className)) {
-      return Class.forName(className, false, _loader);
-    }
-    else {
-      return HashMap.class;
-    }
-  }
-  
-  private boolean isAllow(String className)
-  {
-    ArrayList<Allow> allowList = _allowList;
-    
-    if (allowList == null) {
-      return true;
-    }
-    
-    int size = allowList.size();
-    for (int i = 0; i < size; i++) {
-      Allow allow = allowList.get(i);
-      
-      Boolean isAllow = allow.allow(className);
-      
-      if (isAllow != null) {
-        return isAllow;
-      }
-    }
-    
-    return false;
-  }
-  
-  public void setWhitelist(boolean isWhitelist)
-  {
-    _isWhitelist = isWhitelist;
-    
-    initAllow();
-  }
-  
-  public void allow(String pattern)
-  {
-    initAllow();
-    
-    synchronized (this) {
-      _allowList.add(new Allow(toPattern(pattern), true));
-    }
-  }
-  
-  public void deny(String pattern)
-  {
-    initAllow();
-    
-    synchronized (this) {
-      _allowList.add(new Allow(toPattern(pattern), false));
-    }
-  }
-  
-  private String toPattern(String pattern)
-  {
-    pattern = pattern.replace(".", "\\.");
-    pattern = pattern.replace("*", ".*");
-    
-    return pattern;
-  }
-  
-  private void initAllow()
-  {
-    synchronized (this) {
-      if (_allowList == null) {
-        _allowList = new ArrayList<Allow>();
-        _allowList.addAll(_staticAllowList);
-      }
-    }
-  }
-  
-  static class Allow {
-    private Boolean _isAllow;
-    private Pattern _pattern;
-    
-    private Allow(String pattern, boolean isAllow)
+    private static ArrayList<Allow> _staticAllowList;
+
+    private ClassLoader             _loader;
+    private boolean                 _isWhitelist;
+
+    private ArrayList<Allow>        _allowList;
+
+    ClassFactory(ClassLoader loader)
     {
-      _isAllow = isAllow;
-      _pattern = Pattern.compile(pattern);
+        _loader = loader;
     }
-    
-    Boolean allow(String className)
+
+    public Class<?> load(String className)
+        throws ClassNotFoundException
     {
-      if (_pattern.matcher(className).matches()) {
-        return _isAllow;
-      }
-      else {
-        return null;
-      }
+        if (isAllow(className)) {
+            return Class.forName(className, false, _loader);
+        }
+        else {
+            return HashMap.class;
+        }
     }
-  }
-  
-  static {
-    _staticAllowList = new ArrayList<Allow>();
-    
-    _staticAllowList.add(new Allow("java\\..+", true));
-  }
+
+    private boolean isAllow(String className)
+    {
+        ArrayList<Allow> allowList = _allowList;
+
+        if (allowList == null) {
+            return true;
+        }
+
+        int size = allowList.size();
+        for (int i = 0; i < size; i++) {
+            Allow allow = allowList.get(i);
+
+            Boolean isAllow = allow.allow(className);
+
+            if (isAllow != null) {
+                return isAllow;
+            }
+        }
+
+        return false;
+    }
+
+    public void setWhitelist(boolean isWhitelist)
+    {
+        _isWhitelist = isWhitelist;
+
+        initAllow();
+    }
+
+    public void allow(String pattern)
+    {
+        initAllow();
+
+        synchronized (this) {
+            _allowList.add(new Allow(toPattern(pattern), true));
+        }
+    }
+
+    public void deny(String pattern)
+    {
+        initAllow();
+
+        synchronized (this) {
+            _allowList.add(new Allow(toPattern(pattern), false));
+        }
+    }
+
+    private String toPattern(String pattern)
+    {
+        pattern = pattern.replace(".", "\\.");
+        pattern = pattern.replace("*", ".*");
+
+        return pattern;
+    }
+
+    private void initAllow()
+    {
+        synchronized (this) {
+            if (_allowList == null) {
+                _allowList = new ArrayList<Allow>();
+                _allowList.addAll(_staticAllowList);
+            }
+        }
+    }
+
+    static class Allow {
+        private Boolean _isAllow;
+        private Pattern _pattern;
+
+        private Allow(String pattern, boolean isAllow)
+        {
+            _isAllow = isAllow;
+            _pattern = Pattern.compile(pattern);
+        }
+
+        Boolean allow(String className)
+        {
+            if (_pattern.matcher(className).matches()) {
+                return _isAllow;
+            }
+            else {
+                return null;
+            }
+        }
+    }
+
+    static {
+        _staticAllowList = new ArrayList<Allow>();
+
+        _staticAllowList.add(new Allow("java\\..+", true));
+    }
 }

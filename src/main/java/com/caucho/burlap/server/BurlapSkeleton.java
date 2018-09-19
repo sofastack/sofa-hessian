@@ -61,135 +61,134 @@ import java.util.logging.*;
  * Proxy class for Burlap services.
  */
 public class BurlapSkeleton extends AbstractSkeleton {
-  private static final Logger log
-    = Logger.getLogger(BurlapSkeleton.class.getName());
-  
-  private Object _service;
-  
-  /**
-   * Create a new burlap skeleton.
-   *
-   * @param service the underlying service object.
-   * @param apiClass the API interface
-   */
-  public BurlapSkeleton(Object service, Class apiClass)
-  {
-    super(apiClass);
+    private static final Logger log = Logger.getLogger(BurlapSkeleton.class.getName());
 
-    _service = service;
-  }
-  
-  /**
-   * Create a new burlap skeleton.
-   *
-   * @param service the underlying service object.
-   * @param apiClass the API interface
-   */
-  public BurlapSkeleton(Class apiClass)
-  {
-    super(apiClass);
-  }
+    private Object              _service;
 
-  /**
-   * Invoke the object with the request from the input stream.
-   *
-   * @param in the Burlap input stream
-   * @param out the Burlap output stream
-   */
-  public void invoke(BurlapInput in, BurlapOutput out)
-    throws Exception
-  {
-    invoke(_service, in, out);
-  }
+    /**
+     * Create a new burlap skeleton.
+     *
+     * @param service the underlying service object.
+     * @param apiClass the API interface
+     */
+    public BurlapSkeleton(Object service, Class apiClass)
+    {
+        super(apiClass);
 
-  /**
-   * Invoke the object with the request from the input stream.
-   *
-   * @param in the Burlap input stream
-   * @param out the Burlap output stream
-   */
-  public void invoke(Object service, BurlapInput in, BurlapOutput out)
-    throws Exception
-  {
-    in.readCall();
-
-    ServiceContext context = ServiceContext.getContext();
-    
-    String header;
-    while ((header = in.readHeader()) != null) {
-      Object value = in.readObject();
-
-      context.addHeader(header, value);
+        _service = service;
     }
 
-    String methodName = in.readMethod();
-    Method method = getMethod(methodName);
-
-    if (log.isLoggable(Level.FINE))
-      log.fine(this + " invoking " + methodName + " (" + method + ")");
-
-    if (method != null) {
-    }
-    else if ("_burlap_getAttribute".equals(in.getMethod())) {
-      String attrName = in.readString();
-      in.completeCall();
-
-      String value = null;
-
-      if ("java.api.class".equals(attrName))
-        value = getAPIClassName();
-      else if ("java.home.class".equals(attrName))
-        value = getHomeClassName();
-      else if ("java.object.class".equals(attrName))
-        value = getObjectClassName();
-
-      out.startReply();
-
-      out.writeObject(value);
-
-      out.completeReply();
-      return;
-    }
-    else if (method == null) {
-      out.startReply();
-      out.writeFault("NoSuchMethodException",
-                     "The service has no method named: " + in.getMethod(),
-                     null);
-      out.completeReply();
-      return;
+    /**
+     * Create a new burlap skeleton.
+     *
+     * @param service the underlying service object.
+     * @param apiClass the API interface
+     */
+    public BurlapSkeleton(Class apiClass)
+    {
+        super(apiClass);
     }
 
-    Class []args = method.getParameterTypes();
-    Object []values = new Object[args.length];
-
-    for (int i = 0; i < args.length; i++)
-      values[i] = in.readObject(args[i]);
-
-    in.completeCall();
-
-    Object result = null;
-    
-    try {
-      result = method.invoke(service, values);
-    } catch (Throwable e) {
-      log.log(Level.FINE,
-              service + "." + method.getName() + "() failed with exception:\n"
-              + e.toString(),
-              e);
-      
-      if (e instanceof InvocationTargetException
-          && e.getCause() instanceof Exception)
-        e = ((InvocationTargetException) e).getTargetException();
-      out.startReply();
-      out.writeFault("ServiceException", e.getMessage(), e);
-      out.completeReply();
-      return;
+    /**
+     * Invoke the object with the request from the input stream.
+     *
+     * @param in the Burlap input stream
+     * @param out the Burlap output stream
+     */
+    public void invoke(BurlapInput in, BurlapOutput out)
+        throws Exception
+    {
+        invoke(_service, in, out);
     }
 
-    out.startReply();
+    /**
+     * Invoke the object with the request from the input stream.
+     *
+     * @param in the Burlap input stream
+     * @param out the Burlap output stream
+     */
+    public void invoke(Object service, BurlapInput in, BurlapOutput out)
+        throws Exception
+    {
+        in.readCall();
 
-    out.writeObject(result);
-    
-    out.completeReply();
-  }
+        ServiceContext context = ServiceContext.getContext();
+
+        String header;
+        while ((header = in.readHeader()) != null) {
+            Object value = in.readObject();
+
+            context.addHeader(header, value);
+        }
+
+        String methodName = in.readMethod();
+        Method method = getMethod(methodName);
+
+        if (log.isLoggable(Level.FINE))
+            log.fine(this + " invoking " + methodName + " (" + method + ")");
+
+        if (method != null) {
+        }
+        else if ("_burlap_getAttribute".equals(in.getMethod())) {
+            String attrName = in.readString();
+            in.completeCall();
+
+            String value = null;
+
+            if ("java.api.class".equals(attrName))
+                value = getAPIClassName();
+            else if ("java.home.class".equals(attrName))
+                value = getHomeClassName();
+            else if ("java.object.class".equals(attrName))
+                value = getObjectClassName();
+
+            out.startReply();
+
+            out.writeObject(value);
+
+            out.completeReply();
+            return;
+        }
+        else if (method == null) {
+            out.startReply();
+            out.writeFault("NoSuchMethodException",
+                "The service has no method named: " + in.getMethod(),
+                null);
+            out.completeReply();
+            return;
+        }
+
+        Class[] args = method.getParameterTypes();
+        Object[] values = new Object[args.length];
+
+        for (int i = 0; i < args.length; i++)
+            values[i] = in.readObject(args[i]);
+
+        in.completeCall();
+
+        Object result = null;
+
+        try {
+            result = method.invoke(service, values);
+        } catch (Throwable e) {
+            log.log(Level.FINE,
+                service + "." + method.getName() + "() failed with exception:\n"
+                    + e.toString(),
+                e);
+
+            if (e instanceof InvocationTargetException
+                && e.getCause() instanceof Exception)
+                e = ((InvocationTargetException) e).getTargetException();
+            out.startReply();
+            out.writeFault("ServiceException", e.getMessage(), e);
+            out.completeReply();
+            return;
+        }
+
+        out.startReply();
+
+        out.writeObject(result);
+
+        out.completeReply();
+    }
 }

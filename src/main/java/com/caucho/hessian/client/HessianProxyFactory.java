@@ -118,496 +118,494 @@ import com.caucho.services.client.ServiceProxyFactory;
  * password are set.
  */
 public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
-  protected static Logger log
-    = Logger.getLogger(HessianProxyFactory.class.getName());
+    protected static Logger          log                = Logger.getLogger(HessianProxyFactory.class.getName());
 
-  private final ClassLoader _loader;
-  
-  private SerializerFactory _serializerFactory;
+    private final ClassLoader        _loader;
 
-  private HessianConnectionFactory _connFactory;
-  
-  private HessianRemoteResolver _resolver;
+    private SerializerFactory        _serializerFactory;
 
-  private String _user;
-  private String _password;
-  private String _basicAuth;
+    private HessianConnectionFactory _connFactory;
 
-  private boolean _isOverloadEnabled = false;
+    private HessianRemoteResolver    _resolver;
 
-  private boolean _isHessian2Reply = true;
-  private boolean _isHessian2Request = false;
+    private String                   _user;
+    private String                   _password;
+    private String                   _basicAuth;
 
-  private boolean _isChunkedPost = true;
-  private boolean _isDebug = false;
+    private boolean                  _isOverloadEnabled = false;
 
-  private long _readTimeout = -1;
-  private long _connectTimeout = -1;
+    private boolean                  _isHessian2Reply   = true;
+    private boolean                  _isHessian2Request = false;
 
-  /**
-   * Creates the new proxy factory.
-   */
-  public HessianProxyFactory()
-  {
-    this(Thread.currentThread().getContextClassLoader());
-  }
+    private boolean                  _isChunkedPost     = true;
+    private boolean                  _isDebug           = false;
 
-  /**
-   * Creates the new proxy factory.
-   */
-  public HessianProxyFactory(ClassLoader loader)
-  {
-    _loader = loader;
-    _resolver = new HessianProxyResolver(this);
-  }
+    private long                     _readTimeout       = -1;
+    private long                     _connectTimeout    = -1;
 
-  /**
-   * Sets the user.
-   */
-  public void setUser(String user)
-  {
-    _user = user;
-    _basicAuth = null;
-  }
-
-  /**
-   * Sets the password.
-   */
-  public void setPassword(String password)
-  {
-    _password = password;
-    _basicAuth = null;
-  }
-
-  public String getBasicAuth()
-  {
-    if (_basicAuth != null)
-      return _basicAuth;
-
-    else if (_user != null && _password != null)
-      return "Basic " + base64(_user + ":" + _password);
-
-    else
-      return null;
-  }
-
-  /**
-   * Sets the connection factory to use when connecting
-   * to the Hessian service.
-   */
-  public void setConnectionFactory(HessianConnectionFactory factory)
-  {
-    _connFactory = factory;
-  }
-
-  /**
-   * Returns the connection factory to be used for the HTTP request.
-   */
-  public HessianConnectionFactory getConnectionFactory()
-  {
-    if (_connFactory == null) {
-      _connFactory = createHessianConnectionFactory();
-      _connFactory.setHessianProxyFactory(this);
-    }
-    
-    return _connFactory;
-  }
-
-  /**
-   * Sets the debug
-   */
-  public void setDebug(boolean isDebug)
-  {
-    _isDebug = isDebug;
-  }
-
-  /**
-   * Gets the debug
-   */
-  public boolean isDebug()
-  {
-    return _isDebug;
-  }
-
-  /**
-   * Returns true if overloaded methods are allowed (using mangling)
-   */
-  public boolean isOverloadEnabled()
-  {
-    return _isOverloadEnabled;
-  }
-
-  /**
-   * set true if overloaded methods are allowed (using mangling)
-   */
-  public void setOverloadEnabled(boolean isOverloadEnabled)
-  {
-    _isOverloadEnabled = isOverloadEnabled;
-  }
-
-  /**
-   * Set true if should use chunked encoding on the request.
-   */
-  public void setChunkedPost(boolean isChunked)
-  {
-    _isChunkedPost = isChunked;
-  }
-
-  /**
-   * Set true if should use chunked encoding on the request.
-   */
-  public boolean isChunkedPost()
-  {
-    return _isChunkedPost;
-  }
-
-  /**
-   * The socket timeout on requests in milliseconds.
-   */
-  public long getReadTimeout()
-  {
-    return _readTimeout;
-  }
-
-  /**
-   * The socket timeout on requests in milliseconds.
-   */
-  public void setReadTimeout(long timeout)
-  {
-    _readTimeout = timeout;
-  }
-
-  /**
-   * The socket connection timeout in milliseconds.
-   */
-  public long getConnectTimeout()
-  {
-    return _connectTimeout;
-  }
-
-  /**
-   * The socket connect timeout in milliseconds.
-   */
-  public void setConnectTimeout(long timeout)
-  {
-    _connectTimeout = timeout;
-  }
-
-  /**
-   * True if the proxy can read Hessian 2 responses.
-   */
-  public void setHessian2Reply(boolean isHessian2)
-  {
-    _isHessian2Reply = isHessian2;
-  }
-
-  /**
-   * True if the proxy should send Hessian 2 requests.
-   */
-  public void setHessian2Request(boolean isHessian2)
-  {
-    _isHessian2Request = isHessian2;
-
-    if (isHessian2)
-      _isHessian2Reply = true;
-  }
-
-  /**
-   * Returns the remote resolver.
-   */
-  public HessianRemoteResolver getRemoteResolver()
-  {
-    return _resolver;
-  }
-
-  /**
-   * Sets the serializer factory.
-   */
-  public void setSerializerFactory(SerializerFactory factory)
-  {
-    _serializerFactory = factory;
-  }
-
-  /**
-   * Gets the serializer factory.
-   */
-  public SerializerFactory getSerializerFactory()
-  {
-    if (_serializerFactory == null)
-      _serializerFactory = new SerializerFactory(_loader);
-
-    return _serializerFactory;
-  }
-
-  protected HessianConnectionFactory createHessianConnectionFactory()
-  {
-    String className
-      = System.getProperty(HessianConnectionFactory.class.getName());
-
-    HessianConnectionFactory factory = null;
-      
-    try {
-      if (className != null) {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-        Class<?> cl = Class.forName(className, false, loader);
-
-        factory = (HessianConnectionFactory) cl.newInstance();
-
-        return factory;
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    /**
+     * Creates the new proxy factory.
+     */
+    public HessianProxyFactory()
+    {
+        this(Thread.currentThread().getContextClassLoader());
     }
 
-    return new HessianURLConnectionFactory();
-  }
-  /**
-   * Creates a new proxy with the specified URL.  The API class uses
-   * the java.api.class value from _hessian_
-   *
-   * @param url the URL where the client object is located.
-   *
-   * @return a proxy to the object with the specified interface.
-   */
-  public Object create(String url)
-    throws MalformedURLException, ClassNotFoundException
-  {
-    HessianMetaInfoAPI metaInfo;
-
-    metaInfo = (HessianMetaInfoAPI) create(HessianMetaInfoAPI.class, url);
-
-    String apiClassName =
-      (String) metaInfo._hessian_getAttribute("java.api.class");
-
-    if (apiClassName == null)
-      throw new HessianRuntimeException(url + " has an unknown api.");
-
-    Class<?> apiClass = Class.forName(apiClassName, false, _loader);
-
-    return create(apiClass, url);
-  }
-
-  /**
-   * Creates a new proxy with the specified URL.  The returned object
-   * is a proxy with the interface specified by api.
-   *
-   * <pre>
-   * String url = "http://localhost:8080/ejb/hello");
-   * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
-   * </pre>
-   *
-   * @param api the interface the proxy class needs to implement
-   * @param url the URL where the client object is located.
-   *
-   * @return a proxy to the object with the specified interface.
-   */
-  public Object create(Class api, String urlName)
-    throws MalformedURLException
-  {
-    return create(api, urlName, _loader);
-  }
-
-  /**
-   * Creates a new proxy with the specified URL.  The returned object
-   * is a proxy with the interface specified by api.
-   *
-   * <pre>
-   * String url = "http://localhost:8080/ejb/hello");
-   * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
-   * </pre>
-   *
-   * @param api the interface the proxy class needs to implement
-   * @param url the URL where the client object is located.
-   *
-   * @return a proxy to the object with the specified interface.
-   */
-  public Object create(Class<?> api, String urlName, ClassLoader loader)
-    throws MalformedURLException
-  {
-    URL url = new URL(urlName);
-    
-    return create(api, url, loader);
-  }
-
-  /**
-   * Creates a new proxy with the specified URL.  The returned object
-   * is a proxy with the interface specified by api.
-   *
-   * <pre>
-   * String url = "http://localhost:8080/ejb/hello");
-   * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
-   * </pre>
-   *
-   * @param api the interface the proxy class needs to implement
-   * @param url the URL where the client object is located.
-   *
-   * @return a proxy to the object with the specified interface.
-   */
-  public Object create(Class<?> api, URL url, ClassLoader loader)
-  {
-    if (api == null)
-      throw new NullPointerException("api must not be null for HessianProxyFactory.create()");
-    InvocationHandler handler = null;
-
-    handler = new HessianProxy(url, this, api);
-
-    return Proxy.newProxyInstance(loader,
-                                  new Class[] { api,
-                                                HessianRemoteObject.class },
-                                  handler);
-  }
-
-  public AbstractHessianInput getHessianInput(InputStream is)
-  {
-    return getHessian2Input(is);
-  }
-
-  public AbstractHessianInput getHessian1Input(InputStream is)
-  {
-    AbstractHessianInput in;
-
-    if (_isDebug)
-      is = new HessianDebugInputStream(is, new PrintWriter(System.out));
-
-    in = new HessianInput(is);
-
-    in.setRemoteResolver(getRemoteResolver());
-
-    in.setSerializerFactory(getSerializerFactory());
-
-    return in;
-  }
-
-  public AbstractHessianInput getHessian2Input(InputStream is)
-  {
-    AbstractHessianInput in;
-
-    if (_isDebug)
-      is = new HessianDebugInputStream(is, new PrintWriter(System.out));
-
-    in = new Hessian2Input(is);
-
-    in.setRemoteResolver(getRemoteResolver());
-
-    in.setSerializerFactory(getSerializerFactory());
-
-    return in;
-  }
-
-  public AbstractHessianOutput getHessianOutput(OutputStream os)
-  {
-    AbstractHessianOutput out;
-
-    if (_isHessian2Request)
-      out = new Hessian2Output(os);
-    else {
-      HessianOutput out1 = new HessianOutput(os);
-      out = out1;
-
-      if (_isHessian2Reply)
-        out1.setVersion(2);
+    /**
+     * Creates the new proxy factory.
+     */
+    public HessianProxyFactory(ClassLoader loader)
+    {
+        _loader = loader;
+        _resolver = new HessianProxyResolver(this);
     }
 
-    out.setSerializerFactory(getSerializerFactory());
-
-    return out;
-  }
-
-  /**
-   * JNDI object factory so the proxy can be used as a resource.
-   */
-  public Object getObjectInstance(Object obj, Name name,
-                                  Context nameCtx, Hashtable<?,?> environment)
-    throws Exception
-  {
-    Reference ref = (Reference) obj;
-
-    String api = null;
-    String url = null;
-    
-    for (int i = 0; i < ref.size(); i++) {
-      RefAddr addr = ref.get(i);
-
-      String type = addr.getType();
-      String value = (String) addr.getContent();
-
-      if (type.equals("type"))
-        api = value;
-      else if (type.equals("url"))
-        url = value;
-      else if (type.equals("user"))
-        setUser(value);
-      else if (type.equals("password"))
-        setPassword(value);
+    /**
+     * Sets the user.
+     */
+    public void setUser(String user)
+    {
+        _user = user;
+        _basicAuth = null;
     }
 
-    if (url == null)
-      throw new NamingException("`url' must be configured for HessianProxyFactory.");
-    // XXX: could use meta protocol to grab this
-    if (api == null)
-      throw new NamingException("`type' must be configured for HessianProxyFactory.");
-
-    Class apiClass = Class.forName(api, false, _loader);
-
-    return create(apiClass, url);
-  }
-
-  /**
-   * Creates the Base64 value.
-   */
-  private String base64(String value)
-  {
-    StringBuffer cb = new StringBuffer();
-
-    int i = 0;
-    for (i = 0; i + 2 < value.length(); i += 3) {
-      long chunk = (int) value.charAt(i);
-      chunk = (chunk << 8) + (int) value.charAt(i + 1);
-      chunk = (chunk << 8) + (int) value.charAt(i + 2);
-
-      cb.append(encode(chunk >> 18));
-      cb.append(encode(chunk >> 12));
-      cb.append(encode(chunk >> 6));
-      cb.append(encode(chunk));
+    /**
+     * Sets the password.
+     */
+    public void setPassword(String password)
+    {
+        _password = password;
+        _basicAuth = null;
     }
 
-    if (i + 1 < value.length()) {
-      long chunk = (int) value.charAt(i);
-      chunk = (chunk << 8) + (int) value.charAt(i + 1);
-      chunk <<= 8;
+    public String getBasicAuth()
+    {
+        if (_basicAuth != null)
+            return _basicAuth;
 
-      cb.append(encode(chunk >> 18));
-      cb.append(encode(chunk >> 12));
-      cb.append(encode(chunk >> 6));
-      cb.append('=');
-    }
-    else if (i < value.length()) {
-      long chunk = (int) value.charAt(i);
-      chunk <<= 16;
+        else if (_user != null && _password != null)
+            return "Basic " + base64(_user + ":" + _password);
 
-      cb.append(encode(chunk >> 18));
-      cb.append(encode(chunk >> 12));
-      cb.append('=');
-      cb.append('=');
+        else
+            return null;
     }
 
-    return cb.toString();
-  }
+    /**
+     * Sets the connection factory to use when connecting
+     * to the Hessian service.
+     */
+    public void setConnectionFactory(HessianConnectionFactory factory)
+    {
+        _connFactory = factory;
+    }
 
-  public static char encode(long d)
-  {
-    d &= 0x3f;
-    if (d < 26)
-      return (char) (d + 'A');
-    else if (d < 52)
-      return (char) (d + 'a' - 26);
-    else if (d < 62)
-      return (char) (d + '0' - 52);
-    else if (d == 62)
-      return '+';
-    else
-      return '/';
-  }
+    /**
+     * Returns the connection factory to be used for the HTTP request.
+     */
+    public HessianConnectionFactory getConnectionFactory()
+    {
+        if (_connFactory == null) {
+            _connFactory = createHessianConnectionFactory();
+            _connFactory.setHessianProxyFactory(this);
+        }
+
+        return _connFactory;
+    }
+
+    /**
+     * Sets the debug
+     */
+    public void setDebug(boolean isDebug)
+    {
+        _isDebug = isDebug;
+    }
+
+    /**
+     * Gets the debug
+     */
+    public boolean isDebug()
+    {
+        return _isDebug;
+    }
+
+    /**
+     * Returns true if overloaded methods are allowed (using mangling)
+     */
+    public boolean isOverloadEnabled()
+    {
+        return _isOverloadEnabled;
+    }
+
+    /**
+     * set true if overloaded methods are allowed (using mangling)
+     */
+    public void setOverloadEnabled(boolean isOverloadEnabled)
+    {
+        _isOverloadEnabled = isOverloadEnabled;
+    }
+
+    /**
+     * Set true if should use chunked encoding on the request.
+     */
+    public void setChunkedPost(boolean isChunked)
+    {
+        _isChunkedPost = isChunked;
+    }
+
+    /**
+     * Set true if should use chunked encoding on the request.
+     */
+    public boolean isChunkedPost()
+    {
+        return _isChunkedPost;
+    }
+
+    /**
+     * The socket timeout on requests in milliseconds.
+     */
+    public long getReadTimeout()
+    {
+        return _readTimeout;
+    }
+
+    /**
+     * The socket timeout on requests in milliseconds.
+     */
+    public void setReadTimeout(long timeout)
+    {
+        _readTimeout = timeout;
+    }
+
+    /**
+     * The socket connection timeout in milliseconds.
+     */
+    public long getConnectTimeout()
+    {
+        return _connectTimeout;
+    }
+
+    /**
+     * The socket connect timeout in milliseconds.
+     */
+    public void setConnectTimeout(long timeout)
+    {
+        _connectTimeout = timeout;
+    }
+
+    /**
+     * True if the proxy can read Hessian 2 responses.
+     */
+    public void setHessian2Reply(boolean isHessian2)
+    {
+        _isHessian2Reply = isHessian2;
+    }
+
+    /**
+     * True if the proxy should send Hessian 2 requests.
+     */
+    public void setHessian2Request(boolean isHessian2)
+    {
+        _isHessian2Request = isHessian2;
+
+        if (isHessian2)
+            _isHessian2Reply = true;
+    }
+
+    /**
+     * Returns the remote resolver.
+     */
+    public HessianRemoteResolver getRemoteResolver()
+    {
+        return _resolver;
+    }
+
+    /**
+     * Sets the serializer factory.
+     */
+    public void setSerializerFactory(SerializerFactory factory)
+    {
+        _serializerFactory = factory;
+    }
+
+    /**
+     * Gets the serializer factory.
+     */
+    public SerializerFactory getSerializerFactory()
+    {
+        if (_serializerFactory == null)
+            _serializerFactory = new SerializerFactory(_loader);
+
+        return _serializerFactory;
+    }
+
+    protected HessianConnectionFactory createHessianConnectionFactory()
+    {
+        String className = System.getProperty(HessianConnectionFactory.class.getName());
+
+        HessianConnectionFactory factory = null;
+
+        try {
+            if (className != null) {
+                ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+                Class<?> cl = Class.forName(className, false, loader);
+
+                factory = (HessianConnectionFactory) cl.newInstance();
+
+                return factory;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return new HessianURLConnectionFactory();
+    }
+
+    /**
+     * Creates a new proxy with the specified URL.  The API class uses
+     * the java.api.class value from _hessian_
+     *
+     * @param url the URL where the client object is located.
+     *
+     * @return a proxy to the object with the specified interface.
+     */
+    public Object create(String url)
+        throws MalformedURLException, ClassNotFoundException
+    {
+        HessianMetaInfoAPI metaInfo;
+
+        metaInfo = (HessianMetaInfoAPI) create(HessianMetaInfoAPI.class, url);
+
+        String apiClassName =
+                (String) metaInfo._hessian_getAttribute("java.api.class");
+
+        if (apiClassName == null)
+            throw new HessianRuntimeException(url + " has an unknown api.");
+
+        Class<?> apiClass = Class.forName(apiClassName, false, _loader);
+
+        return create(apiClass, url);
+    }
+
+    /**
+     * Creates a new proxy with the specified URL.  The returned object
+     * is a proxy with the interface specified by api.
+     *
+     * <pre>
+     * String url = "http://localhost:8080/ejb/hello");
+     * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
+     * </pre>
+     *
+     * @param api the interface the proxy class needs to implement
+     * @param url the URL where the client object is located.
+     *
+     * @return a proxy to the object with the specified interface.
+     */
+    public Object create(Class api, String urlName)
+        throws MalformedURLException
+    {
+        return create(api, urlName, _loader);
+    }
+
+    /**
+     * Creates a new proxy with the specified URL.  The returned object
+     * is a proxy with the interface specified by api.
+     *
+     * <pre>
+     * String url = "http://localhost:8080/ejb/hello");
+     * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
+     * </pre>
+     *
+     * @param api the interface the proxy class needs to implement
+     * @param url the URL where the client object is located.
+     *
+     * @return a proxy to the object with the specified interface.
+     */
+    public Object create(Class<?> api, String urlName, ClassLoader loader)
+        throws MalformedURLException
+    {
+        URL url = new URL(urlName);
+
+        return create(api, url, loader);
+    }
+
+    /**
+     * Creates a new proxy with the specified URL.  The returned object
+     * is a proxy with the interface specified by api.
+     *
+     * <pre>
+     * String url = "http://localhost:8080/ejb/hello");
+     * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
+     * </pre>
+     *
+     * @param api the interface the proxy class needs to implement
+     * @param url the URL where the client object is located.
+     *
+     * @return a proxy to the object with the specified interface.
+     */
+    public Object create(Class<?> api, URL url, ClassLoader loader)
+    {
+        if (api == null)
+            throw new NullPointerException("api must not be null for HessianProxyFactory.create()");
+        InvocationHandler handler = null;
+
+        handler = new HessianProxy(url, this, api);
+
+        return Proxy.newProxyInstance(loader,
+            new Class[] { api,
+                    HessianRemoteObject.class },
+            handler);
+    }
+
+    public AbstractHessianInput getHessianInput(InputStream is)
+    {
+        return getHessian2Input(is);
+    }
+
+    public AbstractHessianInput getHessian1Input(InputStream is)
+    {
+        AbstractHessianInput in;
+
+        if (_isDebug)
+            is = new HessianDebugInputStream(is, new PrintWriter(System.out));
+
+        in = new HessianInput(is);
+
+        in.setRemoteResolver(getRemoteResolver());
+
+        in.setSerializerFactory(getSerializerFactory());
+
+        return in;
+    }
+
+    public AbstractHessianInput getHessian2Input(InputStream is)
+    {
+        AbstractHessianInput in;
+
+        if (_isDebug)
+            is = new HessianDebugInputStream(is, new PrintWriter(System.out));
+
+        in = new Hessian2Input(is);
+
+        in.setRemoteResolver(getRemoteResolver());
+
+        in.setSerializerFactory(getSerializerFactory());
+
+        return in;
+    }
+
+    public AbstractHessianOutput getHessianOutput(OutputStream os)
+    {
+        AbstractHessianOutput out;
+
+        if (_isHessian2Request)
+            out = new Hessian2Output(os);
+        else {
+            HessianOutput out1 = new HessianOutput(os);
+            out = out1;
+
+            if (_isHessian2Reply)
+                out1.setVersion(2);
+        }
+
+        out.setSerializerFactory(getSerializerFactory());
+
+        return out;
+    }
+
+    /**
+     * JNDI object factory so the proxy can be used as a resource.
+     */
+    public Object getObjectInstance(Object obj, Name name,
+                                    Context nameCtx, Hashtable<?, ?> environment)
+        throws Exception
+    {
+        Reference ref = (Reference) obj;
+
+        String api = null;
+        String url = null;
+
+        for (int i = 0; i < ref.size(); i++) {
+            RefAddr addr = ref.get(i);
+
+            String type = addr.getType();
+            String value = (String) addr.getContent();
+
+            if (type.equals("type"))
+                api = value;
+            else if (type.equals("url"))
+                url = value;
+            else if (type.equals("user"))
+                setUser(value);
+            else if (type.equals("password"))
+                setPassword(value);
+        }
+
+        if (url == null)
+            throw new NamingException("`url' must be configured for HessianProxyFactory.");
+        // XXX: could use meta protocol to grab this
+        if (api == null)
+            throw new NamingException("`type' must be configured for HessianProxyFactory.");
+
+        Class apiClass = Class.forName(api, false, _loader);
+
+        return create(apiClass, url);
+    }
+
+    /**
+     * Creates the Base64 value.
+     */
+    private String base64(String value)
+    {
+        StringBuffer cb = new StringBuffer();
+
+        int i = 0;
+        for (i = 0; i + 2 < value.length(); i += 3) {
+            long chunk = (int) value.charAt(i);
+            chunk = (chunk << 8) + (int) value.charAt(i + 1);
+            chunk = (chunk << 8) + (int) value.charAt(i + 2);
+
+            cb.append(encode(chunk >> 18));
+            cb.append(encode(chunk >> 12));
+            cb.append(encode(chunk >> 6));
+            cb.append(encode(chunk));
+        }
+
+        if (i + 1 < value.length()) {
+            long chunk = (int) value.charAt(i);
+            chunk = (chunk << 8) + (int) value.charAt(i + 1);
+            chunk <<= 8;
+
+            cb.append(encode(chunk >> 18));
+            cb.append(encode(chunk >> 12));
+            cb.append(encode(chunk >> 6));
+            cb.append('=');
+        }
+        else if (i < value.length()) {
+            long chunk = (int) value.charAt(i);
+            chunk <<= 16;
+
+            cb.append(encode(chunk >> 18));
+            cb.append(encode(chunk >> 12));
+            cb.append('=');
+            cb.append('=');
+        }
+
+        return cb.toString();
+    }
+
+    public static char encode(long d)
+    {
+        d &= 0x3f;
+        if (d < 26)
+            return (char) (d + 'A');
+        else if (d < 52)
+            return (char) (d + 'a' - 26);
+        else if (d < 62)
+            return (char) (d + '0' - 52);
+        else if (d == 62)
+            return '+';
+        else
+            return '/';
+    }
 }
-

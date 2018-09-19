@@ -65,13 +65,13 @@ import java.io.IOException;
  * </pre>
  */
 abstract public class AbstractBurlapOutput extends AbstractHessianOutput {
-  @Override
-  public void startCall(String method, int length)
-    throws IOException
-  {
-    startCall(method);
-  }
+    @Override
+    public void startCall(String method, int length)
+        throws IOException
+    {
+        startCall(method);
+    }
 
-  abstract void startCall(String method)
-    throws IOException;
+    abstract void startCall(String method)
+        throws IOException;
 }

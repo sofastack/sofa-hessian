@@ -63,149 +63,149 @@ import java.util.logging.Level;
  */
 public class HessianDebugInputStream extends InputStream
 {
-  private InputStream _is;
-  
-  private HessianDebugState _state;
-  
-  /**
-   * Creates an uninitialized Hessian input stream.
-   */
-  public HessianDebugInputStream(InputStream is, OutputStream os)
-  {
-    this(is, new PrintWriter(os));
-  }
-  
-  /**
-   * Creates an uninitialized Hessian input stream.
-   */
-  public HessianDebugInputStream(InputStream is, PrintWriter dbg)
-  {
-    _is = is;
+    private InputStream       _is;
 
-    if (dbg == null)
-      dbg = new PrintWriter(System.out);
+    private HessianDebugState _state;
 
-    _state = new HessianDebugState(dbg);
-  }
-  
-  /**
-   * Creates an uninitialized Hessian input stream.
-   */
-  public HessianDebugInputStream(InputStream is, Logger log, Level level)
-  {
-    this(is, new PrintWriter(new LogWriter(log, level)));
-  }
-  
-  /**
-   * Creates an uninitialized Hessian input stream.
-   */
-  public HessianDebugInputStream(Logger log, Level level)
-  {
-    this(null, log, level);
-  }
-  
-  public void initPacket(InputStream is)
-  {
-    _is = is;
-  }
-
-  public void startTop2()
-  {
-    _state.startTop2();
-  }
-
-  public void startData1()
-  {
-    _state.startData1();
-  }
-  
-  public void startStreaming()
-  {
-    _state.startStreaming();
-  }
-
-  public void setDepth(int depth)
-  {
-    _state.setDepth(depth);
-  }
-
-  /**
-   * Reads a character.
-   */
-  public int read()
-    throws IOException
-  {
-    int ch;
-
-    InputStream is = _is;
-
-    if (is == null)
-      return -1;
-    else {
-      ch = is.read();
+    /**
+     * Creates an uninitialized Hessian input stream.
+     */
+    public HessianDebugInputStream(InputStream is, OutputStream os)
+    {
+        this(is, new PrintWriter(os));
     }
 
-    _state.next(ch);
-
-    return ch;
-  }
-
-  /**
-   * closes the stream.
-   */
-  public void close()
-    throws IOException
-  {
-    InputStream is = _is;
-    _is = null;
-
-    if (is != null)
-      is.close();
-    
-    _state.println();
-  }
-
-  static class LogWriter extends Writer {
-    private Logger _log;
-    private Level _level;
-    private StringBuilder _sb = new StringBuilder();
-
-    LogWriter(Logger log, Level level)
+    /**
+     * Creates an uninitialized Hessian input stream.
+     */
+    public HessianDebugInputStream(InputStream is, PrintWriter dbg)
     {
-      _log = log;
-      _level = level;
+        _is = is;
+
+        if (dbg == null)
+            dbg = new PrintWriter(System.out);
+
+        _state = new HessianDebugState(dbg);
     }
 
-    public void write(char ch)
+    /**
+     * Creates an uninitialized Hessian input stream.
+     */
+    public HessianDebugInputStream(InputStream is, Logger log, Level level)
     {
-      if (ch == '\n' && _sb.length() > 0) {
-        _log.log(_level, _sb.toString());
-        _sb.setLength(0);
-      }
-      else
-        _sb.append((char) ch);
+        this(is, new PrintWriter(new LogWriter(log, level)));
     }
 
-    public void write(char []buffer, int offset, int length)
+    /**
+     * Creates an uninitialized Hessian input stream.
+     */
+    public HessianDebugInputStream(Logger log, Level level)
     {
-      for (int i = 0; i < length; i++) {
-        char ch = buffer[offset + i];
+        this(null, log, level);
+    }
 
-        if (ch == '\n' && _sb.length() > 0) {
-          _log.log(_level, _sb.toString());
-          _sb.setLength(0);
+    public void initPacket(InputStream is)
+    {
+        _is = is;
+    }
+
+    public void startTop2()
+    {
+        _state.startTop2();
+    }
+
+    public void startData1()
+    {
+        _state.startData1();
+    }
+
+    public void startStreaming()
+    {
+        _state.startStreaming();
+    }
+
+    public void setDepth(int depth)
+    {
+        _state.setDepth(depth);
+    }
+
+    /**
+     * Reads a character.
+     */
+    public int read()
+        throws IOException
+    {
+        int ch;
+
+        InputStream is = _is;
+
+        if (is == null)
+            return -1;
+        else {
+            ch = is.read();
         }
-        else
-          _sb.append((char) ch);
-      }
+
+        _state.next(ch);
+
+        return ch;
     }
 
-    public void flush()
-    {
-    }
-
+    /**
+     * closes the stream.
+     */
     public void close()
+        throws IOException
     {
+        InputStream is = _is;
+        _is = null;
+
+        if (is != null)
+            is.close();
+
+        _state.println();
     }
-  }
+
+    static class LogWriter extends Writer {
+        private Logger        _log;
+        private Level         _level;
+        private StringBuilder _sb = new StringBuilder();
+
+        LogWriter(Logger log, Level level)
+        {
+            _log = log;
+            _level = level;
+        }
+
+        public void write(char ch)
+        {
+            if (ch == '\n' && _sb.length() > 0) {
+                _log.log(_level, _sb.toString());
+                _sb.setLength(0);
+            }
+            else
+                _sb.append((char) ch);
+        }
+
+        public void write(char[] buffer, int offset, int length)
+        {
+            for (int i = 0; i < length; i++) {
+                char ch = buffer[offset + i];
+
+                if (ch == '\n' && _sb.length() > 0) {
+                    _log.log(_level, _sb.toString());
+                    _sb.setLength(0);
+                }
+                else
+                    _sb.append((char) ch);
+            }
+        }
+
+        public void flush()
+        {
+        }
+
+        public void close()
+        {
+        }
+    }
 }

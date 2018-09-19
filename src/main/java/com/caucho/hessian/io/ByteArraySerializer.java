@@ -54,29 +54,29 @@ import java.io.IOException;
  * Serializing an object for known object types.
  */
 public class ByteArraySerializer extends AbstractSerializer
-  implements ObjectSerializer
+                                                           implements ObjectSerializer
 {
-  public static final ByteArraySerializer SER = new ByteArraySerializer();
-  
-  private ByteArraySerializer()
-  {
-  }
+    public static final ByteArraySerializer SER = new ByteArraySerializer();
 
-  @Override
-  public Serializer getObjectSerializer()
-  {
-    return this;
-  }
-  
-  @Override
-  public void writeObject(Object obj, AbstractHessianOutput out)
-    throws IOException
-  {
-    byte []data = (byte []) obj;
-    
-    if (data != null)
-      out.writeBytes(data, 0, data.length);
-    else
-      out.writeNull();
-  }
+    private ByteArraySerializer()
+    {
+    }
+
+    @Override
+    public Serializer getObjectSerializer()
+    {
+        return this;
+    }
+
+    @Override
+    public void writeObject(Object obj, AbstractHessianOutput out)
+        throws IOException
+    {
+        byte[] data = (byte[]) obj;
+
+        if (data != null)
+            out.writeBytes(data, 0, data.length);
+        else
+            out.writeNull();
+    }
 }

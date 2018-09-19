@@ -54,5 +54,5 @@ import java.io.IOException;
  * Serializing an object. 
  */
 public interface ObjectSerializer {
-  public Serializer getObjectSerializer();
+    public Serializer getObjectSerializer();
 }

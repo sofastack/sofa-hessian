@@ -61,138 +61,137 @@ import java.util.logging.Level;
  */
 public class HessianDebugOutputStream extends OutputStream
 {
-  private static final Logger log
-    = Logger.getLogger(HessianDebugOutputStream.class.getName());
-  
-  private OutputStream _os;
-  
-  private HessianDebugState _state;
-  
-  /**
-   * Creates an uninitialized Hessian input stream.
-   */
-  public HessianDebugOutputStream(OutputStream os, PrintWriter dbg)
-  {
-    _os = os;
+    private static final Logger log = Logger.getLogger(HessianDebugOutputStream.class.getName());
 
-    _state = new HessianDebugState(dbg);
-  }
-  
-  /**
-   * Creates an uninitialized Hessian input stream.
-   */
-  public HessianDebugOutputStream(OutputStream os, Logger log, Level level)
-  {
-    this(os, new PrintWriter(new LogWriter(log, level)));
-  }
-  
-  /**
-   * Creates an uninitialized Hessian input stream.
-   */
-  public HessianDebugOutputStream(Logger log, Level level)
-  {
-    this(null, new PrintWriter(new LogWriter(log, level)));
-  }
-  
-  public void initPacket(OutputStream os)
-  {
-    _os = os;
-  }
+    private OutputStream        _os;
 
-  public void startTop2()
-  {
-    _state.startTop2();
-  }
+    private HessianDebugState   _state;
 
-  public void startStreaming()
-  {
-    _state.startStreaming();
-  }
-
-  /**
-   * Writes a character.
-   */
-  @Override
-  public void write(int ch)
-    throws IOException
-  {
-    ch = ch & 0xff;
-    
-    _os.write(ch);
-
-    try {
-      _state.next(ch);
-    } catch (Exception e) {
-      log.log(Level.WARNING, e.toString(), e);
-    }
-  }
-
-  @Override
-  public void flush()
-    throws IOException
-  {
-    _os.flush();
-  }
-
-  /**
-   * closes the stream.
-   */
-  @Override
-  public void close()
-    throws IOException
-  {
-    OutputStream os = _os;
-    _os = null;
-
-    if (os != null) {
-      _state.next(-1);
-      os.close();
-    }
-
-    _state.println();
-  }
-
-  static class LogWriter extends Writer {
-    private Logger _log;
-    private Level _level;
-    private StringBuilder _sb = new StringBuilder();
-
-    LogWriter(Logger log, Level level)
+    /**
+     * Creates an uninitialized Hessian input stream.
+     */
+    public HessianDebugOutputStream(OutputStream os, PrintWriter dbg)
     {
-      _log = log;
-      _level = level;
+        _os = os;
+
+        _state = new HessianDebugState(dbg);
     }
 
-    public void write(char ch)
+    /**
+     * Creates an uninitialized Hessian input stream.
+     */
+    public HessianDebugOutputStream(OutputStream os, Logger log, Level level)
     {
-      if (ch == '\n' && _sb.length() > 0) {
-        _log.log(_level, _sb.toString());
-        _sb.setLength(0);
-      }
-      else
-        _sb.append((char) ch);
+        this(os, new PrintWriter(new LogWriter(log, level)));
     }
 
-    public void write(char []buffer, int offset, int length)
+    /**
+     * Creates an uninitialized Hessian input stream.
+     */
+    public HessianDebugOutputStream(Logger log, Level level)
     {
-      for (int i = 0; i < length; i++) {
-        char ch = buffer[offset + i];
+        this(null, new PrintWriter(new LogWriter(log, level)));
+    }
 
-        if (ch == '\n' && _sb.length() > 0) {
-          _log.log(_level, _sb.toString());
-          _sb.setLength(0);
+    public void initPacket(OutputStream os)
+    {
+        _os = os;
+    }
+
+    public void startTop2()
+    {
+        _state.startTop2();
+    }
+
+    public void startStreaming()
+    {
+        _state.startStreaming();
+    }
+
+    /**
+     * Writes a character.
+     */
+    @Override
+    public void write(int ch)
+        throws IOException
+    {
+        ch = ch & 0xff;
+
+        _os.write(ch);
+
+        try {
+            _state.next(ch);
+        } catch (Exception e) {
+            log.log(Level.WARNING, e.toString(), e);
         }
-        else
-          _sb.append((char) ch);
-      }
     }
 
+    @Override
     public void flush()
+        throws IOException
     {
+        _os.flush();
     }
 
+    /**
+     * closes the stream.
+     */
+    @Override
     public void close()
+        throws IOException
     {
+        OutputStream os = _os;
+        _os = null;
+
+        if (os != null) {
+            _state.next(-1);
+            os.close();
+        }
+
+        _state.println();
     }
-  }
+
+    static class LogWriter extends Writer {
+        private Logger        _log;
+        private Level         _level;
+        private StringBuilder _sb = new StringBuilder();
+
+        LogWriter(Logger log, Level level)
+        {
+            _log = log;
+            _level = level;
+        }
+
+        public void write(char ch)
+        {
+            if (ch == '\n' && _sb.length() > 0) {
+                _log.log(_level, _sb.toString());
+                _sb.setLength(0);
+            }
+            else
+                _sb.append((char) ch);
+        }
+
+        public void write(char[] buffer, int offset, int length)
+        {
+            for (int i = 0; i < length; i++) {
+                char ch = buffer[offset + i];
+
+                if (ch == '\n' && _sb.length() > 0) {
+                    _log.log(_level, _sb.toString());
+                    _sb.setLength(0);
+                }
+                else
+                    _sb.append((char) ch);
+            }
+        }
+
+        public void flush()
+        {
+        }
+
+        public void close()
+        {
+        }
+    }
 }

@@ -46,7 +46,6 @@
  * @author Scott Ferguson
  */
 
-
 package com.caucho.hessian;
 
 import java.lang.annotation.ElementType;
@@ -61,7 +60,7 @@ import java.lang.annotation.Target;
  * 
  * Used for efficiency to avoid the cost of the map lookup.
  */
-@Target({ElementType.TYPE })
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HessianUnshared
 {

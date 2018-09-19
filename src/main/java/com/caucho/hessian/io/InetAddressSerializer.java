@@ -55,23 +55,23 @@ import java.net.InetAddress;
  * Serializing a locale.
  */
 public class InetAddressSerializer extends AbstractSerializer {
-  private static InetAddressSerializer SERIALIZER = new InetAddressSerializer();
+    private static InetAddressSerializer SERIALIZER = new InetAddressSerializer();
 
-  public static InetAddressSerializer create()
-  {
-    return SERIALIZER;
-  }
-  
-  @Override
-  public void writeObject(Object obj, AbstractHessianOutput out)
-    throws IOException
-  {
-    if (obj == null)
-      out.writeNull();
-    else {
-      InetAddress addr = (InetAddress) obj;
-      out.writeObject(new InetAddressHandle(addr.getHostName(),
-                                            addr.getAddress()));
+    public static InetAddressSerializer create()
+    {
+        return SERIALIZER;
     }
-  }
+
+    @Override
+    public void writeObject(Object obj, AbstractHessianOutput out)
+        throws IOException
+    {
+        if (obj == null)
+            out.writeNull();
+        else {
+            InetAddress addr = (InetAddress) obj;
+            out.writeObject(new InetAddressHandle(addr.getHostName(),
+                addr.getAddress()));
+        }
+    }
 }

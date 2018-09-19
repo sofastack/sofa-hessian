@@ -57,15 +57,15 @@ import com.caucho.hessian.HessianException;
  * Deserializing a File
  */
 public class FileDeserializer extends AbstractStringValueDeserializer {
-  @Override
-  public Class getType()
-  {
-    return File.class;
-  }
+    @Override
+    public Class getType()
+    {
+        return File.class;
+    }
 
-  @Override
-  protected Object create(String value)
-  {
-    return new File(value);
-  }
+    @Override
+    protected Object create(String value)
+    {
+        return new File(value);
+    }
 }
