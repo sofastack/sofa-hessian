@@ -49,6 +49,7 @@
 package com.caucho.burlap.io;
 
 import com.caucho.hessian.io.AbstractHessianOutput;
+import java.io.IOException;
 
 /**
  * Abstract output stream for Burlap requests.
@@ -64,4 +65,13 @@ import com.caucho.hessian.io.AbstractHessianOutput;
  * </pre>
  */
 abstract public class AbstractBurlapOutput extends AbstractHessianOutput {
+  @Override
+  public void startCall(String method, int length)
+    throws IOException
+  {
+    startCall(method);
+  }
+
+  abstract void startCall(String method)
+    throws IOException;
 }

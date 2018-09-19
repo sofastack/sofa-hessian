@@ -56,30 +56,30 @@ import java.io.IOException;
  * Looks up remote objects in the proxy.
  */
 public class HessianProxyResolver implements HessianRemoteResolver {
-    private HessianProxyFactory _factory;
+  private HessianProxyFactory _factory;
+  
+  /**
+   * Creates an uninitialized Hessian remote resolver.
+   */
+  public HessianProxyResolver(HessianProxyFactory factory)
+  {
+    _factory = factory;
+  }
 
-    /**
-     * Creates an uninitialized Hessian remote resolver.
-     */
-    public HessianProxyResolver(HessianProxyFactory factory)
-    {
-        _factory = factory;
+  /**
+   * Looks up a proxy object.
+   */
+  public Object lookup(String type, String url)
+    throws IOException
+  {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+    try {
+      Class api = Class.forName(type, false, loader);
+
+      return _factory.create(api, url);
+    } catch (Exception e) {
+      throw new IOException(String.valueOf(e));
     }
-
-    /**
-     * Looks up a proxy object.
-     */
-    public Object lookup(String type, String url)
-        throws IOException
-    {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-        try {
-            Class api = Class.forName(type, false, loader);
-
-            return _factory.create(api, url);
-        } catch (Exception e) {
-            throw new IOException(String.valueOf(e));
-        }
-    }
+  }
 }

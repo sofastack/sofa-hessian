@@ -59,36 +59,36 @@ import java.io.IOException;
  * Deserializing an ObjectInstance valued object
  */
 public class ObjectInstanceDeserializer extends AbstractDeserializer {
-    public Class getType()
-    {
-        return ObjectInstance.class;
+  public Class getType()
+  {
+    return ObjectInstance.class;
+  }
+  
+  public Object readMap(AbstractHessianInput in)
+    throws IOException
+  {
+    String className = null;
+    ObjectName objectName = null;
+    
+    String initValue = null;
+    
+    while (! in.isEnd()) {
+      String key = in.readString();
+
+      if ("className".equals(key))
+        className = in.readString();
+      else if ("name".equals(key))
+        objectName = (ObjectName) in.readObject(ObjectName.class);
+      else
+        in.readObject();
     }
 
-    public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
-        String className = null;
-        ObjectName objectName = null;
+    in.readMapEnd();
 
-        String initValue = null;
-
-        while (!in.isEnd()) {
-            String key = in.readString();
-
-            if ("className".equals(key))
-                className = in.readString();
-            else if ("name".equals(key))
-                objectName = (ObjectName) in.readObject(ObjectName.class);
-            else
-                in.readObject();
-        }
-
-        in.readMapEnd();
-
-        try {
-            return new ObjectInstance(objectName, className);
-        } catch (Exception e) {
-            throw new IOException(String.valueOf(e));
-        }
+    try {
+      return new ObjectInstance(objectName, className);
+    } catch (Exception e) {
+      throw new IOException(String.valueOf(e));
     }
+  }
 }

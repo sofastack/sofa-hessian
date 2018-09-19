@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2006 Caucho Technology, Inc.  All rights reserved.
+ * Copyright (c) 2001-2008 Caucho Technology, Inc.  All rights reserved.
  *
  * The Apache Software License, Version 1.1
  *
@@ -56,53 +56,63 @@ import java.io.OutputStream;
  */
 public class Hessian2StreamingOutput
 {
-    private Hessian2Output _out;
+  private Hessian2Output _out;
+  
+  /**
+   * Creates a new Hessian output stream, initialized with an
+   * underlying output stream.
+   *
+   * @param os the underlying output stream.
+   */
+  public Hessian2StreamingOutput(OutputStream os)
+  {
+    _out = new Hessian2Output(os);
+  }
+  
+  public Hessian2StreamingOutput(Hessian2Output out)
+  {
+    _out = out;
+  }
 
-    /**
-     * Creates a new Hessian output stream, initialized with an
-     * underlying output stream.
-     *
-     * @param os the underlying output stream.
-     */
-    public Hessian2StreamingOutput(OutputStream os)
-    {
-        _out = new Hessian2Output(os);
-    }
+  public Hessian2Output getHessian2Output()
+  {
+    return _out;
+  }
+  
+  public void setCloseStreamOnClose(boolean isClose)
+  {
+    _out.setCloseStreamOnClose(isClose);
+  }
+  
+  public boolean isCloseStreamOnClose()
+  {
+    return _out.isCloseStreamOnClose();
+  }
 
-    public void setCloseStreamOnClose(boolean isClose)
-    {
-        _out.setCloseStreamOnClose(isClose);
-    }
+  /**
+   * Writes any object to the output stream.
+   */
+  public void writeObject(Object object)
+    throws IOException
+  {
+    _out.writeStreamingObject(object);
+  }
 
-    public boolean isCloseStreamOnClose()
-    {
-        return _out.isCloseStreamOnClose();
-    }
+  /**
+   * Flushes the output.
+   */
+  public void flush()
+    throws IOException
+  {
+    _out.flush();
+  }
 
-    /**
-     * Writes any object to the output stream.
-     */
-    public void writeObject(Object object)
-        throws IOException
-    {
-        _out.writeStreamingObject(object);
-    }
-
-    /**
-     * Flushes the output.
-     */
-    public void flush()
-        throws IOException
-    {
-        _out.flush();
-    }
-
-    /**
-     * Close the output.
-     */
-    public void close()
-        throws IOException
-    {
-        _out.close();
-    }
+  /**
+   * Close the output.
+   */
+  public void close()
+    throws IOException
+  {
+    _out.close();
+  }
 }

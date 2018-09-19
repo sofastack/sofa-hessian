@@ -57,97 +57,97 @@ import javax.servlet.ServletRequest;
  * Interface for a service, including lifecycle.
  */
 public class GenericService implements Service {
-    protected ServletConfig config;
+  protected ServletConfig config;
+  
+  /**
+   * Initialize the service instance.
+   */
+  public void init(ServletConfig config)
+    throws ServletException
+  {
+    this.config = config;
 
-    /**
-     * Initialize the service instance.
-     */
-    public void init(ServletConfig config)
-        throws ServletException
-    {
-        this.config = config;
+    init();
+  }
+  
+  /**
+   * Initialize the service instance.
+   */
+  public void init()
+    throws ServletException
+  {
+  }
 
-        init();
-    }
+  /**
+   * Returns the named initialization parameter.
+   */
+  public String getInitParameter(String name)
+  {
+    return this.config.getInitParameter(name);
+  }
 
-    /**
-     * Initialize the service instance.
-     */
-    public void init()
-        throws ServletException
-    {
-    }
+  /**
+   * Returns the servlet context.
+   */
+  public ServletConfig getServletConfig()
+  {
+    return this.config;
+  }
 
-    /**
-     * Returns the named initialization parameter.
-     */
-    public String getInitParameter(String name)
-    {
-        return this.config.getInitParameter(name);
-    }
+  /**
+   * Returns the servlet context.
+   */
+  public ServletContext getServletContext()
+  {
+    return this.config.getServletContext();
+  }
 
-    /**
-     * Returns the servlet context.
-     */
-    public ServletConfig getServletConfig()
-    {
-        return this.config;
-    }
+  /**
+   * Logs a message to the error stream.
+   */
+  public void log(String message)
+  {
+    getServletContext().log(message);
+  }
 
-    /**
-     * Returns the servlet context.
-     */
-    public ServletContext getServletContext()
-    {
-        return this.config.getServletContext();
-    }
+  /**
+   * Returns the servlet request object for the request.
+   */
+  public ServletRequest getRequest()
+  {
+    return ServiceContext.getRequest();
+  }
 
-    /**
-     * Logs a message to the error stream.
-     */
-    public void log(String message)
-    {
-        getServletContext().log(message);
-    }
+  /**
+   * Returns the service identifier for the request.
+   */
+  public String getServiceName()
+  {
+    return ServiceContext.getServiceName();
+  }
 
-    /**
-     * Returns the servlet request object for the request.
-     */
-    public ServletRequest getRequest()
-    {
-        return ServiceContext.getRequest();
-    }
+  /**
+   * Returns the service identifier for the request.
+   *
+   * @deprecated
+   */
+  public String getServiceId()
+  {
+    return getServiceName();
+  }
 
-    /**
-     * Returns the service identifier for the request.
-     */
-    public String getServiceName()
-    {
-        return ServiceContext.getServiceName();
-    }
-
-    /**
-     * Returns the service identifier for the request.
-     *
-     * @deprecated
-     */
-    public String getServiceId()
-    {
-        return getServiceName();
-    }
-
-    /**
-     * Returns the object identifier for the request.
-     */
-    public String getObjectId()
-    {
-        return ServiceContext.getObjectId();
-    }
-
-    /**
-     * Cleanup the service instance.
-     */
-    public void destroy()
-    {
-    }
+  /**
+   * Returns the object identifier for the request.
+   */
+  public String getObjectId()
+  {
+    return ServiceContext.getObjectId();
+  }
+  
+  /**
+   * Cleanup the service instance.
+   */
+  public void destroy()
+  {
+  }
 }

@@ -56,30 +56,30 @@ import java.io.IOException;
  * Looks up remote objects in the proxy.
  */
 public class BurlapProxyResolver implements BurlapRemoteResolver {
-    private BurlapProxyFactory factory;
+  private BurlapProxyFactory factory;
+  
+  /**
+   * Creates an uninitialized Burlap remote resolver.
+   */
+  public BurlapProxyResolver(BurlapProxyFactory factory)
+  {
+    this.factory = factory;
+  }
 
-    /**
-     * Creates an uninitialized Burlap remote resolver.
-     */
-    public BurlapProxyResolver(BurlapProxyFactory factory)
-    {
-        this.factory = factory;
+  /**
+   * Looks up a proxy object.
+   */
+  public Object lookup(String type, String url)
+    throws IOException
+  {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+    try {
+      Class api = Class.forName(type, false, loader);
+
+      return factory.create(api, url);
+    } catch (Exception e) {
+      throw new IOException(String.valueOf(e));
     }
-
-    /**
-     * Looks up a proxy object.
-     */
-    public Object lookup(String type, String url)
-        throws IOException
-    {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-        try {
-            Class api = Class.forName(type, false, loader);
-
-            return factory.create(api, url);
-        } catch (Exception e) {
-            throw new IOException(String.valueOf(e));
-        }
-    }
+  }
 }

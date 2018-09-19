@@ -58,52 +58,52 @@ import java.io.IOException;
  * Deserializing an MBeanAttributeInfo valued object
  */
 public class MBeanAttributeInfoDeserializer extends AbstractDeserializer {
-    public Class getType()
-    {
-        return MBeanAttributeInfo.class;
+  public Class getType()
+  {
+    return MBeanAttributeInfo.class;
+  }
+  
+  public Object readMap(AbstractHessianInput in)
+    throws IOException
+  {
+    String name = null;
+    String type = null;
+    String description = null;
+    boolean isRead = false;
+    boolean isWrite = false;
+    boolean isIs = false;
+    
+    while (! in.isEnd()) {
+      String key = in.readString();
+
+      if ("name".equals(key))
+        name = in.readString();
+      else if ("attributeType".equals(key))
+        type = in.readString();
+      else if ("description".equals(key))
+        description = in.readString();
+      else if ("isRead".equals(key))
+        isRead = in.readBoolean();
+      else if ("isWrite".equals(key))
+        isWrite = in.readBoolean();
+      else if ("is".equals(key))
+        isIs = in.readBoolean();
+      else {
+        in.readObject();
+      }
     }
 
-    public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
-        String name = null;
-        String type = null;
-        String description = null;
-        boolean isRead = false;
-        boolean isWrite = false;
-        boolean isIs = false;
+    in.readMapEnd();
 
-        while (!in.isEnd()) {
-            String key = in.readString();
+    try {
+      MBeanAttributeInfo info;
 
-            if ("name".equals(key))
-                name = in.readString();
-            else if ("attributeType".equals(key))
-                type = in.readString();
-            else if ("description".equals(key))
-                description = in.readString();
-            else if ("isRead".equals(key))
-                isRead = in.readBoolean();
-            else if ("isWrite".equals(key))
-                isWrite = in.readBoolean();
-            else if ("is".equals(key))
-                isIs = in.readBoolean();
-            else {
-                in.readObject();
-            }
-        }
+      info = new MBeanAttributeInfo(name, type, description,
+                                    isRead, isWrite, isIs);
 
-        in.readMapEnd();
-
-        try {
-            MBeanAttributeInfo info;
-
-            info = new MBeanAttributeInfo(name, type, description,
-                isRead, isWrite, isIs);
-
-            return info;
-        } catch (Exception e) {
-            throw new IOException(String.valueOf(e));
-        }
+      return info;
+    } catch (Exception e) {
+      throw new IOException(String.valueOf(e));
     }
+  }
 }

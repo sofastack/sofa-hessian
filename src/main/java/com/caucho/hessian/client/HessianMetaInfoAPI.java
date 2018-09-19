@@ -52,15 +52,15 @@ package com.caucho.hessian.client;
  * API retrieving hessian meta information.
  */
 public interface HessianMetaInfoAPI {
-    /**
-     * Returns a service attribute.
-     *
-     * <ul>
-     * <li>java.api.class - the Java interface for the object interface.
-     * <li>java.ejb.home.class - the EJB home interface
-     * <li>java.ejb.remote.class - the EJB remote interface
-     * <li>java.primary.key.class - the EJB primary key class
-     * </ul>
-     */
-    public Object _hessian_getAttribute(String name);
+  /**
+   * Returns a service attribute.
+   *
+   * <ul>
+   * <li>java.api.class - the Java interface for the object interface.
+   * <li>java.ejb.home.class - the EJB home interface
+   * <li>java.ejb.remote.class - the EJB remote interface
+   * <li>java.primary.key.class - the EJB primary key class
+   * </ul>
+   */
+  public Object _hessian_getAttribute(String name);
 }

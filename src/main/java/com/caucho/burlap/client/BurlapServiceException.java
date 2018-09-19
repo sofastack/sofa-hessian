@@ -53,39 +53,39 @@ package com.caucho.burlap.client;
  * This exception is required for MicroBurlapInput.
  */
 public class BurlapServiceException extends Exception {
-    private String code;
-    private Object detail;
+  private String code;
+  private Object detail;
 
-    /**
-     * Zero-arg constructor.
-     */
-    public BurlapServiceException()
-    {
-    }
+  /**
+   * Zero-arg constructor.
+   */
+  public BurlapServiceException()
+  {
+  }
 
-    /**
-     * Create the exception.
-     */
-    public BurlapServiceException(String message, String code, Object detail)
-    {
-        super(message);
-        this.code = code;
-        this.detail = detail;
-    }
+  /**
+   * Create the exception.
+   */
+  public BurlapServiceException(String message, String code, Object detail)
+  {
+    super(message);
+    this.code = code;
+    this.detail = detail;
+  }
 
-    /**
-     * Returns the code.
-     */
-    public String getCode()
-    {
-        return code;
-    }
+  /**
+   * Returns the code.
+   */
+  public String getCode()
+  {
+    return code;
+  }
 
-    /**
-     * Returns the detail.
-     */
-    public Object getDetail()
-    {
-        return detail;
-    }
+  /**
+   * Returns the detail.
+   */
+  public Object getDetail()
+  {
+    return detail;
+  }
 }

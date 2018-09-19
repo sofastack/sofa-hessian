@@ -55,77 +55,86 @@ import java.lang.reflect.Method;
  * Deserializing an enum valued object
  */
 public class EnumDeserializer extends AbstractDeserializer {
-    private Class  _enumType;
-    private Method _valueOf;
+  private Class _enumType;
+  private Method _valueOf;
+  
+  public EnumDeserializer(Class cl)
+  {
+    // hessian/33b[34], hessian/3bb[78]
+    if (cl.isEnum())
+      _enumType = cl;
+    else if (cl.getSuperclass().isEnum())
+      _enumType = cl.getSuperclass();
+    else
+      throw new RuntimeException("Class " + cl.getName() + " is not an enum");
 
-    public EnumDeserializer(Class cl)
-    {
-        try {
-            _enumType = cl;
-            _valueOf = cl.getMethod("valueOf",
-                new Class[] { Class.class, String.class });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    try {
+      _valueOf = _enumType.getMethod("valueOf",
+                             new Class[] { Class.class, String.class });
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  public Class getType()
+  {
+    return _enumType;
+  }
+  
+  public Object readMap(AbstractHessianInput in)
+    throws IOException
+  {
+    String name = null;
+    
+    while (! in.isEnd()) {
+      String key = in.readString();
+
+      if (key.equals("name"))
+        name = in.readString();
+      else
+        in.readObject();
     }
 
-    public Class getType()
-    {
-        return _enumType;
+    in.readMapEnd();
+
+    Object obj = create(name);
+    
+    in.addRef(obj);
+
+    return obj;
+  }
+  
+  @Override
+  public Object readObject(AbstractHessianInput in, Object []fields)
+    throws IOException
+  {
+    String []fieldNames = (String []) fields;
+    String name = null;
+
+    for (int i = 0; i < fieldNames.length; i++) {
+      if ("name".equals(fieldNames[i]))
+        name = in.readString();
+      else
+        in.readObject();
     }
 
-    public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
-        String name = null;
+    Object obj = create(name);
 
-        while (!in.isEnd()) {
-            String key = in.readString();
+    in.addRef(obj);
 
-            if (key.equals("name"))
-                name = in.readString();
-            else
-                in.readObject();
-        }
+    return obj;
+  }
 
-        in.readMapEnd();
+  private Object create(String name)
+    throws IOException
+  {
+    if (name == null)
+      throw new IOException(_enumType.getName() + " expects name.");
 
-        Object obj = create(name);
-
-        in.addRef(obj);
-
-        return obj;
+    try {
+      return _valueOf.invoke(null, _enumType, name);
+    } catch (Exception e) {
+      throw new IOExceptionWrapper(e);
     }
-
-    public Object readObject(AbstractHessianInput in, String[] fieldNames)
-        throws IOException
-    {
-        String name = null;
-
-        for (int i = 0; i < fieldNames.length; i++) {
-            if ("name".equals(fieldNames[i]))
-                name = in.readString();
-            else
-                in.readObject();
-        }
-
-        Object obj = create(name);
-
-        in.addRef(obj);
-
-        return obj;
-    }
-
-    private Object create(String name)
-        throws IOException
-    {
-        if (name == null)
-            throw new IOException(_enumType.getName() + " expects name.");
-
-        try {
-            return _valueOf.invoke(null, _enumType, name);
-        } catch (Exception e) {
-            throw new IOExceptionWrapper(e);
-        }
-    }
+  }
 }

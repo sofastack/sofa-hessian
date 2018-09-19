@@ -52,5 +52,6 @@ import java.util.logging.*;
 
 public class EnvelopeFactory
 {
-    private static final Logger log = Logger.getLogger(EnvelopeFactory.class.getName());
+  private static final Logger log
+    = Logger.getLogger(EnvelopeFactory.class.getName());
 }
