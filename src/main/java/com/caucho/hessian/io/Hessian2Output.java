@@ -48,7 +48,6 @@
 
 package com.caucho.hessian.io;
 
-import com.alipay.hessian.ClassNameResolver;
 import com.caucho.hessian.util.IdentityIntMap;
 
 import java.io.IOException;

@@ -48,8 +48,6 @@
 
 package com.caucho.hessian.io;
 
-import com.alipay.hessian.ClassNameResolver;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
