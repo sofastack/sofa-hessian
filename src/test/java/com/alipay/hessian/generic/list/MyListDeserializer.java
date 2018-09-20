@@ -36,6 +36,10 @@ public class MyListDeserializer extends AbstractDeserializer {
         _fieldMap = getFieldMap(cl);
     }
 
+    public Object readObject(AbstractHessianInput in, Object[] fieldNames) throws IOException {
+        return readObject(in, (String[]) fieldNames);
+    }
+
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
         try {
             Object obj = instantiate();

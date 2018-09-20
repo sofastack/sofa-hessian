@@ -48,6 +48,10 @@
 
 package com.caucho.hessian.io;
 
+import com.alipay.hessian.ClassNameResolver;
+import com.alipay.hessian.ClassNameResolverBuilder;
+import com.caucho.burlap.io.BurlapRemoteObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -64,28 +68,27 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.caucho.burlap.io.BurlapRemoteObject;
 
 /**
  * Factory for returning serialization methods.
  */
 public class SerializerFactory extends AbstractSerializerFactory
 {
-    private static final Logger                                                     log                       = Logger
-                                                                                                                  .getLogger(SerializerFactory.class
-                                                                                                                      .getName());
+    private static final Logger                                                     log                        = Logger
+                                                                                                                   .getLogger(SerializerFactory.class
+                                                                                                                       .getName());
 
-    private static final Deserializer                                               OBJECT_DESERIALIZER       = new BasicDeserializer(
-                                                                                                                  BasicDeserializer.OBJECT);
+    private static final Deserializer                                               OBJECT_DESERIALIZER        = new BasicDeserializer(
+                                                                                                                   BasicDeserializer.OBJECT);
 
     private static final ClassLoader                                                _systemClassLoader;
 
     private static final HashMap                                                    _staticTypeMap;
 
-    private static final WeakHashMap<ClassLoader, SoftReference<SerializerFactory>> _defaultFactoryRefMap     = new WeakHashMap<ClassLoader, SoftReference<SerializerFactory>>();
+    private static final WeakHashMap<ClassLoader, SoftReference<SerializerFactory>> _defaultFactoryRefMap      = new WeakHashMap<ClassLoader, SoftReference<SerializerFactory>>();
 
     private ContextSerializerFactory                                                _contextFactory;
     private WeakReference<ClassLoader>                                              _loaderRef;
@@ -93,24 +96,26 @@ public class SerializerFactory extends AbstractSerializerFactory
     protected Serializer                                                            _defaultSerializer;
 
     // Additional factories
-    protected ArrayList                                                             _factories                = new ArrayList();
+    protected ArrayList                                                             _factories                 = new ArrayList();
 
     protected CollectionSerializer                                                  _collectionSerializer;
     protected MapSerializer                                                         _mapSerializer;
 
     private Deserializer                                                            _hashMapDeserializer;
     private Deserializer                                                            _arrayListDeserializer;
-    private ConcurrentHashMap                                                       _cachedSerializerMap;
-    private ConcurrentHashMap                                                       _cachedDeserializerMap;
-    private HashMap                                                                 _cachedTypeDeserializerMap;
+    private ConcurrentMap                                                           _cachedSerializerMap       = new ConcurrentHashMap();                                          ;
+    private ConcurrentMap                                                           _cachedDeserializerMap     = new ConcurrentHashMap();                                          ;
+    private ConcurrentMap                                                           _cachedTypeDeserializerMap = new ConcurrentHashMap();                                          ;
 
     private boolean                                                                 _isAllowNonSerializable;
-    private boolean                                                                 _isEnableUnsafeSerializer = (UnsafeSerializer
-                                                                                                                  .isEnabled()
-                                                                                                                      && UnsafeDeserializer
-                                                                                                                  .isEnabled());
+    private boolean                                                                 _isEnableUnsafeSerializer  = (UnsafeSerializer
+                                                                                                                   .isEnabled()
+                                                                                                                       && UnsafeDeserializer
+                                                                                                                   .isEnabled());
 
     private ClassFactory                                                            _classFactory;
+    protected ClassNameResolver                                                     classNameResolver          = ClassNameResolverBuilder
+                                                                                                                   .buildDefault();
 
     public SerializerFactory()
     {
@@ -194,6 +199,24 @@ public class SerializerFactory extends AbstractSerializerFactory
     }
 
     /**
+     * Get ClassNameResolver
+     *
+     * @return ClassNameResolver
+     */
+    public ClassNameResolver getClassNameResolver() {
+        return classNameResolver;
+    }
+
+    /**
+     * Sets ClassNameResolver
+     *
+     * @param classNameResolver ClassNameResolver
+     */
+    public void setClassNameResolver(ClassNameResolver classNameResolver) {
+        this.classNameResolver = classNameResolver;
+    }
+
+    /**
      * Returns the serializer for a class.
      *
      * @param cl the class of the object that needs to be serialized.
@@ -240,18 +263,13 @@ public class SerializerFactory extends AbstractSerializerFactory
     {
         Serializer serializer;
 
-        if (_cachedSerializerMap != null) {
-            serializer = (Serializer) _cachedSerializerMap.get(cl);
+        serializer = (Serializer) _cachedSerializerMap.get(cl);
 
-            if (serializer != null) {
-                return serializer;
-            }
+        if (serializer != null) {
+            return serializer;
         }
 
         serializer = loadSerializer(cl);
-
-        if (_cachedSerializerMap == null)
-            _cachedSerializerMap = new ConcurrentHashMap(8);
 
         _cachedSerializerMap.put(cl, serializer);
 
@@ -261,6 +279,15 @@ public class SerializerFactory extends AbstractSerializerFactory
     protected Serializer loadSerializer(Class<?> cl)
         throws HessianProtocolException
     {
+
+        if (classNameResolver != null) {
+            try {
+                classNameResolver.resolve(cl.getName());
+            } catch (Exception e) {
+                throw new HessianProtocolException(e);
+            }
+        }
+
         Serializer serializer = null;
 
         for (int i = 0; _factories != null && i < _factories.size(); i++) {
@@ -388,17 +415,12 @@ public class SerializerFactory extends AbstractSerializerFactory
     {
         Deserializer deserializer;
 
-        if (_cachedDeserializerMap != null) {
-            deserializer = (Deserializer) _cachedDeserializerMap.get(cl);
+        deserializer = (Deserializer) _cachedDeserializerMap.get(cl);
 
-            if (deserializer != null)
-                return deserializer;
-        }
+        if (deserializer != null)
+            return deserializer;
 
         deserializer = loadDeserializer(cl);
-
-        if (_cachedDeserializerMap == null)
-            _cachedDeserializerMap = new ConcurrentHashMap(8);
 
         _cachedDeserializerMap.put(cl, deserializer);
 
@@ -668,18 +690,22 @@ public class SerializerFactory extends AbstractSerializerFactory
 
         Deserializer deserializer;
 
-        if (_cachedTypeDeserializerMap != null) {
-            synchronized (_cachedTypeDeserializerMap) {
-                deserializer = (Deserializer) _cachedTypeDeserializerMap.get(type);
-            }
+        deserializer = (Deserializer) _cachedTypeDeserializerMap.get(type);
 
-            if (deserializer != null)
-                return deserializer;
-        }
+        if (deserializer != null)
+            return deserializer;
 
         deserializer = (Deserializer) _staticTypeMap.get(type);
         if (deserializer != null)
             return deserializer;
+
+        if (classNameResolver != null) {
+            try {
+                type = classNameResolver.resolve(type);
+            } catch (Exception e) {
+                throw new HessianProtocolException(e);
+            }
+        }
 
         if (type.startsWith("[")) {
             Deserializer subDeserializer = getDeserializer(type.substring(1));
@@ -704,12 +730,7 @@ public class SerializerFactory extends AbstractSerializerFactory
         }
 
         if (deserializer != null) {
-            if (_cachedTypeDeserializerMap == null)
-                _cachedTypeDeserializerMap = new HashMap(8);
-
-            synchronized (_cachedTypeDeserializerMap) {
-                _cachedTypeDeserializerMap.put(type, deserializer);
-            }
+            _cachedTypeDeserializerMap.put(type, deserializer);
         }
 
         return deserializer;
@@ -764,6 +785,21 @@ public class SerializerFactory extends AbstractSerializerFactory
         _staticTypeMap.put("object", objectDeserializer);
         _staticTypeMap.put(HessianRemote.class.getName(),
             RemoteDeserializer.DESER);
+
+        _staticTypeMap.put(Class.class, new ClassDeserializer(Thread.currentThread().getContextClassLoader()));
+
+        _staticTypeMap.put(Number.class, new BasicDeserializer(BasicSerializer.NUMBER));
+
+        try {
+            _staticTypeMap.put(java.sql.Date.class,
+                new SqlDateDeserializer(java.sql.Date.class));
+            _staticTypeMap.put(java.sql.Time.class,
+                new SqlDateDeserializer(java.sql.Time.class));
+            _staticTypeMap.put(java.sql.Timestamp.class,
+                new SqlDateDeserializer(java.sql.Timestamp.class));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
 
         ClassLoader systemClassLoader = null;
         try {

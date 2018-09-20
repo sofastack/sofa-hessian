@@ -20,13 +20,17 @@ import com.alipay.hessian.generic.model.GenericObject;
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.hessian.io.AbstractSerializer;
 import com.caucho.hessian.io.Hessian2Output;
+import com.caucho.hessian.util.IdentityIntMap;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
+
+import static com.caucho.hessian.io.Hessian2Constants.BC_OBJECT_DIRECT;
+import static com.caucho.hessian.io.Hessian2Constants.OBJECT_DIRECT_MAX;
+import static com.caucho.hessian.io.Hessian2Output.SIZE;
 
 /**
  * @author <a href="mailto:caojie.cj@antfin.com">Jie Cao</a>
@@ -34,20 +38,16 @@ import java.util.logging.Logger;
  */
 public class GenericObjectSerializer extends AbstractSerializer {
 
-    private static final Logger                  LOGGER                      = Logger
-                                                                                 .getLogger(GenericObjectSerializer.class
-                                                                                     .getName());
-    private static final GenericObjectSerializer INSTANCE                    = new GenericObjectSerializer();
-    private static final AtomicLong              COUNT                       = new AtomicLong(0);
-    private static boolean                       WRITE_DEFINITION_EVERYTIME  = Boolean
-                                                                                 .parseBoolean(System
-                                                                                     .getProperty(
-                                                                                         "generic_hessian_write_definition_everytime",
-                                                                                         "false"));
-
-    // 值等于 com.caucho.hessian.io.Hessian2Output.SIZE
-    private static final int                     HESSIAN2_OUTPUT_BUFFER_SIZE = 1024;
-
+    private static final Logger                  LOGGER                     = Logger
+                                                                                .getLogger(GenericObjectSerializer.class
+                                                                                    .getName());
+    private static final GenericObjectSerializer INSTANCE                   = new GenericObjectSerializer();
+    private static final AtomicLong              COUNT                      = new AtomicLong(0);
+    private static boolean                       WRITE_DEFINITION_EVERYTIME = Boolean
+                                                                                .parseBoolean(System
+                                                                                    .getProperty(
+                                                                                        "generic_hessian_write_definition_everytime",
+                                                                                        "false"));
     private static Field                         offsetField;
     private static Field                         classRefsField;
     private static Field                         bufferField;
@@ -89,46 +89,52 @@ public class GenericObjectSerializer extends AbstractSerializer {
                 return;
             }
 
+            String type = obj.getType();
             if (!WRITE_DEFINITION_EVERYTIME) {
-                int ref = out.writeObjectBegin(obj.getType());
+                int ref = out.writeObjectBegin(type);
 
                 if (ref == -1) {
                     writeDefinition(definition, out);
-                    out.writeObjectBegin(obj.getType());
+                    out.writeObjectBegin(type);
                 }
 
                 writeInstance(obj, definition, out);
             } else {
                 Hessian2Output output = (Hessian2Output) out;
-                HashMap _classRefs = (HashMap) classRefsField.get(output);
+                IdentityIntMap _classRefs = (IdentityIntMap) classRefsField.get(output);
                 if (_classRefs == null) {
-                    _classRefs = new HashMap();
+                    _classRefs = new IdentityIntMap(256);
                     classRefsField.set(output, _classRefs);
                 }
-                int ref = _classRefs.size();
-                _classRefs.put("" + COUNT.incrementAndGet(), new Integer(ref));
-                int _offset = (Integer) offsetField.get(output);
-                if (HESSIAN2_OUTPUT_BUFFER_SIZE < _offset + 32)
-                    output.flush();
+                int newRef = _classRefs.size();
+                //int ref = _classRefs.put(type, newRef, false);
+                int ref = _classRefs.put(COUNT.incrementAndGet() + "", newRef, false);
 
+                int _offset = (Integer) offsetField.get(output);
                 byte[] _buffer = (byte[]) bufferField.get(output);
 
-                _buffer[_offset++] = (byte) 'O';
-                offsetField.set(output, _offset);
+                if (SIZE < _offset + 32)
+                    output.flushBuffer();
 
-                int len = obj.getType().length();
-                out.writeInt(len);
-                output.printString(obj.getType(), 0, len);
+                _buffer[_offset++] = (byte) 'C';
+                offsetField.set(output, _offset);
+                output.writeString(type);
 
                 writeDefinition(definition, out);
+
                 _offset = (Integer) offsetField.get(output);
+                if (SIZE < _offset + 32)
+                    output.flushBuffer();
 
-                if (HESSIAN2_OUTPUT_BUFFER_SIZE < _offset + 32)
-                    output.flush();
-
-                _buffer[_offset++] = (byte) 'o';
-                offsetField.set(output, _offset);
-                output.writeInt(ref);
+                if (ref <= OBJECT_DIRECT_MAX) {
+                    _buffer[_offset++] = (byte) (BC_OBJECT_DIRECT + ref);
+                    offsetField.set(output, _offset);
+                }
+                else {
+                    _buffer[_offset++] = (byte) 'O';
+                    offsetField.set(output, _offset);
+                    out.writeInt(ref);
+                }
 
                 writeInstance(obj, definition, out);
             }
