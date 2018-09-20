@@ -6,7 +6,7 @@
 
 [Hessian](http://hessian.caucho.com/#Java) 是一个性能较优且兼容性较好的二进制序列化协议。
 
-SOFA-Hessian 基于原生 Hessian v3.1.3 进行改进，目前已经蚂蚁金服内部稳定运行多年。我们修复了一些 bug，增强了一些功能，并且添加了一些特性，包括：
+SOFA-Hessian 基于原生 Hessian v4.0.51 进行改进，目前已经蚂蚁金服内部稳定运行多年。我们修复了一些 bug，增强了一些功能，并且添加了一些特性，包括：
 
 - 增加泛化序列化。
 - 增加 `ClassNameResolver` 和 `ClassNameFilter` 用于类名的映射、转换、过滤等。
