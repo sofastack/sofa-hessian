@@ -48,17 +48,22 @@
 
 package com.caucho.hessian.io;
 
+import java.io.*;
+import java.util.HashMap;
+
 /**
  * Deserializing a JDK 1.4 StackTraceElement
- * @author pangu
  */
 public class StackTraceElementDeserializer extends JavaDeserializer {
-    public StackTraceElementDeserializer() {
+    public StackTraceElementDeserializer()
+    {
         super(StackTraceElement.class);
     }
 
     @Override
-    protected Object instantiate() throws Exception {
+    protected Object instantiate()
+        throws Exception
+    {
         return new StackTraceElement("", "", "", 0);
     }
 }

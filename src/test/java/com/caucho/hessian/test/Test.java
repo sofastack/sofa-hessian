@@ -14,13 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.hessian;
+package com.caucho.hessian.test;
+
+import java.io.IOException;
 
 /**
- * only for security hack scan. do not delete it
- * every publish you need to change class name
- * @author bystander
- * @version $Id: Version326.java, v 0.1 2018年07月06日 5:21 PM bystander Exp $
+ * The Test service is a quick sanity check service.  Developers of a
+ * new Hessian implementation can use this service as an initial test.
  */
-public class Version333 {
+public interface Test {
+    /**
+     * Does nothing.
+     */
+    public void nullCall();
+
+    /**
+     * Hello, World.
+     */
+    public String hello();
+
+    /**
+     * Subtraction
+     */
+    public int subtract(int a, int b);
+
+    /**
+     * Echos the object to the server.
+     * <pre>
+     */
+    public Object echo(Object value);
+
+    /**
+     * Throws an application fault.
+     */
+    public void fault()
+        throws IOException;
 }

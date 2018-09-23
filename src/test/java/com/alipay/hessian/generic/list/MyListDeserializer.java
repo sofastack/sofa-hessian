@@ -16,7 +16,11 @@
  */
 package com.alipay.hessian.generic.list;
 
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.AbstractDeserializer;
+import com.caucho.hessian.io.AbstractHessianInput;
+import com.caucho.hessian.io.HessianFieldException;
+import com.caucho.hessian.io.IOExceptionWrapper;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -30,6 +34,10 @@ public class MyListDeserializer extends AbstractDeserializer {
     public MyListDeserializer(Class cl) {
         _type = cl;
         _fieldMap = getFieldMap(cl);
+    }
+
+    public Object readObject(AbstractHessianInput in, Object[] fieldNames) throws IOException {
+        return readObject(in, (String[]) fieldNames);
     }
 
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {

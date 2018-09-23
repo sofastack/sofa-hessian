@@ -56,17 +56,17 @@ import java.lang.reflect.*;
  * Deserializing a JDK 1.2 Map.
  */
 public class MapDeserializer extends AbstractMapDeserializer {
-    private Class       _type;
-    private Constructor _ctor;
+    private Class<?>       _type;
+    private Constructor<?> _ctor;
 
-    public MapDeserializer(Class type)
+    public MapDeserializer(Class<?> type)
     {
         if (type == null)
             type = HashMap.class;
 
         _type = type;
 
-        Constructor[] ctors = type.getConstructors();
+        Constructor<?>[] ctors = type.getConstructors();
         for (int i = 0; i < ctors.length; i++) {
             if (ctors[i].getParameterTypes().length == 0)
                 _ctor = ctors[i];
@@ -81,7 +81,7 @@ public class MapDeserializer extends AbstractMapDeserializer {
         }
     }
 
-    public Class getType()
+    public Class<?> getType()
     {
         if (_type != null)
             return _type;
@@ -121,10 +121,11 @@ public class MapDeserializer extends AbstractMapDeserializer {
 
     @Override
     public Object readObject(AbstractHessianInput in,
-                             String[] fieldNames)
+                             Object[] fields)
         throws IOException
     {
-        Map map = createMap();
+        String[] fieldNames = (String[]) fields;
+        Map<Object, Object> map = createMap();
 
         int ref = in.addRef(map);
 

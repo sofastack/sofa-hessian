@@ -1,0 +1,5 @@
+java.io.File=com.caucho.hessian.io.FileDeserializer
+java.math.BigDecimal=com.caucho.hessian.io.BigDecimalDeserializer
+javax.management.ObjectName=com.caucho.hessian.io.ObjectNameDeserializer
+java.lang.StackTraceElement=com.caucho.hessian.io.StackTraceElementDeserializer
+java.io.InputStream=com.caucho.hessian.io.InputStreamDeserializer

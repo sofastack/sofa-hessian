@@ -78,9 +78,9 @@ public class GenericDeserializer extends AbstractDeserializer {
     /**
      * 当读取Object时会调用此方法, Object类型包括Enum与AliEnum
      */
-    public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
+    public Object readObject(AbstractHessianInput in, Object[] fieldNames) throws IOException {
         GenericObject obj = new GenericObject(type);
-        return readGenericObject(in, obj, fieldNames);
+        return readGenericObject(in, obj, (String[]) fieldNames);
     }
 
     private static GenericObject readGenericObject(AbstractHessianInput in, GenericObject obj,

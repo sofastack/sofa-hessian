@@ -82,7 +82,7 @@ import java.lang.reflect.Modifier;
  * out.completeCall();      // complete the call
  * </pre>
  */
-public class HessianSerializerOutput extends HessianOutput {
+public class HessianSerializerOutput extends Hessian2Output {
     /**
      * Creates a new Hessian output stream, initialized with an
      * underlying output stream.
@@ -99,12 +99,13 @@ public class HessianSerializerOutput extends HessianOutput {
      */
     public HessianSerializerOutput()
     {
+        super(null);
     }
 
     /**
      * Applications which override this can do custom serialization.
      *
-     * @param obj the object to write.
+     * @param object the object to write.
      */
     public void writeObjectImpl(Object obj)
         throws IOException

@@ -67,14 +67,7 @@ public class InputStreamSerializer extends AbstractSerializer {
         if (is == null)
             out.writeNull();
         else {
-            byte[] buf = new byte[1024];
-            int len;
-
-            while ((len = is.read(buf, 0, buf.length)) > 0) {
-                out.writeByteBufferPart(buf, 0, len);
-            }
-
-            out.writeByteBufferEnd(buf, 0, 0);
+            out.writeByteStream(is);
         }
     }
 }

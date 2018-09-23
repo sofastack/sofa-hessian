@@ -213,4 +213,9 @@ abstract public class AbstractSkeleton {
                 return name;
         }
     }
+
+    public String toString()
+    {
+        return getClass().getSimpleName() + "[" + _apiClass.getName() + "]";
+    }
 }

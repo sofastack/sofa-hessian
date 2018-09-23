@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2004 Caucho Technology, Inc.  All rights reserved.
+ * Copyright (c) 2001-2008 Caucho Technology, Inc.  All rights reserved.
  *
  * The Apache Software License, Version 1.1
  *
@@ -53,7 +53,7 @@ import java.util.Locale;
 /**
  * Handle for a locale object.
  */
-public class LocaleHandle implements java.io.Serializable {
+public class LocaleHandle implements java.io.Serializable, HessianHandle {
     private String value;
 
     public LocaleHandle(String locale)

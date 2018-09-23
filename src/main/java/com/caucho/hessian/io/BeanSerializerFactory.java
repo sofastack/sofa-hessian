@@ -63,7 +63,7 @@ public class BeanSerializerFactory extends SerializerFactory {
      */
     protected Serializer getDefaultSerializer(Class cl)
     {
-        return new BeanSerializer(cl);
+        return new BeanSerializer(cl, getClassLoader());
     }
 
     /**

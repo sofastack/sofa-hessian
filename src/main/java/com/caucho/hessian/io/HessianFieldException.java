@@ -48,6 +48,8 @@
 
 package com.caucho.hessian.io;
 
+import java.io.IOException;
+
 /**
  * Exception during field reading.
  */

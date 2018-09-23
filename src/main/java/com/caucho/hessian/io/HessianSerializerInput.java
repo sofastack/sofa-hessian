@@ -85,7 +85,7 @@ import java.util.HashMap;
  * in.completeReply();      // read reply footer
  * </pre>
  */
-public class HessianSerializerInput extends HessianInput {
+public class HessianSerializerInput extends Hessian2Input {
     /**
      * Creates a new Hessian input stream, initialized with an
      * underlying input stream.
@@ -102,6 +102,7 @@ public class HessianSerializerInput extends HessianInput {
      */
     public HessianSerializerInput()
     {
+        super(null);
     }
 
     /**
@@ -122,7 +123,7 @@ public class HessianSerializerInput extends HessianInput {
 
             int code = read();
             for (; code >= 0 && code != 'z'; code = read()) {
-                _peek = code;
+                unread();
 
                 Object key = readObject();
 

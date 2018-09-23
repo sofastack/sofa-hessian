@@ -48,15 +48,10 @@
 
 package com.caucho.hessian.client;
 
-import com.caucho.hessian.io.AbstractHessianInput;
-import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.HessianProtocolException;
-import com.caucho.services.server.AbstractSkeleton;
+import com.caucho.hessian.io.*;
+import com.caucho.services.server.*;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.logging.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -65,22 +60,40 @@ import java.util.WeakHashMap;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.zip.*;
 
 /**
  * Proxy implementation for Hessian clients.  Applications will generally
  * use HessianProxyFactory to create proxy clients.
  */
-public class HessianProxy implements InvocationHandler {
+public class HessianProxy implements InvocationHandler, Serializable {
     private static final Logger         log        = Logger.getLogger(HessianProxy.class.getName());
 
-    private HessianProxyFactory         _factory;
+    protected HessianProxyFactory       _factory;
+
     private WeakHashMap<Method, String> _mangleMap = new WeakHashMap<Method, String>();
+
+    private Class<?>                    _type;
     private URL                         _url;
 
-    HessianProxy(HessianProxyFactory factory, URL url)
+    /**
+     * Protected constructor for subclassing
+     */
+    protected HessianProxy(URL url, HessianProxyFactory factory)
+    {
+        this(url, factory, null);
+    }
+
+    /**
+     * Protected constructor for subclassing
+     */
+    protected HessianProxy(URL url,
+                           HessianProxyFactory factory,
+                           Class<?> type)
     {
         _factory = factory;
         _url = url;
+        _type = type;
     }
 
     /**
@@ -109,16 +122,21 @@ public class HessianProxy implements InvocationHandler {
 
         if (mangleName == null) {
             String methodName = method.getName();
-            Class[] params = method.getParameterTypes();
+            Class<?>[] params = method.getParameterTypes();
 
             // equals and hashCode are special cased
             if (methodName.equals("equals")
                 && params.length == 1 && params[0].equals(Object.class)) {
                 Object value = args[0];
                 if (value == null || !Proxy.isProxyClass(value.getClass()))
-                    return new Boolean(false);
+                    return Boolean.FALSE;
 
-                HessianProxy handler = (HessianProxy) Proxy.getInvocationHandler(value);
+                Object proxyHandler = Proxy.getInvocationHandler(value);
+
+                if (!(proxyHandler instanceof HessianProxy))
+                    return Boolean.FALSE;
+
+                HessianProxy handler = (HessianProxy) proxyHandler;
 
                 return new Boolean(_url.equals(handler.getURL()));
             }
@@ -142,93 +160,95 @@ public class HessianProxy implements InvocationHandler {
         }
 
         InputStream is = null;
-        URLConnection conn = null;
-        HttpURLConnection httpConn = null;
+        HessianConnection conn = null;
 
         try {
+            if (log.isLoggable(Level.FINER))
+                log.finer("Hessian[" + _url + "] calling " + mangleName);
+
             conn = sendRequest(mangleName, args);
 
-            if (conn instanceof HttpURLConnection) {
-                httpConn = (HttpURLConnection) conn;
-                int code = 500;
+            is = getInputStream(conn);
 
-                try {
-                    code = httpConn.getResponseCode();
-                } catch (Exception e) {
-                }
+            if (log.isLoggable(Level.FINEST)) {
+                PrintWriter dbg = new PrintWriter(new LogWriter(log));
+                HessianDebugInputStream dIs = new HessianDebugInputStream(is, dbg);
 
-                if (code != 200) {
-                    StringBuffer sb = new StringBuffer();
-                    int ch;
+                dIs.startTop2();
 
-                    try {
-                        is = httpConn.getInputStream();
-
-                        if (is != null) {
-                            while ((ch = is.read()) >= 0)
-                                sb.append((char) ch);
-
-                            is.close();
-                        }
-
-                        is = httpConn.getErrorStream();
-                        if (is != null) {
-                            while ((ch = is.read()) >= 0)
-                                sb.append((char) ch);
-                        }
-                    } catch (FileNotFoundException e) {
-                        throw new HessianRuntimeException(String.valueOf(e));
-                    } catch (IOException e) {
-                        if (is == null)
-                            throw new HessianProtocolException(code + ": " + e, e);
-                    }
-
-                    if (is != null)
-                        is.close();
-
-                    throw new HessianProtocolException(code + ": " + sb.toString());
-                }
+                is = dIs;
             }
 
-            is = conn.getInputStream();
+            AbstractHessianInput in;
 
-            AbstractHessianInput in = _factory.getHessianInput(is);
+            int code = is.read();
 
-            in.startReply();
+            if (code == 'H') {
+                int major = is.read();
+                int minor = is.read();
 
-            Object value = in.readObject(method.getReturnType());
+                in = _factory.getHessian2Input(is);
 
-            if (value instanceof InputStream) {
-                value = new ResultInputStream(httpConn, is, in, (InputStream) value);
-                is = null;
-                httpConn = null;
+                Object value = in.readReply(method.getReturnType());
+
+                return value;
+            }
+            else if (code == 'r') {
+                int major = is.read();
+                int minor = is.read();
+
+                in = _factory.getHessianInput(is);
+
+                in.startReplyBody();
+
+                Object value = in.readObject(method.getReturnType());
+
+                if (value instanceof InputStream) {
+                    value = new ResultInputStream(conn, is, in, (InputStream) value);
+                    is = null;
+                    conn = null;
+                }
+                else
+                    in.completeReply();
+
+                return value;
             }
             else
-                in.completeReply();
-
-            return value;
+                throw new HessianProtocolException("'" + (char) code + "' is an unknown code");
         } catch (HessianProtocolException e) {
             throw new HessianRuntimeException(e);
         } finally {
             try {
                 if (is != null)
                     is.close();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 log.log(Level.FINE, e.toString(), e);
             }
 
             try {
-                if (httpConn != null)
-                    httpConn.disconnect();
-            } catch (Throwable e) {
+                if (conn != null)
+                    conn.destroy();
+            } catch (Exception e) {
                 log.log(Level.FINE, e.toString(), e);
             }
         }
     }
 
+    protected InputStream getInputStream(HessianConnection conn)
+        throws IOException
+    {
+        InputStream is = conn.getInputStream();
+
+        if ("deflate".equals(conn.getContentEncoding())) {
+            is = new InflaterInputStream(is, new Inflater(true));
+        }
+
+        return is;
+    }
+
     protected String mangleName(Method method)
     {
-        Class[] param = method.getParameterTypes();
+        Class<?>[] param = method.getParameterTypes();
 
         if (param == null || param.length == 0)
             return method.getName();
@@ -236,58 +256,87 @@ public class HessianProxy implements InvocationHandler {
             return AbstractSkeleton.mangleName(method, false);
     }
 
-    protected URLConnection sendRequest(String methodName, Object[] args)
+    /**
+     * Sends the HTTP request to the Hessian connection.
+     */
+    protected HessianConnection sendRequest(String methodName, Object[] args)
         throws IOException
     {
-        URLConnection conn = null;
+        HessianConnection conn = null;
 
-        conn = _factory.openConnection(_url);
+        conn = _factory.getConnectionFactory().open(_url);
+        boolean isValid = false;
 
-        // Used chunked mode when available, i.e. JDK 1.5.
-        if (_factory.isChunkedPost() && conn instanceof HttpURLConnection) {
+        try {
+            addRequestHeaders(conn);
+
+            OutputStream os = null;
+
             try {
-                HttpURLConnection httpConn = (HttpURLConnection) conn;
-
-                httpConn.setChunkedStreamingMode(8 * 1024);
-            } catch (Throwable e) {
+                os = conn.getOutputStream();
+            } catch (Exception e) {
+                throw new HessianRuntimeException(e);
             }
-        }
 
-        OutputStream os = null;
+            if (log.isLoggable(Level.FINEST)) {
+                PrintWriter dbg = new PrintWriter(new LogWriter(log));
+                HessianDebugOutputStream dOs = new HessianDebugOutputStream(os, dbg);
+                dOs.startTop2();
+                os = dOs;
+            }
 
-        try {
-            os = conn.getOutputStream();
-        } catch (Exception e) {
-            throw new HessianRuntimeException(e);
-        }
-
-        try {
             AbstractHessianOutput out = _factory.getHessianOutput(os);
 
             out.call(methodName, args);
             out.flush();
 
+            conn.sendRequest();
+
+            isValid = true;
+
             return conn;
-        } catch (IOException e) {
-            if (conn instanceof HttpURLConnection)
-                ((HttpURLConnection) conn).disconnect();
-
-            throw e;
-        } catch (RuntimeException e) {
-            if (conn instanceof HttpURLConnection)
-                ((HttpURLConnection) conn).disconnect();
-
-            throw e;
+        } finally {
+            if (!isValid && conn != null)
+                conn.destroy();
         }
     }
 
+    /**
+     * Method that allows subclasses to add request headers such as cookies.
+     * Default implementation is empty. 
+     */
+    protected void addRequestHeaders(HessianConnection conn)
+    {
+        conn.addHeader("Content-Type", "x-application/hessian");
+        conn.addHeader("Accept-Encoding", "deflate");
+
+        String basicAuth = _factory.getBasicAuth();
+
+        if (basicAuth != null)
+            conn.addHeader("Authorization", basicAuth);
+    }
+
+    /**
+     * Method that allows subclasses to parse response headers such as cookies.
+     * Default implementation is empty. 
+     * @param conn
+     */
+    protected void parseResponseHeaders(URLConnection conn)
+    {
+    }
+
+    public Object writeReplace()
+    {
+        return new HessianRemote(_type.getName(), _url.toString());
+    }
+
     static class ResultInputStream extends InputStream {
-        private HttpURLConnection    _conn;
+        private HessianConnection    _conn;
         private InputStream          _connIs;
         private AbstractHessianInput _in;
         private InputStream          _hessianIs;
 
-        ResultInputStream(HttpURLConnection conn,
+        ResultInputStream(HessianConnection conn,
                           InputStream is,
                           AbstractHessianInput in,
                           InputStream hessianIs)
@@ -331,7 +380,7 @@ public class HessianProxy implements InvocationHandler {
         public void close()
             throws IOException
         {
-            HttpURLConnection conn = _conn;
+            HessianConnection conn = _conn;
             _conn = null;
 
             InputStream connIs = _connIs;
@@ -369,11 +418,56 @@ public class HessianProxy implements InvocationHandler {
 
             try {
                 if (conn != null) {
-                    conn.disconnect();
+                    conn.close();
                 }
             } catch (Exception e) {
                 log.log(Level.FINE, e.toString(), e);
             }
+        }
+    }
+
+    static class LogWriter extends Writer {
+        private Logger        _log;
+        private Level         _level = Level.FINEST;
+        private StringBuilder _sb    = new StringBuilder();
+
+        LogWriter(Logger log)
+        {
+            _log = log;
+        }
+
+        public void write(char ch)
+        {
+            if (ch == '\n' && _sb.length() > 0) {
+                _log.fine(_sb.toString());
+                _sb.setLength(0);
+            }
+            else
+                _sb.append((char) ch);
+        }
+
+        public void write(char[] buffer, int offset, int length)
+        {
+            for (int i = 0; i < length; i++) {
+                char ch = buffer[offset + i];
+
+                if (ch == '\n' && _sb.length() > 0) {
+                    _log.log(_level, _sb.toString());
+                    _sb.setLength(0);
+                }
+                else
+                    _sb.append((char) ch);
+            }
+        }
+
+        public void flush()
+        {
+        }
+
+        public void close()
+        {
+            if (_sb.length() > 0)
+                _log.log(_level, _sb.toString());
         }
     }
 }

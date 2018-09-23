@@ -16,7 +16,7 @@
  */
 package com.caucho.hessian.test;
 
-import java.util.*;
+import java.util.HashMap;
 
 /**
  * Cons-cell for testing

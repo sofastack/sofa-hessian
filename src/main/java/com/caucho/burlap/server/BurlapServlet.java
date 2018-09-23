@@ -70,7 +70,7 @@ import java.io.PrintWriter;
  * Servlet for serving Burlap services.
  */
 public class BurlapServlet extends GenericServlet {
-    private Class          _apiClass;
+    private Class<?>       _apiClass;
     private Object         _service;
 
     private BurlapSkeleton _skeleton;
@@ -91,7 +91,7 @@ public class BurlapServlet extends GenericServlet {
     /**
      * Sets the api-class.
      */
-    public void setAPIClass(Class apiClass)
+    public void setAPIClass(Class<?> apiClass)
     {
         _apiClass = apiClass;
     }
@@ -107,7 +107,7 @@ public class BurlapServlet extends GenericServlet {
         try {
             if (_service == null) {
                 String className = getInitParameter("service-class");
-                Class serviceClass = null;
+                Class<?> serviceClass = null;
 
                 if (className != null) {
                     ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -182,7 +182,7 @@ public class BurlapServlet extends GenericServlet {
         if (objectId == null)
             objectId = req.getParameter("ejbid");
 
-        ServiceContext.begin(req, serviceId, objectId);
+        ServiceContext.begin(req, res, serviceId, objectId);
 
         try {
             InputStream is = request.getInputStream();

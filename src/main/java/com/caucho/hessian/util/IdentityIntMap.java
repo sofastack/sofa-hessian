@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2006 Caucho Technology, Inc.  All rights reserved.
+ * Copyright (c) 2001-2008 Caucho Technology, Inc.  All rights reserved.
  *
  * The Apache Software License, Version 1.1
  *
@@ -57,28 +57,26 @@ package com.caucho.hessian.util;
  */
 public class IdentityIntMap {
     /**
-     * Encoding of a null entry.  Since NULL is equal to Integer.MIN_VALUE, 
+     * Encoding of a null entry.  Since NULL is equal to Integer.MIN_VALUE,
      * it's impossible to distinguish between the two.
      */
-    public final static int     NULL    = 0xdeadbeef;  // Integer.MIN_VALUE + 1;
+    public final static int NULL = 0xdeadbeef; // Integer.MIN_VALUE + 1;
 
-    private static final Object DELETED = new Object();
+    private Object[]        _keys;
+    private int[]           _values;
 
-    private Object[]            _keys;
-    private int[]               _values;
-
-    private int                 _size;
-    private int                 _mask;
+    private int             _size;
+    private int             _prime;
 
     /**
      * Create a new IntMap.  Default size is 16.
      */
-    public IdentityIntMap()
+    public IdentityIntMap(int capacity)
     {
-        _keys = new Object[256];
-        _values = new int[256];
+        _keys = new Object[capacity];
+        _values = new int[capacity];
 
-        _mask = _keys.length - 1;
+        _prime = getBiggestPrime(_keys.length);
         _size = 0;
     }
 
@@ -87,8 +85,8 @@ public class IdentityIntMap {
      */
     public void clear()
     {
-        Object[] keys = _keys;
-        int[] values = _values;
+        final Object[] keys = _keys;
+        final int[] values = _values;
 
         for (int i = keys.length - 1; i >= 0; i--) {
             keys[i] = null;
@@ -101,7 +99,7 @@ public class IdentityIntMap {
     /**
      * Returns the current number of entries in the map.
      */
-    public int size()
+    public final int size()
     {
         return _size;
     }
@@ -109,12 +107,13 @@ public class IdentityIntMap {
     /**
      * Puts a new value in the property table with the appropriate flags
      */
-    public int get(Object key)
+    public final int get(Object key)
     {
-        int mask = _mask;
-        int hash = System.identityHashCode(key) % mask & mask;
+        int prime = _prime;
+        int hash = System.identityHashCode(key) % prime;
+        // int hash = key.hashCode() & mask;
 
-        Object[] keys = _keys;
+        final Object[] keys = _keys;
 
         while (true) {
             Object mapKey = keys[hash];
@@ -124,60 +123,25 @@ public class IdentityIntMap {
             else if (mapKey == key)
                 return _values[hash];
 
-            hash = (hash + 1) % mask;
+            hash = (hash + 1) % prime;
         }
-    }
-
-    /**
-     * Expands the property table
-     */
-    private void resize(int newSize)
-    {
-        Object[] newKeys = new Object[newSize];
-        int[] newValues = new int[newSize];
-
-        int mask = _mask = newKeys.length - 1;
-
-        Object[] keys = _keys;
-        int values[] = _values;
-
-        for (int i = keys.length - 1; i >= 0; i--) {
-            Object key = keys[i];
-
-            if (key == null || key == DELETED)
-                continue;
-
-            int hash = System.identityHashCode(key) % mask & mask;
-
-            while (true) {
-                if (newKeys[hash] == null) {
-                    newKeys[hash] = key;
-                    newValues[hash] = values[i];
-                    break;
-                }
-
-                hash = (hash + 1) % mask;
-            }
-        }
-
-        _keys = newKeys;
-        _values = newValues;
     }
 
     /**
      * Puts a new value in the property table with the appropriate flags
      */
-    public int put(Object key, int value)
+    public final int put(Object key, int value, boolean isReplace)
     {
-        int mask = _mask;
-        int hash = System.identityHashCode(key) % mask & mask;
+        int prime = _prime;
+        int hash = Math.abs(System.identityHashCode(key) % prime);
+        // int hash = key.hashCode() % prime;
 
         Object[] keys = _keys;
 
         while (true) {
             Object testKey = keys[hash];
 
-            if (testKey == null || testKey == DELETED) {
+            if (testKey == null) {
                 keys[hash] = key;
                 _values[hash] = value;
 
@@ -186,46 +150,63 @@ public class IdentityIntMap {
                 if (keys.length <= 4 * _size)
                     resize(4 * keys.length);
 
-                return NULL;
+                return value;
             }
             else if (key != testKey) {
-                hash = (hash + 1) % mask;
+                hash = (hash + 1) % prime;
 
                 continue;
             }
-            else {
+            else if (isReplace) {
                 int old = _values[hash];
 
                 _values[hash] = value;
 
                 return old;
             }
+            else {
+                return _values[hash];
+            }
         }
     }
 
     /**
-     * Deletes the entry.  Returns true if successful.
+     * Removes a value in the property table.
      */
-    public int remove(Object key)
+    public final void remove(Object key)
     {
-        int mask = _mask;
-        int hash = System.identityHashCode(key) % mask & mask;
-
-        while (true) {
-            Object mapKey = _keys[hash];
-
-            if (mapKey == null)
-                return NULL;
-            else if (mapKey == key) {
-                _keys[hash] = DELETED;
-
-                _size--;
-
-                return _values[hash];
-            }
-
-            hash = (hash + 1) % mask;
+        if (put(key, NULL, true) != NULL) {
+            _size--;
         }
+    }
+
+    /**
+     * Expands the property table
+     */
+    private void resize(int newSize)
+    {
+        Object[] keys = _keys;
+        int values[] = _values;
+
+        _keys = new Object[newSize];
+        _values = new int[newSize];
+        _size = 0;
+
+        _prime = getBiggestPrime(_keys.length);
+
+        for (int i = keys.length - 1; i >= 0; i--) {
+            Object key = keys[i];
+            int value = values[i];
+
+            if (key != null && value != NULL) {
+                put(key, value, true);
+            }
+        }
+    }
+
+    protected int hashCode(Object value)
+    {
+        return System.identityHashCode(value);
     }
 
     public String toString()
@@ -235,8 +216,8 @@ public class IdentityIntMap {
         sbuf.append("IntMap[");
         boolean isFirst = true;
 
-        for (int i = 0; i <= _mask; i++) {
-            if (_keys[i] != null && _keys[i] != DELETED) {
+        for (int i = 0; i <= _keys.length; i++) {
+            if (_keys[i] != null) {
                 if (!isFirst)
                     sbuf.append(", ");
 
@@ -249,5 +230,48 @@ public class IdentityIntMap {
         sbuf.append("]");
 
         return sbuf.toString();
+    }
+
+    public static final int[] PRIMES =
+                                     {
+                                     1, /* 1<< 0 = 1 */
+                                     2, /* 1<< 1 = 2 */
+                                     3, /* 1<< 2 = 4 */
+                                     7, /* 1<< 3 = 8 */
+                                     13, /* 1<< 4 = 16 */
+                                     31, /* 1<< 5 = 32 */
+                                     61, /* 1<< 6 = 64 */
+                                     127, /* 1<< 7 = 128 */
+                                     251, /* 1<< 8 = 256 */
+                                     509, /* 1<< 9 = 512 */
+                                     1021, /* 1<<10 = 1024 */
+                                     2039, /* 1<<11 = 2048 */
+                                     4093, /* 1<<12 = 4096 */
+                                     8191, /* 1<<13 = 8192 */
+                                     16381, /* 1<<14 = 16384 */
+                                     32749, /* 1<<15 = 32768 */
+                                     65521, /* 1<<16 = 65536 */
+                                     131071, /* 1<<17 = 131072 */
+                                     262139, /* 1<<18 = 262144 */
+                                     524287, /* 1<<19 = 524288 */
+                                     1048573, /* 1<<20 = 1048576 */
+                                     2097143, /* 1<<21 = 2097152 */
+                                     4194301, /* 1<<22 = 4194304 */
+                                     8388593, /* 1<<23 = 8388608 */
+                                     16777213, /* 1<<24 = 16777216 */
+                                     33554393, /* 1<<25 = 33554432 */
+                                     67108859, /* 1<<26 = 67108864 */
+                                     134217689, /* 1<<27 = 134217728 */
+                                     268435399, /* 1<<28 = 268435456 */
+                                     };
+
+    public static int getBiggestPrime(int value)
+    {
+        for (int i = PRIMES.length - 1; i >= 0; i--) {
+            if (PRIMES[i] <= value)
+                return PRIMES[i];
+        }
+
+        return 2;
     }
 }

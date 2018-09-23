@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2006 Caucho Technology, Inc.  All rights reserved.
+ * Copyright (c) 2001-2008 Caucho Technology, Inc.  All rights reserved.
  *
  * The Apache Software License, Version 1.1
  *
@@ -85,17 +85,20 @@ public class MicroHessianOutput {
      *
      * @param os the underlying output stream.
      */
-    public MicroHessianOutput(OutputStream os) {
+    public MicroHessianOutput(OutputStream os)
+    {
         init(os);
     }
 
     /**
      * Creates an uninitialized Hessian output stream.
      */
-    public MicroHessianOutput() {
+    public MicroHessianOutput()
+    {
     }
 
-    public void init(OutputStream os) {
+    public void init(OutputStream os)
+    {
         this.os = os;
     }
 
@@ -110,7 +113,8 @@ public class MicroHessianOutput {
      * @param method the method name to call.
      */
     public void startCall(String method)
-        throws IOException {
+        throws IOException
+    {
         os.write('c');
         os.write(0);
         os.write(1);
@@ -130,7 +134,8 @@ public class MicroHessianOutput {
      * </pre></code>
      */
     public void completeCall()
-        throws IOException {
+        throws IOException
+    {
         os.write('z');
     }
 
@@ -146,7 +151,8 @@ public class MicroHessianOutput {
      * @param value the boolean value to write.
      */
     public void writeBoolean(boolean value)
-        throws IOException {
+        throws IOException
+    {
         if (value)
             os.write('T');
         else
@@ -164,7 +170,8 @@ public class MicroHessianOutput {
      * @param value the integer value to write.
      */
     public void writeInt(int value)
-        throws IOException {
+        throws IOException
+    {
         os.write('I');
         os.write(value >> 24);
         os.write(value >> 16);
@@ -183,7 +190,8 @@ public class MicroHessianOutput {
      * @param value the long value to write.
      */
     public void writeLong(long value)
-        throws IOException {
+        throws IOException
+    {
         os.write('L');
         os.write((byte) (value >> 56));
         os.write((byte) (value >> 48));
@@ -205,7 +213,8 @@ public class MicroHessianOutput {
      * @param time the date in milliseconds from the epoch in UTC
      */
     public void writeUTCDate(long time)
-        throws IOException {
+        throws IOException
+    {
         os.write('d');
         os.write((byte) (time >> 56));
         os.write((byte) (time >> 48));
@@ -224,9 +233,12 @@ public class MicroHessianOutput {
      * <code><pre>
      * N
      * </pre></code>
+     *
+     * @param value the string value to write.
      */
     public void writeNull()
-        throws IOException {
+        throws IOException
+    {
         os.write('N');
     }
 
@@ -237,7 +249,7 @@ public class MicroHessianOutput {
      * <code><pre>
      * S b16 b8 string-value
      * </pre></code>
-     * <p>
+     *
      * If the value is null, it will be written as
      *
      * <code><pre>
@@ -247,10 +259,12 @@ public class MicroHessianOutput {
      * @param value the string value to write.
      */
     public void writeString(String value)
-        throws IOException {
+        throws IOException
+    {
         if (value == null) {
             os.write('N');
-        } else {
+        }
+        else {
             int len = value.length();
 
             os.write('S');
@@ -268,17 +282,18 @@ public class MicroHessianOutput {
      * <code><pre>
      * B b16 b18 bytes
      * </pre></code>
-     * <p>
+     *
      * If the value is null, it will be written as
      *
      * <code><pre>
      * N
      * </pre></code>
      *
-     * @param buffer the string value to write.
+     * @param value the string value to write.
      */
     public void writeBytes(byte[] buffer)
-        throws IOException {
+        throws IOException
+    {
         if (buffer == null)
             os.write('N');
         else
@@ -292,18 +307,22 @@ public class MicroHessianOutput {
      * <code><pre>
      * B b16 b18 bytes
      * </pre></code>
-     * <p>
+     *
      * If the value is null, it will be written as
      *
      * <code><pre>
      * N
      * </pre></code>
+     *
+     * @param value the string value to write.
      */
     public void writeBytes(byte[] buffer, int offset, int length)
-        throws IOException {
+        throws IOException
+    {
         if (buffer == null) {
             os.write('N');
-        } else {
+        }
+        else {
             os.write('B');
             os.write(length << 8);
             os.write(length);
@@ -321,7 +340,8 @@ public class MicroHessianOutput {
      * @param value the integer value to write.
      */
     public void writeRef(int value)
-        throws IOException {
+        throws IOException
+    {
         os.write('R');
         os.write(value << 24);
         os.write(value << 16);
@@ -333,7 +353,8 @@ public class MicroHessianOutput {
      * Writes a generic object to the output stream.
      */
     public void writeObject(Object object)
-        throws IOException {
+        throws IOException
+    {
         if (object == null)
             writeNull();
         else if (object instanceof String)
@@ -349,7 +370,8 @@ public class MicroHessianOutput {
         else if (object instanceof byte[]) {
             byte[] data = (byte[]) object;
             writeBytes(data, 0, data.length);
-        } else if (object instanceof Vector) {
+        }
+        else if (object instanceof Vector) {
             Vector vector = (Vector) object;
 
             int size = vector.size();
@@ -358,7 +380,8 @@ public class MicroHessianOutput {
                 writeObject(vector.elementAt(i));
 
             writeListEnd();
-        } else if (object instanceof Hashtable) {
+        }
+        else if (object instanceof Hashtable) {
             Hashtable hashtable = (Hashtable) object;
 
             writeMapBegin(null);
@@ -371,7 +394,8 @@ public class MicroHessianOutput {
                 writeObject(value);
             }
             writeMapEnd();
-        } else
+        }
+        else
             writeCustomObject(object);
     }
 
@@ -381,7 +405,8 @@ public class MicroHessianOutput {
      * @param object the object to write.
      */
     public void writeCustomObject(Object object)
-        throws IOException {
+        throws IOException
+    {
         throw new IOException("unexpected object: " + object);
     }
 
@@ -401,7 +426,8 @@ public class MicroHessianOutput {
      * </pre></code>
      */
     public void writeListBegin(int length, String type)
-        throws IOException {
+        throws IOException
+    {
         os.write('V');
         os.write('t');
         printLenString(type);
@@ -417,7 +443,8 @@ public class MicroHessianOutput {
      * Writes the tail of the list to the stream.
      */
     public void writeListEnd()
-        throws IOException {
+        throws IOException
+    {
         os.write('z');
     }
 
@@ -431,7 +458,8 @@ public class MicroHessianOutput {
      * </pre></code>
      */
     public void writeMapBegin(String type)
-        throws IOException {
+        throws IOException
+    {
         os.write('M');
         os.write('t');
         printLenString(type);
@@ -441,7 +469,8 @@ public class MicroHessianOutput {
      * Writes the tail of the map to the stream.
      */
     public void writeMapEnd()
-        throws IOException {
+        throws IOException
+    {
         os.write('z');
     }
 
@@ -454,7 +483,8 @@ public class MicroHessianOutput {
      * </pre></code>
      */
     public void writeRemote(String type, String url)
-        throws IOException {
+        throws IOException
+    {
         os.write('r');
         os.write('t');
         printLenString(type);
@@ -468,11 +498,13 @@ public class MicroHessianOutput {
      * @param v the string to print.
      */
     public void printLenString(String v)
-        throws IOException {
+        throws IOException
+    {
         if (v == null) {
             os.write(0);
             os.write(0);
-        } else {
+        }
+        else {
             int len = v.length();
             os.write(len >> 8);
             os.write(len);
@@ -487,7 +519,8 @@ public class MicroHessianOutput {
      * @param v the string to print.
      */
     public void printString(String v)
-        throws IOException {
+        throws IOException
+    {
         printString(v, 0, v.length());
     }
 
@@ -497,7 +530,8 @@ public class MicroHessianOutput {
      * @param v the string to print.
      */
     public void printString(String v, int offset, int length)
-        throws IOException {
+        throws IOException
+    {
         for (int i = 0; i < length; i++) {
             char ch = v.charAt(i + offset);
 
@@ -506,7 +540,8 @@ public class MicroHessianOutput {
             else if (ch < 0x800) {
                 os.write(0xc0 + ((ch >> 6) & 0x1f));
                 os.write(0x80 + (ch & 0x3f));
-            } else {
+            }
+            else {
                 os.write(0xe0 + ((ch >> 12) & 0xf));
                 os.write(0x80 + ((ch >> 6) & 0x3f));
                 os.write(0x80 + (ch & 0x3f));

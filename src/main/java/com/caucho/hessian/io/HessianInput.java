@@ -48,8 +48,6 @@
 
 package com.caucho.hessian.io;
 
-import com.alipay.hessian.ClassNameResolver;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -140,19 +138,6 @@ public class HessianInput extends AbstractHessianInput {
     }
 
     /**
-     * Gets the serializer factory, creating a default if necessary.
-     */
-    public final SerializerFactory findSerializerFactory()
-    {
-        SerializerFactory factory = _serializerFactory;
-
-        if (factory == null)
-            _serializerFactory = factory = new SerializerFactory();
-
-        return factory;
-    }
-
-    /**
      * Initialize the hessian stream with the underlying input stream.
      */
     public void init(InputStream is)
@@ -198,7 +183,7 @@ public class HessianInput extends AbstractHessianInput {
         int tag = read();
 
         if (tag != 'c')
-            throw error("expected hessian call ('c') at code=" + tag + " ch=" + (char) tag);
+            throw error("expected hessian call ('c') at " + codeName(tag));
 
         int major = read();
         int minor = read();
@@ -237,7 +222,7 @@ public class HessianInput extends AbstractHessianInput {
         int tag = read();
 
         if (tag != 'm')
-            throw error("expected hessian method ('m') at code=" + tag + " ch=" + (char) tag);
+            throw error("expected hessian method ('m') at " + codeName(tag));
         int d1 = read();
         int d2 = read();
 
@@ -291,11 +276,9 @@ public class HessianInput extends AbstractHessianInput {
 
         if (tag == 'z') {
         }
-        else if (tag < 0)
-            throw error("expected end of call ('z') at end of stream.");
         else
-            throw error("expected end of call ('z') at '" + (char) tag +
-                "'.  Check method arguments and ensure method overloading is enabled if necessary");
+            throw error("expected end of call ('z') at " + codeName(tag) +
+                ".  Check method arguments and ensure method overloading is enabled if necessary");
     }
 
     /**
@@ -308,7 +291,7 @@ public class HessianInput extends AbstractHessianInput {
         int tag = read();
 
         if (tag != 'r')
-            error("expected hessian reply");
+            error("expected hessian reply at " + codeName(tag));
 
         int major = read();
         int minor = read();
@@ -342,12 +325,19 @@ public class HessianInput extends AbstractHessianInput {
         int tag = read();
 
         if (tag != 'r')
-            error("expected hessian reply");
+            error("expected hessian reply at " + codeName(tag));
 
         int major = read();
         int minor = read();
 
-        tag = read();
+        startReplyBody();
+    }
+
+    public void startReplyBody()
+        throws Throwable
+    {
+        int tag = read();
+
         if (tag == 'f')
             throw prepareFault();
         else
@@ -402,7 +392,7 @@ public class HessianInput extends AbstractHessianInput {
         int tag = read();
 
         if (tag != 'z')
-            error("expected end of reply");
+            error("expected end of reply at " + codeName(tag));
     }
 
     /**
@@ -420,7 +410,7 @@ public class HessianInput extends AbstractHessianInput {
         int tag = read();
 
         if (tag != 'z')
-            error("expected end of reply");
+            error("expected end of reply at " + codeName(tag));
     }
 
     /**
@@ -646,7 +636,7 @@ public class HessianInput extends AbstractHessianInput {
         int tag = read();
 
         if (tag != 'd')
-            throw error("expected date");
+            throw error("expected date at " + codeName(tag));
 
         long b64 = read();
         long b56 = read();
@@ -854,7 +844,7 @@ public class HessianInput extends AbstractHessianInput {
                 _isLastChunk = tag == 'S' || tag == 'X';
                 _chunkLength = (read() << 8) + read();
 
-                throw error("can't cope");
+                throw error("Can't handle string in this context");
 
             default:
                 throw expect("string", tag);
@@ -1122,19 +1112,19 @@ public class HessianInput extends AbstractHessianInput {
                 return null;
 
             case 'T':
-                return new Boolean(true);
+                return Boolean.valueOf(true);
 
             case 'F':
-                return new Boolean(false);
+                return Boolean.valueOf(false);
 
             case 'I':
-                return new Integer(parseInt());
+                return Integer.valueOf(parseInt());
 
             case 'L':
-                return new Long(parseLong());
+                return Long.valueOf(parseLong());
 
             case 'D':
-                return new Double(parseDouble());
+                return Double.valueOf(parseDouble());
 
             case 'd':
                 return new Date(parseLong());
@@ -1202,7 +1192,7 @@ public class HessianInput extends AbstractHessianInput {
             }
 
             default:
-                throw error("unknown code:" + (char) tag);
+                throw error("unknown code for readObject at " + codeName(tag));
         }
     }
 
@@ -1267,7 +1257,7 @@ public class HessianInput extends AbstractHessianInput {
         int code = read();
 
         if (code != 'z')
-            throw error("unknown code:" + (char) code);
+            throw error("unknown code at " + codeName(code));
     }
 
     /**
@@ -1279,7 +1269,7 @@ public class HessianInput extends AbstractHessianInput {
         int code = read();
 
         if (code != 'z')
-            throw error("expected end of map ('z') at '" + (char) code + "'");
+            throw error("expected end of map ('z') at " + codeName(code));
     }
 
     /**
@@ -1291,7 +1281,7 @@ public class HessianInput extends AbstractHessianInput {
         int code = read();
 
         if (code != 'z')
-            throw error("expected end of list ('z') at '" + (char) code + "'");
+            throw error("expected end of list ('z') at " + codeName(code));
     }
 
     /**
@@ -1531,7 +1521,7 @@ public class HessianInput extends AbstractHessianInput {
             return v;
         }
         else
-            throw error("bad utf-8 encoding");
+            throw error("bad utf-8 encoding at " + codeName(ch));
     }
 
     /**
@@ -1705,10 +1695,15 @@ public class HessianInput extends AbstractHessianInput {
 
     protected IOException expect(String expect, int ch)
     {
+        return error("expected " + expect + " at " + codeName(ch));
+    }
+
+    protected String codeName(int ch)
+    {
         if (ch < 0)
-            return error("expected " + expect + " at end of file");
+            return "end of file";
         else
-            return error("expected " + expect + " at " + (char) ch);
+            return "0x" + Integer.toHexString(ch & 0xff) + " (" + (char) +ch + ")";
     }
 
     protected IOException error(String message)

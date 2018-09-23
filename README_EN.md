@@ -6,7 +6,7 @@
 
 [Hessian](http://hessian.caucho.com/#Java) is a high-performance and high-compatibility binary serialization protocol.
 
-SOFA-Hessian is an internal improvement version based on native Hessian v3.1.3. At present, It has been used internally for many years in Ant Financial. We have fixed some bugs, enhanced some functions, and add some features, includes: 
+SOFA-Hessian is an internal improvement version based on native Hessian v4.0.51. At present, It has been used internally for many years in Ant Financial. We have fixed some bugs, enhanced some functions, and add some features, includes: 
 
 - Add generic serialization.
 - Add `ClassNameResolver` & `ClassNameFilter` for the mapping, converting or filtering of the class name.

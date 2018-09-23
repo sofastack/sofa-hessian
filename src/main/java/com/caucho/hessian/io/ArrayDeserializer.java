@@ -59,28 +59,24 @@ public class ArrayDeserializer extends AbstractListDeserializer {
     private Class _componentType;
     private Class _type;
 
-    public ArrayDeserializer(Deserializer componentDeserializer)
+    public ArrayDeserializer(Class componentType)
     {
-        if (componentDeserializer != null)
-            _componentType = componentDeserializer.getType();
+        _componentType = componentType;
 
         if (_componentType != null) {
-            try
-            {
-                this._type = Array.newInstance(this._componentType, 0).getClass();
+            try {
+                _type = Array.newInstance(_componentType, 0).getClass();
             } catch (Exception e) {
-                // ignore
             }
         }
 
-        if (this._type == null) {
-            this._type = Object[].class;
-        }
+        if (_type == null)
+            _type = Object[].class;
     }
 
     public Class getType()
     {
-        return this._type;
+        return _type;
     }
 
     /**

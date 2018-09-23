@@ -59,15 +59,9 @@ public class RemoteSerializer extends AbstractSerializer {
     public void writeObject(Object obj, AbstractHessianOutput out)
         throws IOException
     {
-        if (obj instanceof HessianRemoteObject) {
-            HessianRemoteObject remote = (HessianRemoteObject) obj;
+        HessianRemoteObject remoteObject = (HessianRemoteObject) obj;
 
-            out.writeRemote(remote.getHessianType(), remote.getHessianURL());
-        }
-        else if (obj instanceof BurlapRemoteObject) {
-            BurlapRemoteObject remote = (BurlapRemoteObject) obj;
-
-            out.writeRemote(remote.getBurlapType(), remote.getBurlapURL());
-        }
+        out.writeObject(new HessianRemote(remoteObject.getHessianType(),
+            remoteObject.getHessianURL()));
     }
 }

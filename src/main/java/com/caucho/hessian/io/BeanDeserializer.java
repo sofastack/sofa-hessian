@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2004 Caucho Technology, Inc.  All rights reserved.
+ * Copyright (c) 2001-2008 Caucho Technology, Inc.  All rights reserved.
  *
  * The Apache Software License, Version 1.1
  *
@@ -53,6 +53,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Serializing an object for known object types.
@@ -229,9 +230,9 @@ public class BeanDeserializer extends AbstractMapDeserializer {
                 }
 
                 if (j == 1)
-                    name = name.substring(0, j).toLowerCase() + name.substring(j);
+                    name = name.substring(0, j).toLowerCase(Locale.ENGLISH) + name.substring(j);
                 else if (j > 1)
-                    name = name.substring(0, j - 1).toLowerCase() + name.substring(j - 1);
+                    name = name.substring(0, j - 1).toLowerCase(Locale.ENGLISH) + name.substring(j - 1);
 
                 methodMap.put(name, method);
             }
@@ -275,19 +276,19 @@ public class BeanDeserializer extends AbstractMapDeserializer {
         else if (boolean.class.equals(cl))
             return Boolean.FALSE;
         else if (byte.class.equals(cl))
-            return new Byte((byte) 0);
+            return Byte.valueOf((byte) 0);
         else if (short.class.equals(cl))
-            return new Short((short) 0);
+            return Short.valueOf((short) 0);
         else if (char.class.equals(cl))
-            return new Character((char) 0);
+            return Character.valueOf((char) 0);
         else if (int.class.equals(cl))
-            return new Integer(0);
+            return Integer.valueOf(0);
         else if (long.class.equals(cl))
-            return new Long(0);
+            return Long.valueOf(0);
         else if (float.class.equals(cl))
-            return new Double(0);
+            return Double.valueOf(0);
         else if (double.class.equals(cl))
-            return new Double(0);
+            return Double.valueOf(0);
         else
             throw new UnsupportedOperationException();
     }

@@ -16,8 +16,8 @@
  */
 package com.alipay.hessian.generic.test;
 
-import com.alipay.hessian.generic.model.GenericObject;
 import com.alipay.hessian.generic.io.GenericSerializerFactory;
+import com.alipay.hessian.generic.model.GenericObject;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;

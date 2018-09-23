@@ -28,7 +28,11 @@ import com.alipay.hessian.generic.util.GenericUtils;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.alipay.hessian.generic.test.ComplexTestGO2GO.cmpGPersonEqualPerson;
 import static org.junit.Assert.assertEquals;

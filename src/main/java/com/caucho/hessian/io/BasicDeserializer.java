@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2004 Caucho Technology, Inc.  All rights reserved.
+ * Copyright (c) 2001-2008 Caucho Technology, Inc.  All rights reserved.
  *
  * The Apache Software License, Version 1.1
  *
@@ -157,25 +157,25 @@ public class BasicDeserializer extends AbstractDeserializer {
                 return null;
 
             case BOOLEAN:
-                return new Boolean(in.readBoolean());
+                return Boolean.valueOf(in.readBoolean());
 
             case BYTE:
-                return new Byte((byte) in.readInt());
+                return Byte.valueOf((byte) in.readInt());
 
             case SHORT:
-                return new Short((short) in.readInt());
+                return Short.valueOf((short) in.readInt());
 
             case INTEGER:
-                return new Integer(in.readInt());
+                return Integer.valueOf(in.readInt());
 
             case LONG:
-                return new Long(in.readLong());
+                return Long.valueOf(in.readLong());
 
             case FLOAT:
-                return new Float((float) in.readDouble());
+                return Float.valueOf((float) in.readDouble());
 
             case DOUBLE:
-                return new Double(in.readDouble());
+                return Double.valueOf(in.readDouble());
 
             case STRING:
                 return in.readString();
@@ -186,9 +186,9 @@ public class BasicDeserializer extends AbstractDeserializer {
             case CHARACTER: {
                 String s = in.readString();
                 if (s == null || s.equals(""))
-                    return new Character((char) 0);
+                    return Character.valueOf((char) 0);
                 else
-                    return new Character(s.charAt(0));
+                    return Character.valueOf(s.charAt(0));
             }
 
             case CHARACTER_OBJECT: {
@@ -196,7 +196,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                 if (s == null || s.equals(""))
                     return null;
                 else
-                    return new Character(s.charAt(0));
+                    return Character.valueOf(s.charAt(0));
             }
 
             case DATE:
@@ -289,7 +289,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
-                        list.add(new Boolean(in.readBoolean()));
+                        list.add(Boolean.valueOf(in.readBoolean()));
 
                     in.readEnd();
 
@@ -321,7 +321,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
-                        list.add(new Short((short) in.readInt()));
+                        list.add(Short.valueOf((short) in.readInt()));
 
                     in.readEnd();
 
@@ -352,7 +352,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
-                        list.add(new Integer(in.readInt()));
+                        list.add(Integer.valueOf(in.readInt()));
 
                     in.readEnd();
 
@@ -383,7 +383,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
-                        list.add(new Long(in.readLong()));
+                        list.add(Long.valueOf(in.readLong()));
 
                     in.readEnd();
 
@@ -450,9 +450,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     double[] data = new double[list.size()];
                     in.addRef(data);
                     for (int i = 0; i < data.length; i++)
-                        data[i] = ((Double) list.get(i)).intValue();
-
-                    in.readEnd();
+                        data[i] = ((Double) list.get(i)).doubleValue();
 
                     return data;
                 }
@@ -482,8 +480,6 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.addRef(data);
                     for (int i = 0; i < data.length; i++)
                         data[i] = (String) list.get(i);
-
-                    in.readEnd();
 
                     return data;
                 }
@@ -563,6 +559,7 @@ public class BasicDeserializer extends AbstractDeserializer {
 
             case LONG_ARRAY: {
                 long[] data = new long[length];
+
                 in.addRef(data);
 
                 for (int i = 0; i < data.length; i++)
@@ -614,5 +611,10 @@ public class BasicDeserializer extends AbstractDeserializer {
             default:
                 throw new UnsupportedOperationException(String.valueOf(this));
         }
+    }
+
+    public String toString()
+    {
+        return getClass().getSimpleName() + "[" + _code + "]";
     }
 }

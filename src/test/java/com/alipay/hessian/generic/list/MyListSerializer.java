@@ -64,7 +64,7 @@ public class MyListSerializer extends AbstractSerializer {
         }
     }
 
-    private void writeObject10(Object obj, AbstractHessianOutput out) throws IOException {
+    protected void writeObject10(Object obj, AbstractHessianOutput out) throws IOException {
         for (int i = 0; i < _fields.length; i++) {
             Field field = _fields[i];
             out.writeString(field.getName());

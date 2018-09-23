@@ -22,25 +22,30 @@ package com.caucho.hessian.test;
 public class TestObject implements java.io.Serializable {
     private Object _value;
 
-    public TestObject() {
+    public TestObject()
+    {
     }
 
-    public TestObject(Object value) {
+    public TestObject(Object value)
+    {
         _value = value;
     }
 
-    public Object getValue() {
+    public Object getValue()
+    {
         return _value;
     }
 
-    public int hashCode() {
+    public int hashCode()
+    {
         if (_value != null)
             return _value.hashCode();
         else
             return 0;
     }
 
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (!(o instanceof TestObject))
             return false;
 
@@ -52,8 +57,8 @@ public class TestObject implements java.io.Serializable {
             return _value == obj._value;
     }
 
-    public String toString() {
+    public String toString()
+    {
         return getClass().getName() + "[" + _value + "]";
     }
-
 }

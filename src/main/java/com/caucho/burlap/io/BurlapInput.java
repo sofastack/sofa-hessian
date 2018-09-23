@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2006 Caucho Technology, Inc.  All rights reserved.
+ * Copyright (c) 2001-2008 Caucho Technology, Inc.  All rights reserved.
  *
  * The Apache Software License, Version 1.1
  *
@@ -863,12 +863,8 @@ public class BurlapInput extends AbstractBurlapInput {
             case TAG_MAP: {
                 String type = readType();
                 Deserializer reader;
-                reader = _serializerFactory.getObjectDeserializer(type);
 
-                if (cl != reader.getType() && cl.isAssignableFrom(reader.getType()))
-                    return reader.readMap(this);
-
-                reader = _serializerFactory.getDeserializer(cl);
+                reader = _serializerFactory.getObjectDeserializer(type, cl);
 
                 return reader.readMap(this);
             }
@@ -878,12 +874,7 @@ public class BurlapInput extends AbstractBurlapInput {
                 int length = readLength();
 
                 Deserializer reader;
-                reader = _serializerFactory.getObjectDeserializer(type);
-
-                if (cl != reader.getType() && cl.isAssignableFrom(reader.getType()))
-                    return reader.readList(this, length);
-
-                reader = _serializerFactory.getDeserializer(cl);
+                reader = _serializerFactory.getObjectDeserializer(type, cl);
 
                 return reader.readList(this, length);
             }

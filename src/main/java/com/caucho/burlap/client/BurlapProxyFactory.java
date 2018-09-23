@@ -118,6 +118,7 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
     private String               _password;
     private String               _basicAuth;
 
+    private long                 _readTimeout;
     private boolean              _isOverloadEnabled = false;
 
     /**
@@ -228,18 +229,24 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
      * </pre>
      *
      * @param api the interface the proxy class needs to implement
-     * @param urlName the URL where the client object is located.
+     * @param url the URL where the client object is located.
      *
      * @return a proxy to the object with the specified interface.
      */
     public Object create(Class api, String urlName)
         throws MalformedURLException
     {
+        if (api == null)
+            throw new NullPointerException();
+
         URL url = new URL(urlName);
 
         try {
             // clear old keepalive connections
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setConnectTimeout(10);
+            conn.setReadTimeout(10);
 
             conn.setRequestProperty("Connection", "close");
 

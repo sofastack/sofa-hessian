@@ -52,7 +52,7 @@ package com.caucho.hessian.io;
  * Encapsulates a remote address when no stub is available, e.g. for
  * Java MicroEdition.
  */
-public class HessianRemote {
+public class HessianRemote implements java.io.Serializable {
     private String type;
     private String url;
 
@@ -125,6 +125,6 @@ public class HessianRemote {
      */
     public String toString()
     {
-        return "[HessianRemote " + url + "]";
+        return "HessianRemote[" + url + "]";
     }
 }

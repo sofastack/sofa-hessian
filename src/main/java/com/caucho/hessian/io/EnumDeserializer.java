@@ -60,9 +60,16 @@ public class EnumDeserializer extends AbstractDeserializer {
 
     public EnumDeserializer(Class cl)
     {
-        try {
+        // hessian/33b[34], hessian/3bb[78]
+        if (cl.isEnum())
             _enumType = cl;
-            _valueOf = cl.getMethod("valueOf",
+        else if (cl.getSuperclass().isEnum())
+            _enumType = cl.getSuperclass();
+        else
+            throw new RuntimeException("Class " + cl.getName() + " is not an enum");
+
+        try {
+            _valueOf = _enumType.getMethod("valueOf",
                 new Class[] { Class.class, String.class });
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -97,9 +104,11 @@ public class EnumDeserializer extends AbstractDeserializer {
         return obj;
     }
 
-    public Object readObject(AbstractHessianInput in, String[] fieldNames)
+    @Override
+    public Object readObject(AbstractHessianInput in, Object[] fields)
         throws IOException
     {
+        String[] fieldNames = (String[]) fields;
         String name = null;
 
         for (int i = 0; i < fieldNames.length; i++) {

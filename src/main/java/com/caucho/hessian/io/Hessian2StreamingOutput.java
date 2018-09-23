@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2006 Caucho Technology, Inc.  All rights reserved.
+ * Copyright (c) 2001-2008 Caucho Technology, Inc.  All rights reserved.
  *
  * The Apache Software License, Version 1.1
  *
@@ -67,6 +67,16 @@ public class Hessian2StreamingOutput
     public Hessian2StreamingOutput(OutputStream os)
     {
         _out = new Hessian2Output(os);
+    }
+
+    public Hessian2StreamingOutput(Hessian2Output out)
+    {
+        _out = out;
+    }
+
+    public Hessian2Output getHessian2Output()
+    {
+        return _out;
     }
 
     public void setCloseStreamOnClose(boolean isClose)

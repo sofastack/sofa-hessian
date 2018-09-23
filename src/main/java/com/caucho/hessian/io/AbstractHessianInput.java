@@ -50,6 +50,7 @@ package com.caucho.hessian.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 
 /**
@@ -67,6 +68,7 @@ import java.io.Reader;
  */
 abstract public class AbstractHessianInput {
     private HessianRemoteResolver resolver;
+    private byte[]                _buffer;
 
     /**
      * Initialize the Hessian stream with the underlying input stream.
@@ -144,6 +146,17 @@ abstract public class AbstractHessianInput {
         throws IOException;
 
     /**
+     * Reads the number of method arguments
+     *
+     * @return -1 for a variable length (hessian 1.0)
+     */
+    public int readMethodArgLength()
+        throws IOException
+    {
+        return -1;
+    }
+
+    /**
      * Starts reading the call, including the headers.
      *
      * <p>The call expects the following protocol data
@@ -187,6 +200,15 @@ abstract public class AbstractHessianInput {
      */
     abstract public void startReply()
         throws Throwable;
+
+    /**
+     * Starts reading the body of the reply, i.e. after the 'r' has been
+     * parsed.
+     */
+    public void startReplyBody()
+        throws Throwable
+    {
+    }
 
     /**
      * Completes reading the call
@@ -280,8 +302,11 @@ abstract public class AbstractHessianInput {
      * X b16 b8 final xml chunk
      * </pre>
      */
-    abstract public org.w3c.dom.Node readNode()
-        throws IOException;
+    public org.w3c.dom.Node readNode()
+        throws IOException
+    {
+        throw new UnsupportedOperationException(getClass().getSimpleName());
+    }
 
     /**
      * Starts reading a string.  All the characters must be read before
@@ -307,6 +332,38 @@ abstract public class AbstractHessianInput {
      */
     abstract public InputStream readInputStream()
         throws IOException;
+
+    /**
+     * Reads data to an output stream.
+     *
+     * <pre>
+     * b b16 b8 non-final binary chunk
+     * B b16 b8 final binary chunk
+     * </pre>
+     */
+    public boolean readToOutputStream(OutputStream os)
+        throws IOException
+    {
+        InputStream is = readInputStream();
+
+        if (is == null)
+            return false;
+
+        if (_buffer == null)
+            _buffer = new byte[256];
+
+        try {
+            int len;
+
+            while ((len = is.read(_buffer, 0, _buffer.length)) > 0) {
+                os.write(_buffer, 0, len);
+            }
+
+            return true;
+        } finally {
+            is.close();
+        }
+    }
 
     /**
      * Reads a byte array.

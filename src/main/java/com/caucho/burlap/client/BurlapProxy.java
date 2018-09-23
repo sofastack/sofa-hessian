@@ -61,14 +61,17 @@ import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.*;
 
 /**
  * Proxy implementation for Burlap clients.  Applications will generally
  * use BurlapProxyFactory to create proxy clients.
  */
 public class BurlapProxy implements InvocationHandler {
-    private BurlapProxyFactory _factory;
-    private URL                _url;
+    private static final Logger log = Logger.getLogger(BurlapProxy.class.getName());
+
+    private BurlapProxyFactory  _factory;
+    private URL                 _url;
 
     BurlapProxy(BurlapProxyFactory factory, URL url)
     {
@@ -115,7 +118,7 @@ public class BurlapProxy implements InvocationHandler {
         else if (methodName.equals("getBurlapURL"))
             return _url.toString();
         else if (methodName.equals("toString") && params.length == 0)
-            return "[BurlapProxy " + _url + "]";
+            return getClass().getSimpleName() + "[" + _url + "]";
 
         InputStream is = null;
 
@@ -123,6 +126,10 @@ public class BurlapProxy implements InvocationHandler {
         HttpURLConnection httpConn = null;
         try {
             conn = _factory.openConnection(_url);
+
+            httpConn = (HttpURLConnection) conn;
+
+            httpConn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "text/xml");
 
             OutputStream os;
@@ -141,6 +148,9 @@ public class BurlapProxy implements InvocationHandler {
                 methodName = methodName + "__" + args.length;
             else
                 methodName = methodName + "__0";
+
+            if (log.isLoggable(Level.FINE))
+                log.fine(this + " calling " + methodName + " (" + method + ")");
 
             out.call(methodName, args);
 
@@ -207,5 +217,10 @@ public class BurlapProxy implements InvocationHandler {
             if (httpConn != null)
                 httpConn.disconnect();
         }
+    }
+
+    public String toString()
+    {
+        return getClass().getSimpleName() + "[" + _url + "]";
     }
 }

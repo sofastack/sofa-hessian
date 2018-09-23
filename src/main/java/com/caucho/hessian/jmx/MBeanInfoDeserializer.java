@@ -89,9 +89,9 @@ public class MBeanInfoDeserializer extends AbstractDeserializer {
             }
             /*
             else if ("isWrite".equals(key))
-            isWrite = in.readBoolean();
+              isWrite = in.readBoolean();
             else if ("isIs".equals(key))
-            isIs = in.readBoolean();
+              isIs = in.readBoolean();
             */
             else
                 in.readObject();
