@@ -22,7 +22,10 @@ import com.alipay.hessian.generic.model.GenericClass;
 import com.alipay.hessian.generic.model.GenericCollection;
 import com.alipay.hessian.generic.model.GenericMap;
 import com.alipay.hessian.generic.model.GenericObject;
+import com.caucho.hessian.io.ByteHandle;
 import com.caucho.hessian.io.CalendarHandle;
+import com.caucho.hessian.io.FloatHandle;
+import com.caucho.hessian.io.ShortHandle;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Array;
@@ -213,31 +216,43 @@ public class GenericUtils {
 
     private static void setFieldValue(Object object, Field field, Object value)
         throws IllegalAccessException {
+        if (value != null) {
+            Class fieldType = field.getType();
+            Class valueClass = value.getClass();
 
-        // byte 域写入的可能是 int类型, setField 时需要进行转换
-        if ((field.getType() == byte.class || field.getType() == Byte.class)
-            && value.getClass() == Integer.class) {
+            // byte 域写入的可能是 int类型, setField 时需要进行转换
+            if (fieldType == byte.class || fieldType == Byte.class) {
+                if (valueClass == Integer.class) {
+                    field.set(object, ((Integer) value).byteValue());
+                    return;
+                } else if (valueClass == ByteHandle.class) {
+                    field.set(object, ((ByteHandle) value).getValue());
+                    return;
+                }
+            }
 
-            field.set(object, ((Integer) value).byteValue());
-            return;
+            // short 域写入的可能是 int类型, setField 时需要强转
+            if (fieldType == short.class || fieldType == Short.class) {
+                if (valueClass == Integer.class) {
+                    field.set(object, ((Integer) value).shortValue());
+                    return;
+                } else if (valueClass == ShortHandle.class) {
+                    field.set(object, ((ShortHandle) value).getValue());
+                    return;
+                }
+            }
+
+            // float 域写入的可能是 double类型, setField 时需要进行转换
+            if (fieldType == float.class || fieldType == Float.class) {
+                if (valueClass == Double.class) {
+                    field.set(object, ((Double) value).floatValue());
+                    return;
+                } else if (valueClass == FloatHandle.class) {
+                    field.set(object, ((FloatHandle) value).getValue());
+                    return;
+                }
+            }
         }
-
-        // short 域写入的可能是 int类型, setField 时需要强转
-        if ((field.getType() == short.class || field.getType() == Short.class)
-            && value.getClass() == Integer.class) {
-
-            field.set(object, ((Integer) value).shortValue());
-            return;
-        }
-
-        // float 域写入的可能是 double类型, setField 时需要进行转换
-        if ((field.getType() == float.class || field.getType() == Float.class)
-            && value.getClass() == Double.class) {
-
-            field.set(object, ((Double) value).floatValue());
-            return;
-        }
-
         // 默认情况直接设置
         field.set(object, value);
     }
