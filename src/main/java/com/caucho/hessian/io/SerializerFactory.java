@@ -86,7 +86,7 @@ public class SerializerFactory extends AbstractSerializerFactory
 
     private static final ClassLoader                                                _systemClassLoader;
 
-    private static final HashMap                                                    _staticTypeMap;
+    protected static final HashMap                                                  _staticTypeMap;
 
     private static final WeakHashMap<ClassLoader, SoftReference<SerializerFactory>> _defaultFactoryRefMap      = new WeakHashMap<ClassLoader, SoftReference<SerializerFactory>>();
 
@@ -101,14 +101,14 @@ public class SerializerFactory extends AbstractSerializerFactory
     protected CollectionSerializer                                                  _collectionSerializer;
     protected MapSerializer                                                         _mapSerializer;
 
-    private Deserializer                                                            _hashMapDeserializer;
-    private Deserializer                                                            _arrayListDeserializer;
-    private ConcurrentMap                                                           _cachedSerializerMap       = new ConcurrentHashMap();                                          ;
-    private ConcurrentMap                                                           _cachedDeserializerMap     = new ConcurrentHashMap();                                          ;
-    private ConcurrentMap                                                           _cachedTypeDeserializerMap = new ConcurrentHashMap();                                          ;
+    protected Deserializer                                                          _hashMapDeserializer;
+    protected Deserializer                                                          _arrayListDeserializer;
+    protected ConcurrentMap                                                         _cachedSerializerMap       = new ConcurrentHashMap();                                          ;
+    protected ConcurrentMap                                                         _cachedDeserializerMap     = new ConcurrentHashMap();                                          ;
+    protected ConcurrentMap                                                         _cachedTypeDeserializerMap = new ConcurrentHashMap();                                          ;
 
-    private boolean                                                                 _isAllowNonSerializable;
-    private boolean                                                                 _isEnableUnsafeSerializer  = (UnsafeSerializer
+    protected boolean                                                               _isAllowNonSerializable;
+    protected boolean                                                               _isEnableUnsafeSerializer  = (UnsafeSerializer
                                                                                                                    .isEnabled()
                                                                                                                        && UnsafeDeserializer
                                                                                                                    .isEnabled());
