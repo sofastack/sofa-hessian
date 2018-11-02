@@ -51,6 +51,21 @@ package com.caucho.hessian.io;
 import com.alipay.hessian.ClassNameResolver;
 import com.alipay.hessian.ClassNameResolverBuilder;
 import com.caucho.burlap.io.BurlapRemoteObject;
+import com.caucho.hessian.io.java8.DurationHandle;
+import com.caucho.hessian.io.java8.InstantHandle;
+import com.caucho.hessian.io.java8.Java8TimeSerializer;
+import com.caucho.hessian.io.java8.LocalDateHandle;
+import com.caucho.hessian.io.java8.LocalDateTimeHandle;
+import com.caucho.hessian.io.java8.LocalTimeHandle;
+import com.caucho.hessian.io.java8.MonthDayHandle;
+import com.caucho.hessian.io.java8.OffsetDateTimeHandle;
+import com.caucho.hessian.io.java8.OffsetTimeHandle;
+import com.caucho.hessian.io.java8.PeriodHandle;
+import com.caucho.hessian.io.java8.YearHandle;
+import com.caucho.hessian.io.java8.YearMonthHandle;
+import com.caucho.hessian.io.java8.ZoneIdSerializer;
+import com.caucho.hessian.io.java8.ZoneOffsetHandle;
+import com.caucho.hessian.io.java8.ZonedDateTimeHandle;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -157,6 +172,12 @@ public class SerializerFactory extends AbstractSerializerFactory
         serializer = (Serializer) _staticSerializerMap.get(cl);
         if (serializer != null)
             return serializer;
+
+        //must before "else if (JavaSerializer.getWriteReplace(cl) != null)" or will be WriteReplace
+        if (isZoneId(cl)) {
+            serializer = ZoneIdSerializer.getInstance();
+            return serializer;
+        }
 
         serializer = (Serializer) _cachedSerializerMap.get(cl);
         if (serializer != null)
@@ -568,5 +589,63 @@ public class SerializerFactory extends AbstractSerializerFactory
             _staticDeserializerMap.put(stackTrace, new StackTraceElementDeserializer());
         } catch (Throwable e) {
         }
+        try {
+
+            if (isJava8()) {
+                _staticSerializerMap.put(Class.forName("java.time.LocalTime"),
+                    Java8TimeSerializer.create(LocalTimeHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.LocalDate"),
+                    Java8TimeSerializer.create(LocalDateHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.LocalDateTime"),
+                    Java8TimeSerializer.create(LocalDateTimeHandle.class));
+
+                _staticSerializerMap.put(Class.forName("java.time.Instant"),
+                    Java8TimeSerializer.create(InstantHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.Duration"),
+                    Java8TimeSerializer.create(DurationHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.Period"),
+                    Java8TimeSerializer.create(PeriodHandle.class));
+
+                _staticSerializerMap.put(Class.forName("java.time.Year"), Java8TimeSerializer.create(YearHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.YearMonth"),
+                    Java8TimeSerializer.create(YearMonthHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.MonthDay"),
+                    Java8TimeSerializer.create(MonthDayHandle.class));
+
+                _staticSerializerMap.put(Class.forName("java.time.OffsetDateTime"),
+                    Java8TimeSerializer.create(OffsetDateTimeHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.ZoneOffset"),
+                    Java8TimeSerializer.create(ZoneOffsetHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.OffsetTime"),
+                    Java8TimeSerializer.create(OffsetTimeHandle.class));
+                _staticSerializerMap.put(Class.forName("java.time.ZonedDateTime"),
+                    Java8TimeSerializer.create(ZonedDateTimeHandle.class));
+
+                _staticSerializerMap.put(Class.forName("java.time.ZonedDateTime"),
+                    Java8TimeSerializer.create(ZonedDateTimeHandle.class));
+            }
+        } catch (Throwable t) {
+            log.warning(String.valueOf(t.getCause()));
+        }
+
+    }
+
+    /**
+     * check if the environment is java 8 or beyond
+     *
+     * @return if on java 8
+     */
+    private static boolean isJava8() {
+        String javaVersion = System.getProperty("java.specification.version");
+        return Double.valueOf(javaVersion) >= 1.8;
+    }
+
+    private static boolean isZoneId(Class cl) {
+        try {
+            return isJava8() && Class.forName("java.time.ZoneId").isAssignableFrom(cl);
+        } catch (ClassNotFoundException e) {
+            // ignore
+        }
+        return false;
     }
 }
