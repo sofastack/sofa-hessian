@@ -51,6 +51,21 @@ package com.caucho.hessian.io;
 import com.alipay.hessian.ClassNameResolver;
 import com.alipay.hessian.ClassNameResolverBuilder;
 import com.caucho.burlap.io.BurlapRemoteObject;
+import com.caucho.hessian.io.java8.DurationHandle;
+import com.caucho.hessian.io.java8.InstantHandle;
+import com.caucho.hessian.io.java8.Java8TimeSerializer;
+import com.caucho.hessian.io.java8.LocalDateHandle;
+import com.caucho.hessian.io.java8.LocalDateTimeHandle;
+import com.caucho.hessian.io.java8.LocalTimeHandle;
+import com.caucho.hessian.io.java8.MonthDayHandle;
+import com.caucho.hessian.io.java8.OffsetDateTimeHandle;
+import com.caucho.hessian.io.java8.OffsetTimeHandle;
+import com.caucho.hessian.io.java8.PeriodHandle;
+import com.caucho.hessian.io.java8.YearHandle;
+import com.caucho.hessian.io.java8.YearMonthHandle;
+import com.caucho.hessian.io.java8.ZoneIdSerializer;
+import com.caucho.hessian.io.java8.ZoneOffsetHandle;
+import com.caucho.hessian.io.java8.ZonedDateTimeHandle;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,8 +90,7 @@ import java.util.logging.Logger;
 /**
  * Factory for returning serialization methods.
  */
-public class SerializerFactory extends AbstractSerializerFactory
-{
+public class SerializerFactory extends AbstractSerializerFactory {
     private static final Logger                                                     log                        = Logger
                                                                                                                    .getLogger(SerializerFactory.class
                                                                                                                        .getName());
@@ -117,20 +131,19 @@ public class SerializerFactory extends AbstractSerializerFactory
     protected ClassNameResolver                                                     classNameResolver          = ClassNameResolverBuilder
                                                                                                                    .buildDefault();
 
-    public SerializerFactory()
-    {
+    protected static Map<Class, Serializer>                                         jdk8DateSerializeMap       = new ConcurrentHashMap<Class, Serializer>();
+
+    public SerializerFactory() {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public SerializerFactory(ClassLoader loader)
-    {
+    public SerializerFactory(ClassLoader loader) {
         _loaderRef = new WeakReference<ClassLoader>(loader);
 
         _contextFactory = ContextSerializerFactory.create(loader);
     }
 
-    public static SerializerFactory createDefault()
-    {
+    public static SerializerFactory createDefault() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
         synchronized (_defaultFactoryRefMap) {
@@ -153,16 +166,14 @@ public class SerializerFactory extends AbstractSerializerFactory
         }
     }
 
-    public ClassLoader getClassLoader()
-    {
+    public ClassLoader getClassLoader() {
         return _loaderRef.get();
     }
 
     /**
      * Set true if the collection serializer should send the java type.
      */
-    public void setSendCollectionType(boolean isSendType)
-    {
+    public void setSendCollectionType(boolean isSendType) {
         if (_collectionSerializer == null)
             _collectionSerializer = new CollectionSerializer();
 
@@ -177,24 +188,21 @@ public class SerializerFactory extends AbstractSerializerFactory
     /**
      * Adds a factory.
      */
-    public void addFactory(AbstractSerializerFactory factory)
-    {
+    public void addFactory(AbstractSerializerFactory factory) {
         _factories.add(factory);
     }
 
     /**
      * If true, non-serializable objects are allowed.
      */
-    public void setAllowNonSerializable(boolean allow)
-    {
+    public void setAllowNonSerializable(boolean allow) {
         _isAllowNonSerializable = allow;
     }
 
     /**
      * If true, non-serializable objects are allowed.
      */
-    public boolean isAllowNonSerializable()
-    {
+    public boolean isAllowNonSerializable() {
         return _isAllowNonSerializable;
     }
 
@@ -220,12 +228,10 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Returns the serializer for a class.
      *
      * @param cl the class of the object that needs to be serialized.
-     *
      * @return a serializer object for the serialization.
      */
     public Serializer getObjectSerializer(Class<?> cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         Serializer serializer = getSerializer(cl);
 
         if (serializer instanceof ObjectSerializer)
@@ -235,13 +241,11 @@ public class SerializerFactory extends AbstractSerializerFactory
     }
 
     public Class<?> loadSerializedClass(String className)
-        throws ClassNotFoundException
-    {
+        throws ClassNotFoundException {
         return getClassFactory().load(className);
     }
 
-    public ClassFactory getClassFactory()
-    {
+    public ClassFactory getClassFactory() {
         synchronized (this) {
             if (_classFactory == null) {
                 _classFactory = new ClassFactory(getClassLoader());
@@ -255,12 +259,10 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Returns the serializer for a class.
      *
      * @param cl the class of the object that needs to be serialized.
-     *
      * @return a serializer object for the serialization.
      */
     public Serializer getSerializer(Class cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         Serializer serializer;
 
         serializer = (Serializer) _cachedSerializerMap.get(cl);
@@ -277,8 +279,7 @@ public class SerializerFactory extends AbstractSerializerFactory
     }
 
     protected Serializer loadSerializer(Class<?> cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
 
         if (classNameResolver != null) {
             try {
@@ -299,6 +300,18 @@ public class SerializerFactory extends AbstractSerializerFactory
 
             if (serializer != null)
                 return serializer;
+        }
+        //must before "else if (JavaSerializer.getWriteReplace(cl) != null)" or will be WriteReplace
+        if (isZoneId(cl)) {
+            serializer = ZoneIdSerializer.getInstance();
+            return serializer;
+        }
+        //先处理 jdk8
+        else {
+            serializer = jdk8DateSerializeMap.get(cl);
+            if (serializer != null) {
+                return serializer;
+            }
         }
 
         serializer = _contextFactory.getSerializer(cl.getName());
@@ -323,33 +336,26 @@ public class SerializerFactory extends AbstractSerializerFactory
 
         if (HessianRemoteObject.class.isAssignableFrom(cl)) {
             return new RemoteSerializer();
-        }
-        else if (BurlapRemoteObject.class.isAssignableFrom(cl)) {
+        } else if (BurlapRemoteObject.class.isAssignableFrom(cl)) {
             return new RemoteSerializer();
-        }
-        else if (InetAddress.class.isAssignableFrom(cl)) {
+        } else if (InetAddress.class.isAssignableFrom(cl)) {
             return InetAddressSerializer.create();
-        }
-        else if (JavaSerializer.getWriteReplace(cl) != null) {
+        } else if (JavaSerializer.getWriteReplace(cl) != null) {
             Serializer baseSerializer = getDefaultSerializer(cl);
 
             return new WriteReplaceSerializer(cl, getClassLoader(), baseSerializer);
-        }
-        else if (Map.class.isAssignableFrom(cl)) {
+        } else if (Map.class.isAssignableFrom(cl)) {
             if (_mapSerializer == null)
                 _mapSerializer = new MapSerializer();
 
             return _mapSerializer;
-        }
-        else if (Collection.class.isAssignableFrom(cl)) {
+        } else if (Collection.class.isAssignableFrom(cl)) {
             if (_collectionSerializer == null) {
                 _collectionSerializer = new CollectionSerializer();
             }
 
             return _collectionSerializer;
-        }
-
-        else if (cl.isArray())
+        } else if (cl.isArray())
             return new ArraySerializer();
 
         else if (Throwable.class.isAssignableFrom(cl))
@@ -382,11 +388,9 @@ public class SerializerFactory extends AbstractSerializerFactory
      * bean-style serialization instead of field serialization.
      *
      * @param cl the class of the object that needs to be serialized.
-     *
      * @return a serializer object for the serialization.
      */
-    protected Serializer getDefaultSerializer(Class cl)
-    {
+    protected Serializer getDefaultSerializer(Class cl) {
         if (_defaultSerializer != null)
             return _defaultSerializer;
 
@@ -398,8 +402,7 @@ public class SerializerFactory extends AbstractSerializerFactory
         if (_isEnableUnsafeSerializer
             && JavaSerializer.getWriteReplace(cl) == null) {
             return UnsafeSerializer.create(cl);
-        }
-        else
+        } else
             return JavaSerializer.create(cl);
     }
 
@@ -407,12 +410,10 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Returns the deserializer for a class.
      *
      * @param cl the class of the object that needs to be deserialized.
-     *
      * @return a deserializer object for the serialization.
      */
     public Deserializer getDeserializer(Class cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         Deserializer deserializer;
 
         deserializer = (Deserializer) _cachedDeserializerMap.get(cl);
@@ -428,8 +429,7 @@ public class SerializerFactory extends AbstractSerializerFactory
     }
 
     protected Deserializer loadDeserializer(Class cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         Deserializer deserializer = null;
 
         for (int i = 0; deserializer == null && _factories != null && i < _factories.size(); i++) {
@@ -465,23 +465,17 @@ public class SerializerFactory extends AbstractSerializerFactory
 
         else if (Map.class.isAssignableFrom(cl)) {
             deserializer = new MapDeserializer(cl);
-        }
-        else if (Iterator.class.isAssignableFrom(cl)) {
+        } else if (Iterator.class.isAssignableFrom(cl)) {
             deserializer = IteratorDeserializer.create();
-        }
-        else if (Annotation.class.isAssignableFrom(cl)) {
+        } else if (Annotation.class.isAssignableFrom(cl)) {
             deserializer = new AnnotationDeserializer(cl);
-        }
-        else if (cl.isInterface()) {
+        } else if (cl.isInterface()) {
             deserializer = new ObjectDeserializer(cl);
-        }
-        else if (cl.isArray()) {
+        } else if (cl.isArray()) {
             deserializer = new ArrayDeserializer(cl.getComponentType());
-        }
-        else if (Enumeration.class.isAssignableFrom(cl)) {
+        } else if (Enumeration.class.isAssignableFrom(cl)) {
             deserializer = EnumerationDeserializer.create();
-        }
-        else if (Enum.class.isAssignableFrom(cl))
+        } else if (Enum.class.isAssignableFrom(cl))
             deserializer = new EnumDeserializer(cl);
 
         else if (Class.class.equals(cl))
@@ -497,11 +491,9 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Returns a custom serializer the class
      *
      * @param cl the class of the object that needs to be serialized.
-     *
      * @return a serializer object for the serialization.
      */
-    protected Deserializer getCustomDeserializer(Class cl)
-    {
+    protected Deserializer getCustomDeserializer(Class cl) {
         try {
             Class serClass = Class.forName(cl.getName() + "HessianDeserializer",
                 false, cl.getClassLoader());
@@ -526,18 +518,15 @@ public class SerializerFactory extends AbstractSerializerFactory
      * bean-style serialization instead of field serialization.
      *
      * @param cl the class of the object that needs to be serialized.
-     *
      * @return a serializer object for the serialization.
      */
-    protected Deserializer getDefaultDeserializer(Class cl)
-    {
+    protected Deserializer getDefaultDeserializer(Class cl) {
         if (InputStream.class.equals(cl))
             return InputStreamDeserializer.DESER;
 
         if (_isEnableUnsafeSerializer) {
             return new UnsafeDeserializer(cl);
-        }
-        else
+        } else
             return new JavaDeserializer(cl);
     }
 
@@ -545,8 +534,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Reads the object as a list.
      */
     public Object readList(AbstractHessianInput in, int length, String type)
-        throws HessianProtocolException, IOException
-    {
+        throws HessianProtocolException, IOException {
         Deserializer deserializer = getDeserializer(type);
 
         if (deserializer != null)
@@ -559,8 +547,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Reads the object as a map.
      */
     public Object readMap(AbstractHessianInput in, String type)
-        throws HessianProtocolException, IOException
-    {
+        throws HessianProtocolException, IOException {
         Deserializer deserializer = getDeserializer(type);
 
         if (deserializer != null)
@@ -580,8 +567,7 @@ public class SerializerFactory extends AbstractSerializerFactory
     public Object readObject(AbstractHessianInput in,
                              String type,
                              String[] fieldNames)
-        throws HessianProtocolException, IOException
-    {
+        throws HessianProtocolException, IOException {
         Deserializer deserializer = getDeserializer(type);
 
         if (deserializer != null)
@@ -599,8 +585,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Reads the object as a map.
      */
     public Deserializer getObjectDeserializer(String type, Class cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         Deserializer reader = getObjectDeserializer(type);
 
         if (cl == null
@@ -623,8 +608,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Reads the object as a map.
      */
     public Deserializer getObjectDeserializer(String type)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         Deserializer deserializer = getDeserializer(type);
 
         if (deserializer != null)
@@ -642,8 +626,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Reads the object as a map.
      */
     public Deserializer getListDeserializer(String type, Class cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         Deserializer reader = getListDeserializer(type);
 
         if (cl == null
@@ -664,8 +647,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Reads the object as a map.
      */
     public Deserializer getListDeserializer(String type)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         Deserializer deserializer = getDeserializer(type);
 
         if (deserializer != null)
@@ -683,8 +665,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      * Returns a deserializer based on a string type.
      */
     public Deserializer getDeserializer(String type)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         if (type == null || type.equals(""))
             return null;
 
@@ -714,8 +695,7 @@ public class SerializerFactory extends AbstractSerializerFactory
                 deserializer = new ArrayDeserializer(subDeserializer.getType());
             else
                 deserializer = new ArrayDeserializer(Object.class);
-        }
-        else {
+        } else {
             try {
                 //Class cl = Class.forName(type, false, getClassLoader());
 
@@ -736,8 +716,7 @@ public class SerializerFactory extends AbstractSerializerFactory
         return deserializer;
     }
 
-    private static void addBasic(Class<?> cl, String typeName, int type)
-    {
+    private static void addBasic(Class<?> cl, String typeName, int type) {
         Deserializer deserializer = new BasicDeserializer(type);
 
         _staticTypeMap.put(typeName, deserializer);
@@ -801,6 +780,41 @@ public class SerializerFactory extends AbstractSerializerFactory
             e.printStackTrace();
         }
 
+        try {
+            if (isJava8()) {
+                jdk8DateSerializeMap.put(Class.forName("java.time.LocalTime"),
+                    Java8TimeSerializer.create(LocalTimeHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.LocalDate"),
+                    Java8TimeSerializer.create(LocalDateHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.LocalDateTime"),
+                    Java8TimeSerializer.create(LocalDateTimeHandle.class));
+
+                jdk8DateSerializeMap.put(Class.forName("java.time.Instant"),
+                    Java8TimeSerializer.create(InstantHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.Duration"),
+                    Java8TimeSerializer.create(DurationHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.Period"),
+                    Java8TimeSerializer.create(PeriodHandle.class));
+
+                jdk8DateSerializeMap.put(Class.forName("java.time.Year"), Java8TimeSerializer.create(YearHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.YearMonth"),
+                    Java8TimeSerializer.create(YearMonthHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.MonthDay"),
+                    Java8TimeSerializer.create(MonthDayHandle.class));
+
+                jdk8DateSerializeMap.put(Class.forName("java.time.OffsetDateTime"),
+                    Java8TimeSerializer.create(OffsetDateTimeHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.ZoneOffset"),
+                    Java8TimeSerializer.create(ZoneOffsetHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.OffsetTime"),
+                    Java8TimeSerializer.create(OffsetTimeHandle.class));
+                jdk8DateSerializeMap.put(Class.forName("java.time.ZonedDateTime"),
+                    Java8TimeSerializer.create(ZonedDateTimeHandle.class));
+            }
+        } catch (Throwable t) {
+            log.warning(String.valueOf(t.getCause()));
+        }
+
         ClassLoader systemClassLoader = null;
         try {
             systemClassLoader = ClassLoader.getSystemClassLoader();
@@ -808,5 +822,24 @@ public class SerializerFactory extends AbstractSerializerFactory
         }
 
         _systemClassLoader = systemClassLoader;
+    }
+
+    /**
+     * check if the environment is java 8 or beyond
+     *
+     * @return if on java 8
+     */
+    private static boolean isJava8() {
+        String javaVersion = System.getProperty("java.specification.version");
+        return Double.valueOf(javaVersion) >= 1.8;
+    }
+
+    private static boolean isZoneId(Class cl) {
+        try {
+            return isJava8() && Class.forName("java.time.ZoneId").isAssignableFrom(cl);
+        } catch (ClassNotFoundException e) {
+            // ignore
+        }
+        return false;
     }
 }
