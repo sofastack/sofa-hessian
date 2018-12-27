@@ -30,6 +30,7 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
 
     private static final List<String> INTERNAL_BLACK_LIST = Arrays
                                                               .asList(
+                                                                  "org.codehaus.groovy.runtime.MethodClosure",
                                                                   "clojure.core$constantly",
                                                                   "clojure.main$eval_opt",
                                                                   "com.alibaba.citrus.springext.support.parser.AbstractNamedProxyBeanDefinitionParser$ProxyTargetFactory",
