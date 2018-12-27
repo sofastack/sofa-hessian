@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class InternalNameBlackListFilter extends NameBlackListFilter {
 
-    private static final List<String> INTERNAL_BLACK_LIST = Arrays
+    static final List<String> INTERNAL_BLACK_LIST = Arrays
                                                               .asList(
                                                                   "org.codehaus.groovy.runtime.MethodClosure",
                                                                   "clojure.core$constantly",
@@ -85,7 +85,6 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
                                                                   "org.springframework.jndi.JndiObjectTargetSource",
                                                                   "ch.qos.logback.core.db.JNDIConnectionSource",
                                                                   "java.beans.Expression",
-                                                                  "org.codehaus.groovy.runtime.MethodClosure",
                                                                   "javassist.bytecode",
                                                                   "org.apache.ibatis.javassist.bytecode",
                                                                   "org.springframework.beans.factory.config.MethodInvokingFactoryBean",
