@@ -81,7 +81,21 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
                                                                   "org.yaml.snakeyaml.tokens.DirectiveToken",
                                                                   "sun.rmi.server.UnicastRef",
                                                                   "javax.management.ImmutableDescriptor",
-                                                                  "org.springframework.jndi.JndiObjectTargetSource");
+                                                                  "org.springframework.jndi.JndiObjectTargetSource",
+                                                                  "ch.qos.logback.core.db.JNDIConnectionSource",
+                                                                  "java.beans.Expression",
+                                                                  "org.codehaus.groovy.runtime.MethodClosure",
+                                                                  "javassist.bytecode",
+                                                                  "org.apache.ibatis.javassist.bytecode",
+                                                                  "org.springframework.beans.factory.config.MethodInvokingFactoryBean",
+                                                                  "com.alibaba.druid.pool.DruidDataSource",
+                                                                  "com.sun.org.apache.bcel.internal.util.ClassLoader",
+                                                                  "com.alibaba.druid.stat.JdbcDataSourceStat",
+                                                                  "org.apache.tomcat.dbcp.dbcp.BasicDataSource",
+                                                                  "com.sun.org.apache.xml.internal.security.signature.XMLSignatureInput",
+                                                                  "javassist.tools.web.Viewer",
+                                                                  "net.bytebuddy.dynamic.loading.ByteArrayClassLoader",
+                                                                  "org.apache.commons.beanutils.BeanMap");
 
     /**
      * 构造函数
