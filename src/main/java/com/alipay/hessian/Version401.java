@@ -21,5 +21,5 @@ package com.alipay.hessian;
  * every publish you need to change class name
  * @author bystander
  */
-public class Version400 {
+public class Version401 {
 }
