@@ -19,7 +19,6 @@ package com.alipay.hessian.internal;
 import com.alipay.hessian.NameBlackListFilter;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
         super(INTERNAL_BLACK_LIST, maxCacheSize);
     }
 
-    private static List<String> readBlackList(String relativePath) {
+    static List<String> readBlackList(String blackListFile) {
 
         List<String> result = new ArrayList<String>();
         //Get file from resources folder
@@ -66,20 +65,40 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
         } else {
             classLoader = Thread.currentThread().getContextClassLoader();
         }
-        final URL resource = classLoader.getResource(relativePath);
+        final URL resource = classLoader.getResource(blackListFile);
         if (resource != null) {
             File file = new File(resource.getFile());
+            Scanner scanner = null;
             try {
-                Scanner scanner = new Scanner(file);
+                scanner = new Scanner(file);
                 while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    result.add(line);
+                    final String nextLine = scanner.nextLine();
+                    if (!isBlank(nextLine)) {
+                        result.add(nextLine);
+                    }
                 }
-                scanner.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 //ignore
+            } finally {
+                if (scanner != null) {
+                    scanner.close();
+                }
             }
         }
         return result;
+    }
+
+    //is blank
+    static boolean isBlank(String cs) {
+        int strLen;
+        if (cs == null || (strLen = cs.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(cs.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
