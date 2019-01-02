@@ -22,5 +22,5 @@ package com.alipay.hessian;
  * @author bystander
  * @version $Id: Version326.java, v 0.1 2018年07月06日 5:21 PM bystander Exp $
  */
-public class Version334 {
+public class Version335 {
 }
