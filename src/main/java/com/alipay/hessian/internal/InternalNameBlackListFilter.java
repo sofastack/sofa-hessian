@@ -32,8 +32,10 @@ import java.util.Scanner;
  */
 public class InternalNameBlackListFilter extends NameBlackListFilter {
 
-    private static final String blackListFile       = System.getProperty("serialize.blacklist.file",
-                                                        "security/serialize.blacklist");
+    private static final String DEFAULT_BLACK_LIST  = "security/serialize.blacklist";
+
+    private static final String blackListFile       = System
+                                                        .getProperty("serialize.blacklist.file", DEFAULT_BLACK_LIST);
 
     static final List<String>   INTERNAL_BLACK_LIST = readBlackList(blackListFile);
 
@@ -57,7 +59,13 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
 
         List<String> result = new ArrayList<String>();
         //Get file from resources folder
-        ClassLoader classLoader = InternalNameBlackListFilter.class.getClassLoader();
+        ClassLoader classLoader;
+
+        if (blackListFile.equals(DEFAULT_BLACK_LIST)) {
+            classLoader = InternalNameBlackListFilter.class.getClassLoader();
+        } else {
+            classLoader = Thread.currentThread().getContextClassLoader();
+        }
         final URL resource = classLoader.getResource(relativePath);
         if (resource != null) {
             File file = new File(resource.getFile());
