@@ -19,6 +19,8 @@ package com.alipay.hessian.internal;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
+
 /**
  * Created by zhanggeng on 2017/8/5.
  *
@@ -46,5 +48,16 @@ public class InternalNameBlackListFilterTest {
         }
         Assert.assertTrue(pass);
         Assert.assertEquals(className, "com.alipay.xx");
+    }
+
+    @Test
+    public void readBlackList() {
+
+        InternalNameBlackListFilter filter = new InternalNameBlackListFilter(3);
+        List<String> result = filter.readBlackList("test.blacklist");
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("aa", result.get(0));
+        Assert.assertEquals("bb", result.get(1));
+
     }
 }
