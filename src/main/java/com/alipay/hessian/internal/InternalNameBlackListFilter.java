@@ -18,8 +18,7 @@ package com.alipay.hessian.internal;
 
 import com.alipay.hessian.NameBlackListFilter;
 
-import java.io.File;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -65,12 +64,11 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
         } else {
             classLoader = Thread.currentThread().getContextClassLoader();
         }
-        final URL resource = classLoader.getResource(blackListFile);
-        if (resource != null) {
-            File file = new File(resource.getFile());
+        final InputStream inputStream = classLoader.getResourceAsStream(blackListFile);
+        if (inputStream != null) {
             Scanner scanner = null;
             try {
-                scanner = new Scanner(file);
+                scanner = new Scanner(inputStream);
                 while (scanner.hasNextLine()) {
                     final String nextLine = scanner.nextLine();
                     if (!isBlank(nextLine)) {
@@ -84,7 +82,11 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
                     scanner.close();
                 }
             }
+            //不存在使用内置的
+        } else {
+            result = readBlackList(DEFAULT_BLACK_LIST);
         }
+
         return result;
     }
 
