@@ -18,8 +18,10 @@ package com.alipay.hessian.internal;
 
 import com.alipay.hessian.NameBlackListFilter;
 
-import java.util.Arrays;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * 内置黑名单列表过滤器
@@ -28,74 +30,12 @@ import java.util.List;
  */
 public class InternalNameBlackListFilter extends NameBlackListFilter {
 
-    static final List<String> INTERNAL_BLACK_LIST = Arrays
-                                                      .asList(
-                                                          "org.codehaus.groovy.runtime.MethodClosure",
-                                                          "clojure.core$constantly",
-                                                          "clojure.main$eval_opt",
-                                                          "com.alibaba.citrus.springext.support.parser.AbstractNamedProxyBeanDefinitionParser$ProxyTargetFactory",
-                                                          "com.alibaba.citrus.springext.support.parser.AbstractNamedProxyBeanDefinitionParser$ProxyTargetFactoryImpl",
-                                                          "com.alibaba.citrus.springext.util.SpringExtUtil.AbstractProxy",
-                                                          "com.alipay.custrelation.service.model.redress.Pair",
-                                                          "com.caucho.hessian.test.TestCons",
-                                                          "com.mchange.v2.c3p0.JndiRefForwardingDataSource",
-                                                          "com.mchange.v2.c3p0.WrapperConnectionPoolDataSource",
-                                                          "com.rometools.rome.feed.impl.EqualsBean",
-                                                          "com.rometools.rome.feed.impl.ToStringBean",
-                                                          "com.sun.jndi.rmi.registry.BindingEnumeration",
-                                                          "com.sun.jndi.toolkit.dir.LazySearchEnumerationImpl",
-                                                          "com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl",
-                                                          "com.sun.rowset.JdbcRowSetImpl",
-                                                          "com.sun.xml.internal.bind.v2.runtime.unmarshaller.Base64Data",
-                                                          "java.rmi.server.UnicastRemoteObject",
-                                                          "java.security.SignedObject",
-                                                          "java.util.ServiceLoader$LazyIterator",
-                                                          "javax.imageio.ImageIO$ContainsFilter",
-                                                          "javax.imageio.spi.ServiceRegistry",
-                                                          "javax.management.BadAttributeValueExpException",
-                                                          "javax.naming.InitialContext",
-                                                          "javax.naming.spi.ObjectFactory",
-                                                          "javax.script.ScriptEngineManager",
-                                                          "javax.sound.sampled.AudioFormat$Encoding",
-                                                          "org.apache.carbondata.core.scan.expression.ExpressionResult",
-                                                          "org.apache.commons.dbcp.datasources.SharedPoolDataSource",
-                                                          "org.apache.ibatis.executor.loader.AbstractSerialStateHolder",
-                                                          "org.apache.ibatis.executor.loader.CglibSerialStateHolder",
-                                                          "org.apache.ibatis.executor.loader.JavassistSerialStateHolder",
-                                                          "org.apache.ibatis.executor.loader.cglib.CglibProxyFactory",
-                                                          "org.apache.ibatis.executor.loader.javassist.JavassistSerialStateHolder",
-                                                          "org.apache.tomcat.dbcp.dbcp.datasources.SharedPoolDataSource",
-                                                          "org.apache.wicket.util.upload.DiskFileItem",
-                                                          "org.apache.xalan.xsltc.trax.TemplatesImpl",
-                                                          "org.apache.xbean.naming.context.ContextUtil$ReadOnlyBinding",
-                                                          "org.apache.xpath.XPathContext",
-                                                          "org.eclipse.jetty.util.log.LoggerLog",
-                                                          "org.geotools.filter.ConstantExpression",
-                                                          "org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator$PartiallyComparableAdvisorHolder",
-                                                          "org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor",
-                                                          "org.springframework.beans.factory.BeanFactory",
-                                                          "org.springframework.beans.factory.config.PropertyPathFactoryBean",
-                                                          "org.springframework.beans.factory.support.DefaultListableBeanFactory",
-                                                          "org.springframework.jndi.support.SimpleJndiBeanFactory",
-                                                          "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
-                                                          "org.springframework.transaction.jta.JtaTransactionManager",
-                                                          "org.yaml.snakeyaml.tokens.DirectiveToken",
-                                                          "sun.rmi.server.UnicastRef",
-                                                          "javax.management.ImmutableDescriptor",
-                                                          "org.springframework.jndi.JndiObjectTargetSource",
-                                                          "ch.qos.logback.core.db.JNDIConnectionSource",
-                                                          "java.beans.Expression",
-                                                          "javassist.bytecode",
-                                                          "org.apache.ibatis.javassist.bytecode",
-                                                          "org.springframework.beans.factory.config.MethodInvokingFactoryBean",
-                                                          "com.alibaba.druid.pool.DruidDataSource",
-                                                          "com.sun.org.apache.bcel.internal.util.ClassLoader",
-                                                          "com.alibaba.druid.stat.JdbcDataSourceStat",
-                                                          "org.apache.tomcat.dbcp.dbcp.BasicDataSource",
-                                                          "com.sun.org.apache.xml.internal.security.signature.XMLSignatureInput",
-                                                          "javassist.tools.web.Viewer",
-                                                          "net.bytebuddy.dynamic.loading.ByteArrayClassLoader",
-                                                          "org.apache.commons.beanutils.BeanMap");
+    private static final String DEFAULT_BLACK_LIST  = "security/serialize.blacklist";
+
+    private static final String blackListFile       = System
+                                                        .getProperty("serialize.blacklist.file", DEFAULT_BLACK_LIST);
+
+    static final List<String>   INTERNAL_BLACK_LIST = readBlackList(blackListFile);
 
     /**
      * 构造函数
@@ -111,5 +51,56 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
      */
     public InternalNameBlackListFilter(int maxCacheSize) {
         super(INTERNAL_BLACK_LIST, maxCacheSize);
+    }
+
+    static List<String> readBlackList(String blackListFile) {
+
+        List<String> result = new ArrayList<String>();
+        //Get file from resources folder
+        ClassLoader classLoader;
+
+        if (blackListFile.equals(DEFAULT_BLACK_LIST)) {
+            classLoader = InternalNameBlackListFilter.class.getClassLoader();
+        } else {
+            classLoader = Thread.currentThread().getContextClassLoader();
+        }
+        final InputStream inputStream = classLoader.getResourceAsStream(blackListFile);
+        if (inputStream != null) {
+            Scanner scanner = null;
+            try {
+                scanner = new Scanner(inputStream);
+                while (scanner.hasNextLine()) {
+                    final String nextLine = scanner.nextLine();
+                    if (!isBlank(nextLine)) {
+                        result.add(nextLine);
+                    }
+                }
+            } catch (Exception e) {
+                //ignore
+            } finally {
+                if (scanner != null) {
+                    scanner.close();
+                }
+            }
+            //不存在使用内置的
+        } else {
+            result = readBlackList(DEFAULT_BLACK_LIST);
+        }
+
+        return result;
+    }
+
+    //is blank
+    static boolean isBlank(String cs) {
+        int strLen;
+        if (cs == null || (strLen = cs.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(cs.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
