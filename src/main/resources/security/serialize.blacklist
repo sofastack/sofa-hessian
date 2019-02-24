@@ -66,4 +66,3 @@ net.bytebuddy.dynamic.loading.ByteArrayClassLoader
 org.apache.commons.beanutils.BeanMap
 com.caucho.naming.QName
 com.sun.org.apache.xpath
-org.apache.commons.beanutils.BeanMap
