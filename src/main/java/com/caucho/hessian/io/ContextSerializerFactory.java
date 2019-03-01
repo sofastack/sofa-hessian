@@ -132,12 +132,7 @@ public class ContextSerializerFactory
                 factory = factoryRef.get();
 
             if (factory == null) {
-                ContextSerializerFactory parent = null;
-
-                if (loader != null)
-                    parent = create(loader.getParent());
-
-                factory = new ContextSerializerFactory(parent, loader);
+                factory = new ContextSerializerFactory(null, loader);
                 factoryRef = new SoftReference<ContextSerializerFactory>(factory);
 
                 _contextRefMap.put(loader, factoryRef);
