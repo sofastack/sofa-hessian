@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.hessian.io;
+package com.caucho.hessian.io;
 
 import com.alipay.hessian.Constants;
-import com.caucho.hessian.io.ContextSerializerFactory;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -33,12 +32,20 @@ public class ContextSerializerFactoryTest {
     // won't throw ClassCastException
     @Test
     public void testCastException() throws Throwable {
-        System.setProperty(Constants.RESOLVE_PARENT_CONTEXT_SERIALIZER_FACTORY, "false");
-        URL[] urls = ((URLClassLoader) this.getClass().getClassLoader()).getURLs();
-        ClassLoaderA cla = new ClassLoaderA(urls, null);
-        Class classContextSerializerFactory = cla.loadClass(ContextSerializerFactory.class.getCanonicalName());
-        Method method = classContextSerializerFactory.getDeclaredMethod("create", ClassLoader.class);
-        method.invoke(null, cla);
+        String old = System.getProperty(Constants.HESSIAN_PARENT_CONTEXT_CREATE);
+        try {
+            System.setProperty(Constants.HESSIAN_PARENT_CONTEXT_CREATE, "false");
+            URL[] urls = ((URLClassLoader) this.getClass().getClassLoader()).getURLs();
+            ClassLoaderA cla = new ClassLoaderA(urls, null);
+            Class classContextSerializerFactory = cla.loadClass(ContextSerializerFactory.class.getCanonicalName());
+            Method method = classContextSerializerFactory.getDeclaredMethod("create", ClassLoader.class);
+            method.invoke(null, cla);
+        } finally {
+            if (old != null) {
+                System.setProperty(Constants.HESSIAN_PARENT_CONTEXT_CREATE, old);
+            }
+        }
+
     }
 
     static class ClassLoaderA extends URLClassLoader {
