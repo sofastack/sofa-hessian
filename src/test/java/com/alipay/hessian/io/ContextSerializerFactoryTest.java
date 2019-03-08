@@ -16,6 +16,7 @@
  */
 package com.alipay.hessian.io;
 
+import com.alipay.hessian.Constants;
 import com.caucho.hessian.io.ContextSerializerFactory;
 import org.junit.Test;
 
@@ -32,6 +33,7 @@ public class ContextSerializerFactoryTest {
     // won't throw ClassCastException
     @Test
     public void testCastException() throws Throwable {
+        System.setProperty(Constants.RESOLVE_PARENT_CONTEXT_SERIALIZER_FACTORY, "false");
         URL[] urls = ((URLClassLoader) this.getClass().getClassLoader()).getURLs();
         ClassLoaderA cla = new ClassLoaderA(urls, null);
         Class classContextSerializerFactory = cla.loadClass(ContextSerializerFactory.class.getCanonicalName());
