@@ -63,6 +63,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.alipay.hessian.Constants;
 import com.caucho.hessian.HessianException;
 
 /**
@@ -133,10 +134,11 @@ public class ContextSerializerFactory
 
             if (factory == null) {
                 ContextSerializerFactory parent = null;
-
-                if (loader != null)
+                if (loader != null &&
+                    !Boolean.FALSE.toString().equalsIgnoreCase(
+                        System.getProperty(Constants.RESOLVE_PARENT_CONTEXT_SERIALIZER_FACTORY))) {
                     parent = create(loader.getParent());
-
+                }
                 factory = new ContextSerializerFactory(parent, loader);
                 factoryRef = new SoftReference<ContextSerializerFactory>(factory);
 
