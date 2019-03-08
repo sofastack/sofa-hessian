@@ -48,6 +48,9 @@
 
 package com.caucho.hessian.io;
 
+import com.alipay.hessian.Constants;
+import com.caucho.hessian.HessianException;
+
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
@@ -62,9 +65,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.alipay.hessian.Constants;
-import com.caucho.hessian.HessianException;
 
 /**
  * The classloader-specific Factory for returning serialization
@@ -136,7 +136,7 @@ public class ContextSerializerFactory
                 ContextSerializerFactory parent = null;
                 if (loader != null &&
                     !Boolean.FALSE.toString().equalsIgnoreCase(
-                        System.getProperty(Constants.RESOLVE_PARENT_CONTEXT_SERIALIZER_FACTORY))) {
+                        System.getProperty(Constants.HESSIAN_PARENT_CONTEXT_CREATE))) {
                     parent = create(loader.getParent());
                 }
                 factory = new ContextSerializerFactory(parent, loader);

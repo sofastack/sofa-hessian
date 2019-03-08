@@ -18,7 +18,31 @@ package com.alipay.hessian;
 
 /**
  * @author qilong.zql
+ * @author <a href="mailto:zhanggeng.zg@antfin.com">zhanggeng</a>
  */
 public class Constants {
-    public final static String RESOLVE_PARENT_CONTEXT_SERIALIZER_FACTORY = "hessian.parent.context.create";
+    /**
+     * enable blacklist of serializer, default is true
+     */
+    public static final String SERIALIZE_BLACKLIST_ENABLE         = "serialize.blacklist.enable";
+    /**
+     * default value of SERIALIZE_BLACKLIST_ENABLE
+     */
+    public static final String DEFAULT_SERIALIZE_BLACKLIST_ENABLE = "true";
+    /**
+     * the custom blacklist file path of serializer, default is DEFAULT_SERIALIZE_BLACK_LIST
+     *
+     * @see #DEFAULT_SERIALIZE_BLACK_LIST
+     */
+    public static final String SERIALIZE_BLACKLIST_FILE           = "serialize.blacklist.file";
+    /**
+     * default value of SERIALIZE_BLACKLIST_FILE
+     */
+    public static final String DEFAULT_SERIALIZE_BLACK_LIST       = "security/serialize.blacklist";
+    /**
+     * whether to create ContextSerializeFactory of parent classloader, default is true
+     *
+     * @since 4.0.3
+     */
+    public final static String HESSIAN_PARENT_CONTEXT_CREATE      = "hessian.parent.context.create";
 }

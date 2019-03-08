@@ -31,7 +31,8 @@ public class ClassNameResolverBuilder {
      * @return Default ClassNameResolver
      */
     public static ClassNameResolver buildDefault() {
-        String enable = System.getProperty("serialize.blacklist.enable", "true");
+        String enable = System.getProperty(Constants.SERIALIZE_BLACKLIST_ENABLE,
+            Constants.DEFAULT_SERIALIZE_BLACKLIST_ENABLE);
         if (Boolean.TRUE.toString().equalsIgnoreCase(enable)) {
             ClassNameResolver resolver = new ClassNameResolver();
             resolver.addFilter(new InternalNameBlackListFilter());

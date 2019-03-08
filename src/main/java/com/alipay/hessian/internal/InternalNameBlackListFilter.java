@@ -16,6 +16,7 @@
  */
 package com.alipay.hessian.internal;
 
+import com.alipay.hessian.Constants;
 import com.alipay.hessian.NameBlackListFilter;
 
 import java.io.InputStream;
@@ -30,12 +31,11 @@ import java.util.Scanner;
  */
 public class InternalNameBlackListFilter extends NameBlackListFilter {
 
-    private static final String DEFAULT_BLACK_LIST  = "security/serialize.blacklist";
+    private static final String BLACKLIST_FILE      = System
+                                                        .getProperty(Constants.SERIALIZE_BLACKLIST_FILE,
+                                                            Constants.DEFAULT_SERIALIZE_BLACK_LIST);
 
-    private static final String blackListFile       = System
-                                                        .getProperty("serialize.blacklist.file", DEFAULT_BLACK_LIST);
-
-    static final List<String>   INTERNAL_BLACK_LIST = readBlackList(blackListFile);
+    static final List<String>   INTERNAL_BLACK_LIST = readBlackList(BLACKLIST_FILE);
 
     /**
      * 构造函数
@@ -59,7 +59,7 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
         //Get file from resources folder
         ClassLoader classLoader;
 
-        if (blackListFile.equals(DEFAULT_BLACK_LIST)) {
+        if (blackListFile.equals(Constants.DEFAULT_SERIALIZE_BLACK_LIST)) {
             classLoader = InternalNameBlackListFilter.class.getClassLoader();
         } else {
             classLoader = Thread.currentThread().getContextClassLoader();
@@ -84,7 +84,7 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
             }
             //不存在使用内置的
         } else {
-            result = readBlackList(DEFAULT_BLACK_LIST);
+            result = readBlackList(Constants.DEFAULT_SERIALIZE_BLACK_LIST);
         }
 
         return result;
