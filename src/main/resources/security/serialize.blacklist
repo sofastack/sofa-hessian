@@ -64,3 +64,5 @@ com.sun.org.apache.xml.internal.security.signature.XMLSignatureInput
 javassist.tools.web.Viewer
 net.bytebuddy.dynamic.loading.ByteArrayClassLoader
 org.apache.commons.beanutils.BeanMap
+com.caucho.naming.QName
+com.sun.org.apache.xpath
