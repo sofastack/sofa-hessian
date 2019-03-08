@@ -20,5 +20,5 @@ package com.alipay.hessian;
  * @author qilong.zql
  */
 public class Constants {
-    public final static String RESOLVE_PARENT_CONTEXT_SERIALIZER_FACTORY = "com.alipay.sofa.hessian.resolveParentContextSerializerFactory";
+    public final static String RESOLVE_PARENT_CONTEXT_SERIALIZER_FACTORY = "hessian.parent.context.create";
 }

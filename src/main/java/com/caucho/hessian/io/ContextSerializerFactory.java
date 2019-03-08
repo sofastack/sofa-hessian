@@ -135,7 +135,7 @@ public class ContextSerializerFactory
             if (factory == null) {
                 ContextSerializerFactory parent = null;
                 if (loader != null &&
-                    Boolean.TRUE.toString().equalsIgnoreCase(
+                    Boolean.FALSE.toString().equalsIgnoreCase(
                         System.getProperty(Constants.RESOLVE_PARENT_CONTEXT_SERIALIZER_FACTORY))) {
                     parent = create(loader.getParent());
                 }
