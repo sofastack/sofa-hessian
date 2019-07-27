@@ -100,7 +100,7 @@ public class SerializerFactory extends AbstractSerializerFactory {
 
     private static final ClassLoader                                                _systemClassLoader;
 
-    protected static final HashMap                                                  _staticTypeMap;
+    protected static final ConcurrentMap                                            _staticTypeMap;
 
     private static final WeakHashMap<ClassLoader, SoftReference<SerializerFactory>> _defaultFactoryRefMap      = new WeakHashMap<ClassLoader, SoftReference<SerializerFactory>>();
 
@@ -723,7 +723,7 @@ public class SerializerFactory extends AbstractSerializerFactory {
     }
 
     static {
-        _staticTypeMap = new HashMap();
+        _staticTypeMap = new ConcurrentHashMap();
 
         addBasic(void.class, "void", BasicSerializer.NULL);
 
