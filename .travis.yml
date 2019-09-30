@@ -1,11 +1,8 @@
 #.travis.yml
 language: java
 
-addons:
-  apt:
-    packages:
-      - openjdk-6-jdk
-      
+dist: trusty
+
 jdk:
   - oraclejdk8
   - openjdk7
