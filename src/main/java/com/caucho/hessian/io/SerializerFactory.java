@@ -104,6 +104,8 @@ public class SerializerFactory extends AbstractSerializerFactory
 
     protected ClassNameResolver    classNameResolver          = ClassNameResolverBuilder.buildDefault();
 
+    protected final static boolean isHigherThanJdk8           = isJava8();
+
     /**
      * Set true if the collection serializer should send the java type.
      */
@@ -591,7 +593,7 @@ public class SerializerFactory extends AbstractSerializerFactory
         }
         try {
 
-            if (isJava8()) {
+            if (isHigherThanJdk8) {
                 _staticSerializerMap.put(Class.forName("java.time.LocalTime"),
                     Java8TimeSerializer.create(LocalTimeHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.LocalDate"),
@@ -642,7 +644,7 @@ public class SerializerFactory extends AbstractSerializerFactory
 
     private static boolean isZoneId(Class cl) {
         try {
-            return isJava8() && Class.forName("java.time.ZoneId").isAssignableFrom(cl);
+            return isHigherThanJdk8 && Class.forName("java.time.ZoneId").isAssignableFrom(cl);
         } catch (ClassNotFoundException e) {
             // ignore
         }
