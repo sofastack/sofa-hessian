@@ -14,32 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.stc.bl;
+package com.alipay.hessian;
 
-import com.alipay.hessian.NameBlackListFilter;
-
-import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author <a href="mailto:zhanggeng.zg@antfin.com">GengZhang</a>
- */
-public class MockNameBlacklistFilter extends NameBlackListFilter {
+public class NameBlackListFilterManager {
+    /**
+     * rebuild cache.
+     * @param blackList
+     */
+    public static void rebuildBlackList(List<String> blackList) {
 
-    private static final List<String> INTERNAL_BLACK_LIST = Arrays.asList(
-                                                              "com.alipay.stc.bl");
-
-    public MockNameBlacklistFilter() {
-        super(INTERNAL_BLACK_LIST);
-    }
-
-    @Override
-    protected boolean inBlackList(String className) {
-        for (String prefix : INTERNAL_BLACK_LIST) {
-            if (className.startsWith(prefix)) {
-                return Boolean.TRUE;
-            }
-        }
-        return Boolean.FALSE;
+        NameBlackListFilter.buildCache(blackList, 4096);
     }
 }
