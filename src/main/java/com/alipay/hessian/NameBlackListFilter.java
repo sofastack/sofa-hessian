@@ -32,12 +32,12 @@ public class NameBlackListFilter implements ClassNameFilter {
     /**
      * 黑名单 包名前缀
      */
-    protected List<String>                   blackPrefixList;
+    protected static List<String>                   blackPrefixList;
 
     /**
      * 类名是否在黑名单中结果缓存。{className:true/false}
      */
-    protected ConcurrentMap<String, Boolean> resultOfInBlackList;
+    protected static ConcurrentMap<String, Boolean> resultOfInBlackList;
 
     /**
      * 指定黑名单前缀
@@ -55,8 +55,8 @@ public class NameBlackListFilter implements ClassNameFilter {
      * @param maxCacheSize    最大缓存大小
      */
     public NameBlackListFilter(List<String> blackPrefixList, int maxCacheSize) {
-        this.blackPrefixList = blackPrefixList;
-        buildCache(maxCacheSize);
+        NameBlackListFilter.blackPrefixList = blackPrefixList;
+        buildCache(blackPrefixList, maxCacheSize);
     }
 
     /**
@@ -64,15 +64,16 @@ public class NameBlackListFilter implements ClassNameFilter {
      *
      * @param maxCacheSize 最大缓存
      */
-    protected void buildCache(int maxCacheSize) {
+    public static void buildCache(List<String> blackPrefixList, int maxCacheSize) {
         if (blackPrefixList != null && !blackPrefixList.isEmpty()) {
+            NameBlackListFilter.blackPrefixList = blackPrefixList;
             int min = Math.min(256, maxCacheSize);
             int max = Math.min(10240, maxCacheSize);
             ConcurrentLinkedHashMap.Builder<String, Boolean> builder = new ConcurrentLinkedHashMap.Builder<String, Boolean>()
                 .initialCapacity(min).maximumWeightedCapacity(max);
-            this.resultOfInBlackList = builder.build();
+            NameBlackListFilter.resultOfInBlackList = builder.build();
         } else {
-            this.resultOfInBlackList = null;
+            NameBlackListFilter.resultOfInBlackList = null;
         }
     }
 
@@ -102,7 +103,7 @@ public class NameBlackListFilter implements ClassNameFilter {
      * @param className
      * @return 是否在黑名单中
      */
-    private boolean inBlackList(String className) {
+    protected boolean inBlackList(String className) {
         for (String prefix : blackPrefixList) {
             if (className.startsWith(prefix)) {
                 return Boolean.TRUE;
