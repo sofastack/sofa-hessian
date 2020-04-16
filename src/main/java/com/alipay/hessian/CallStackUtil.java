@@ -16,27 +16,19 @@
  */
 package com.alipay.hessian;
 
-import com.alipay.hessian.internal.InternalNameBlackListFilter;
-
 /**
- * 类名处理器的构造器
  *
- * @author <a href="mailto:zhanggeng.zg@antfin.com">zhanggeng</a>
+ * @author ruoshan
+ * @version $Id: CallStackUtil.java, v 0.1 2019年02月13日 11:29 ruoshan Exp $
  */
-public class ClassNameResolverBuilder {
+public class CallStackUtil {
 
-    /**
-     * Build default ClassNameResolver
-     * 
-     * @return Default ClassNameResolver
-     */
-    public static ClassNameResolver buildDefault() {
-        String enable = System.getProperty("serialize.blacklist.enable", "true");
-        if (Boolean.TRUE.toString().equalsIgnoreCase(enable)) {
-            ClassNameResolver resolver = new ClassNameResolver();
-            resolver.addFilter(InternalNameBlackListFilter.Singleton());
-            return resolver;
+    public static String getCurrentCallStack() {
+        StringBuilder msg = new StringBuilder();
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        for (int index = 2; index < elements.length; index++) {
+            msg.append(elements[index].toString()).append("\n");
         }
-        return null;
+        return msg.toString();
     }
 }

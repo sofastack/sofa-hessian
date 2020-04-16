@@ -4,7 +4,7 @@
 
     <groupId>com.alipay.sofa</groupId>
     <artifactId>hessian</artifactId>
-    <version>3.3.7</version>
+    <version>3.3.8</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -68,6 +68,18 @@
             <groupId>javax.jms</groupId>
             <artifactId>jms-api</artifactId>
             <version>1.1-rev-1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.9</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alipay.sofa.common</groupId>
+            <artifactId>sofa-common-tools</artifactId>
+            <version>1.0.14</version>
             <scope>provided</scope>
         </dependency>
 

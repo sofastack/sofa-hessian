@@ -17,6 +17,7 @@
 package com.alipay.hessian;
 
 import com.alipay.hessian.clhm.ConcurrentLinkedHashMap;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,12 +28,36 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author <a href="mailto:zhanggeng.zg@antfin.com">zhanggeng</a>
  */
-public class NameBlackListFilter implements ClassNameFilter {
+public abstract class NameBlackListFilter implements ClassNameFilter {
+
+    private static Logger      LOGGER                     = judgeLogger();
+
+    //do not change this
+    public static final String HESSIAN_SERIALIZE_LOG_NAME = "HessianSerializeLog";
+    public static final String CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.middleware.config";
+
+    private static Logger judgeLogger() {
+
+        try {
+            NameBlackListFilter.class.getClassLoader().loadClass("com.alipay.sofa.common.log.LoggerSpaceManager");
+        } catch (Throwable e) {
+            //do nothing
+            return null;
+        }
+
+        return com.alipay.sofa.common.log.LoggerSpaceManager.getLoggerBySpace(HESSIAN_SERIALIZE_LOG_NAME,
+            CONFIG_LOG_SPACE_NAME);
+    }
 
     /**
      * 黑名单 包名前缀
      */
-    protected static List<String>                   blackPrefixList;
+    protected List<String>                          blackPrefixList;
+
+    /**
+     * 全局黑名单 包名前缀, 优先级高于上者
+     */
+    protected static List<String>                   addBlackPrefixList;
 
     /**
      * 类名是否在黑名单中结果缓存。{className:true/false}
@@ -55,7 +80,7 @@ public class NameBlackListFilter implements ClassNameFilter {
      * @param maxCacheSize    最大缓存大小
      */
     public NameBlackListFilter(List<String> blackPrefixList, int maxCacheSize) {
-        NameBlackListFilter.blackPrefixList = blackPrefixList;
+        this.blackPrefixList = blackPrefixList;
         buildCache(blackPrefixList, maxCacheSize);
     }
 
@@ -66,14 +91,13 @@ public class NameBlackListFilter implements ClassNameFilter {
      */
     public static void buildCache(List<String> blackPrefixList, int maxCacheSize) {
         if (blackPrefixList != null && !blackPrefixList.isEmpty()) {
-            NameBlackListFilter.blackPrefixList = blackPrefixList;
             int min = Math.min(256, maxCacheSize);
             int max = Math.min(10240, maxCacheSize);
             ConcurrentLinkedHashMap.Builder<String, Boolean> builder = new ConcurrentLinkedHashMap.Builder<String, Boolean>()
                 .initialCapacity(min).maximumWeightedCapacity(max);
-            NameBlackListFilter.resultOfInBlackList = builder.build();
+            resultOfInBlackList = builder.build();
         } else {
-            NameBlackListFilter.resultOfInBlackList = null;
+            resultOfInBlackList = null;
         }
     }
 
@@ -85,12 +109,32 @@ public class NameBlackListFilter implements ClassNameFilter {
         if (blackPrefixList == null || resultOfInBlackList == null) {
             return className;
         }
+        final String monitorKey = "@" + className;
+        Boolean monitorResult = resultOfInBlackList.get(monitorKey);
+        if (monitorResult == null) {
+            monitorResult = inBlackList(monitorKey);
+            resultOfInBlackList.putIfAbsent(monitorKey, monitorResult);
+        }
+
+        if (monitorResult && LOGGER != null) {
+            LOGGER.info(String.format(
+                "[status] %s, [class] %s, [rule] %s, [callStack] %s",
+                "watch", className, monitorKey, CallStackUtil
+                    .getCurrentCallStack()));
+
+        }
+
         Boolean result = resultOfInBlackList.get(className);
         if (result == null) {
             result = inBlackList(className);
             resultOfInBlackList.putIfAbsent(className, result);
         }
-        if (result) {
+        if (result && LOGGER != null) {
+            LOGGER.info(String.format(
+                "[status] %s, [class] %s, [rule] %s, [callStack] %s",
+                "control", className, className, CallStackUtil
+                    .getCurrentCallStack()));
+
             throw new IOException("Class " + className + " is in blacklist. ");
         } else {
             return className;
@@ -101,14 +145,29 @@ public class NameBlackListFilter implements ClassNameFilter {
      * 检测类名是否不在黑名单中
      *
      * @param className
-     * @return 是否在黑名单中
+     * @return
      */
     protected boolean inBlackList(String className) {
-        for (String prefix : blackPrefixList) {
-            if (className.startsWith(prefix)) {
-                return Boolean.TRUE;
+
+        //动态推送不允许推空，推送一个白名单的值即可
+        if (addBlackPrefixList != null && addBlackPrefixList.size() != 0) {
+            for (String prefix : addBlackPrefixList) {
+                if (className.startsWith(prefix)) {
+                    return Boolean.TRUE;
+                }
+            }
+        } else {
+            for (String prefix : blackPrefixList) {
+                if (className.startsWith(prefix)) {
+                    return Boolean.TRUE;
+                }
             }
         }
+
         return Boolean.FALSE;
+    }
+
+    public static void setAddBlackPrefixList(List<String> addBlackPrefixList) {
+        NameBlackListFilter.addBlackPrefixList = addBlackPrefixList;
     }
 }

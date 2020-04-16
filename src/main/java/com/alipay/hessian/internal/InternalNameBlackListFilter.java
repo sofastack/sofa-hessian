@@ -103,4 +103,21 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
         }
         return true;
     }
+
+    /**
+     * 单例
+     */
+    private volatile static InternalNameBlackListFilter instance;
+
+    public static InternalNameBlackListFilter Singleton() {
+        if (instance == null) { //step1
+            synchronized (InternalNameBlackListFilter.class) { //step2
+                if (instance == null) { //step3
+                    instance = new InternalNameBlackListFilter(); //step4
+                }
+            }
+        }
+
+        return instance;
+    }
 }

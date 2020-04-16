@@ -67,7 +67,7 @@ public class ClassNameResolver {
 
     /**
      * 删除类名过滤器
-     * 
+     *
      * @param classNameFilter 类名过滤器
      */
     public void removeFilter(ClassNameFilter classNameFilter) {
