@@ -25,6 +25,6 @@ public class NameBlackListFilterManager {
      */
     public static void rebuildBlackList(List<String> blackList) {
 
-        NameBlackListFilter.buildCache(blackList, 4096);
+        NameBlackListFilter.setAddBlackPrefixList(blackList);
     }
 }

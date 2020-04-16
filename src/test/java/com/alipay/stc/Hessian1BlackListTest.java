@@ -55,12 +55,6 @@ public class Hessian1BlackListTest {
         serializerFactory.setClassNameResolver(resolver);
     }
 
-    //reset
-    @AfterClass
-    public static void afterClass() {
-        InternalNameBlackListFilter nameBlackListFilter = new InternalNameBlackListFilter();
-    }
-
     @Test
     public void testBeanSerialize() throws IOException {
         TestBlackBean blackBean = new TestBlackBean().setString("sss");

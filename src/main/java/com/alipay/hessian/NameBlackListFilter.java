@@ -52,7 +52,12 @@ public abstract class NameBlackListFilter implements ClassNameFilter {
     /**
      * 黑名单 包名前缀
      */
-    protected static List<String>                   blackPrefixList;
+    protected List<String>                          blackPrefixList;
+
+    /**
+     * 黑名单 包名前缀
+     */
+    protected static List<String>                   addBlackPrefixList;
 
     /**
      * 类名是否在黑名单中结果缓存。{className:true/false}
@@ -75,7 +80,7 @@ public abstract class NameBlackListFilter implements ClassNameFilter {
      * @param maxCacheSize    最大缓存大小
      */
     public NameBlackListFilter(List<String> blackPrefixList, int maxCacheSize) {
-        NameBlackListFilter.blackPrefixList = blackPrefixList;
+        this.blackPrefixList = blackPrefixList;
         buildCache(blackPrefixList, maxCacheSize);
     }
 
@@ -86,7 +91,6 @@ public abstract class NameBlackListFilter implements ClassNameFilter {
      */
     public static void buildCache(List<String> blackPrefixList, int maxCacheSize) {
         if (blackPrefixList != null && !blackPrefixList.isEmpty()) {
-            NameBlackListFilter.blackPrefixList = blackPrefixList;
             int min = Math.min(256, maxCacheSize);
             int max = Math.min(10240, maxCacheSize);
             ConcurrentLinkedHashMap.Builder<String, Boolean> builder = new ConcurrentLinkedHashMap.Builder<String, Boolean>()
@@ -144,11 +148,26 @@ public abstract class NameBlackListFilter implements ClassNameFilter {
      * @return
      */
     protected boolean inBlackList(String className) {
-        for (String prefix : blackPrefixList) {
-            if (className.startsWith(prefix)) {
-                return Boolean.TRUE;
+
+        //动态推送不允许推空，推送一个白名单的值即可
+        if (addBlackPrefixList != null && addBlackPrefixList.size() != 0) {
+            for (String prefix : addBlackPrefixList) {
+                if (className.startsWith(prefix)) {
+                    return Boolean.TRUE;
+                }
+            }
+        } else {
+            for (String prefix : blackPrefixList) {
+                if (className.startsWith(prefix)) {
+                    return Boolean.TRUE;
+                }
             }
         }
+
         return Boolean.FALSE;
+    }
+
+    public static void setAddBlackPrefixList(List<String> addBlackPrefixList) {
+        NameBlackListFilter.addBlackPrefixList = addBlackPrefixList;
     }
 }
