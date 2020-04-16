@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 类名处理器，包含一组类名过滤器
@@ -33,14 +33,12 @@ public class ClassNameResolver {
     /**
      * 锁
      */
-    private ReentrantReadWriteLock           lock      = new ReentrantReadWriteLock();
-    private ReentrantReadWriteLock.ReadLock  readLock  = lock.readLock();
-    private ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+    private ReentrantLock lock    = new ReentrantLock();
 
     /**
      * 过滤器列表
      */
-    List<ClassNameFilter>                    filters   = null;
+    List<ClassNameFilter> filters = null;
 
     /**
      * 增加类名过滤器
@@ -48,7 +46,7 @@ public class ClassNameResolver {
      * @param classNameFilter 类名过滤器t
      */
     public void addFilter(ClassNameFilter classNameFilter) {
-        writeLock.lock();
+        lock.lock();
         try {
             if (filters == null) {
                 filters = new ArrayList<ClassNameFilter>();
@@ -61,46 +59,41 @@ public class ClassNameResolver {
                 }
             });
         } finally {
-            writeLock.unlock();
+            lock.unlock();
         }
     }
 
     /**
      * 删除类名过滤器
-     * 
+     *
      * @param classNameFilter 类名过滤器
      */
     public void removeFilter(ClassNameFilter classNameFilter) {
-        writeLock.lock();
+        lock.lock();
         try {
             if (filters != null) {
                 filters.remove(classNameFilter);
                 // 删除不用重新排序
             }
         } finally {
-            writeLock.unlock();
+            lock.unlock();
         }
     }
 
     /**
      * 决定类名
-     *
+     * 这个地方调用非常频繁，读锁也有一定的性能影响。
      * @param className 类名
-     * @return 过滤器执行后的类名
+     * @return
      */
     public String resolve(String className) throws IOException {
-        readLock.lock();
-        try {
-            if (filters == null || filters.isEmpty()) {
-                return className;
-            }
-            String cls = className;
-            for (ClassNameFilter filter : filters) {
-                cls = filter.resolve(cls);
-            }
-            return cls;
-        } finally {
-            readLock.unlock();
+        if (filters == null || filters.isEmpty()) {
+            return className;
         }
+        String cls = className;
+        for (ClassNameFilter filter : filters) {
+            cls = filter.resolve(cls);
+        }
+        return cls;
     }
 }
