@@ -18,11 +18,13 @@ package com.alipay.stc;
 
 import com.alipay.hessian.ClassNameResolver;
 import com.alipay.hessian.NameBlackListFilter;
+import com.alipay.hessian.internal.InternalNameBlackListFilter;
 import com.alipay.stc.bl.MockNameBlacklistFilter;
 import com.alipay.stc.bl.TestBlackBean;
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
 import com.caucho.hessian.io.SerializerFactory;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,6 +53,12 @@ public class Hessian1BlackListTest {
         resolver.addFilter(filter);
         serializerFactory = new SerializerFactory();
         serializerFactory.setClassNameResolver(resolver);
+    }
+
+    //reset
+    @AfterClass
+    public static void afterClass() {
+        InternalNameBlackListFilter nameBlackListFilter = new InternalNameBlackListFilter();
     }
 
     @Test
