@@ -55,7 +55,7 @@ public abstract class NameBlackListFilter implements ClassNameFilter {
     protected List<String>                          blackPrefixList;
 
     /**
-     * 黑名单 包名前缀
+     * 全局黑名单 包名前缀, 优先级高于上者
      */
     protected static List<String>                   addBlackPrefixList;
 

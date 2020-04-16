@@ -18,13 +18,11 @@ package com.alipay.stc;
 
 import com.alipay.hessian.ClassNameResolver;
 import com.alipay.hessian.NameBlackListFilter;
-import com.alipay.hessian.internal.InternalNameBlackListFilter;
 import com.alipay.stc.bl.MockNameBlacklistFilter;
 import com.alipay.stc.bl.TestBlackBean;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
