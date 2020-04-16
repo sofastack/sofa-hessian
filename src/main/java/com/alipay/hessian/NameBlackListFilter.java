@@ -17,7 +17,6 @@
 package com.alipay.hessian;
 
 import com.alipay.hessian.clhm.ConcurrentLinkedHashMap;
-import com.alipay.sofa.common.log.LoggerSpaceManager;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -40,12 +39,14 @@ public abstract class NameBlackListFilter implements ClassNameFilter {
     private static Logger judgeLogger() {
 
         try {
-            NameBlackListFilter.class.getClassLoader().loadClass("com.alipay.sofa.middleware.log.ConfigLogFactory");
+            NameBlackListFilter.class.getClassLoader().loadClass("com.alipay.sofa.common.log.LoggerSpaceManager");
         } catch (Throwable e) {
             //do nothing
             return null;
         }
-        return LoggerSpaceManager.getLoggerBySpace(HESSIAN_SERIALIZE_LOG_NAME, CONFIG_LOG_SPACE_NAME);
+
+        return com.alipay.sofa.common.log.LoggerSpaceManager.getLoggerBySpace(HESSIAN_SERIALIZE_LOG_NAME,
+            CONFIG_LOG_SPACE_NAME);
     }
 
     /**
