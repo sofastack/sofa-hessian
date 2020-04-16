@@ -169,5 +169,8 @@ public abstract class NameBlackListFilter implements ClassNameFilter {
 
     public static void setAddBlackPrefixList(List<String> addBlackPrefixList) {
         NameBlackListFilter.addBlackPrefixList = addBlackPrefixList;
+        if (resultOfInBlackList != null) {
+            resultOfInBlackList.clear();
+        }
     }
 }
