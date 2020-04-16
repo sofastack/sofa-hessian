@@ -40,10 +40,9 @@ public class ArrayInjectTest {
         ByteArrayInputStream input = new ByteArrayInputStream(bs, 0, bs.length);
         Hessian2Input hin = new Hessian2Input(input);
         hin.setSerializerFactory(factory);
-
         try {
             hin.readObject();
-            Assert.fail();
+            Assert.fail("should be intercepted");
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IOException);
         }
