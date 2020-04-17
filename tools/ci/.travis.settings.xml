@@ -28,7 +28,7 @@
                 <repository>
                     <id>central2</id>
                     <name>Central Repository 2</name>
-                    <url>http://repo1.maven.apache.org/maven2</url>
+                    <url>https://repo1.maven.apache.org/maven2</url>
                     <releases>
                         <enabled>true</enabled>
                         <updatePolicy>always</updatePolicy>
@@ -108,7 +108,7 @@
                 <pluginRepository>
                     <id>central</id>
                     <!-- specify repo1 which support http -->
-                    <url>http://repo1.maven.org/maven2</url>
+                    <url>https://repo1.maven.org/maven2</url>
                     <releases>
                         <enabled>true</enabled>
                         <updatePolicy>always</updatePolicy>
