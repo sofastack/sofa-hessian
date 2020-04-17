@@ -456,6 +456,14 @@ public class SerializerFactory extends AbstractSerializerFactory
         if (type == null || type.equals(""))
             return null;
 
+        if (classNameResolver != null) {
+            try {
+                type = classNameResolver.resolve(type);
+            } catch (Exception e) {
+                throw new HessianProtocolException(e);
+            }
+        }
+
         Deserializer deserializer;
 
         deserializer = (Deserializer) _cachedTypeDeserializerMap.get(type);
@@ -466,14 +474,6 @@ public class SerializerFactory extends AbstractSerializerFactory
         deserializer = (Deserializer) _staticTypeMap.get(type);
         if (deserializer != null)
             return deserializer;
-
-        if (classNameResolver != null) {
-            try {
-                type = classNameResolver.resolve(type);
-            } catch (Exception e) {
-                throw new HessianProtocolException(e);
-            }
-        }
 
         if (type.startsWith("[")) {
             Deserializer subDeserializer = getDeserializer(type.substring(1));
