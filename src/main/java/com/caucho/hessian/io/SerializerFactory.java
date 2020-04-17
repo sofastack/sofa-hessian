@@ -170,7 +170,7 @@ public class SerializerFactory extends AbstractSerializerFactory {
         return _loaderRef.get();
     }
 
-    protected final static boolean isHigherThanJdk8           = isJava8();
+    protected final static boolean isHigherThanJdk8 = isJava8();
 
     /**
      * Set true if the collection serializer should send the java type.
