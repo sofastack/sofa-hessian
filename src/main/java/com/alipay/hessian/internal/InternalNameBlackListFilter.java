@@ -30,12 +30,14 @@ import java.util.Scanner;
  */
 public class InternalNameBlackListFilter extends NameBlackListFilter {
 
+    private static final String EXTERNAL_BLACK_LIST = "external/serialize.blacklist";
+
+    private static final String USER_BLACK_LIST     = System
+                                                        .getProperty("serialize.blacklist.file");
+
     private static final String DEFAULT_BLACK_LIST  = "security/serialize.blacklist";
 
-    private static final String blackListFile       = System
-                                                        .getProperty("serialize.blacklist.file", DEFAULT_BLACK_LIST);
-
-    static final List<String>   INTERNAL_BLACK_LIST = readBlackList(blackListFile);
+    static final List<String>   INTERNAL_BLACK_LIST = readBlackList();
 
     /**
      * 构造函数
@@ -53,18 +55,41 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
         super(INTERNAL_BLACK_LIST, maxCacheSize);
     }
 
-    static List<String> readBlackList(String blackListFile) {
+    static List<String> readBlackList() {
 
+        //ext->sec->inner
         List<String> result = new ArrayList<String>();
         //Get file from resources folder
-        ClassLoader classLoader;
+        result = readBlackList(EXTERNAL_BLACK_LIST);
+        if (result.size() != 0) {
+            return result;
+        }
+        //read form -D
 
-        if (blackListFile.equals(DEFAULT_BLACK_LIST)) {
+        result = readBlackList(USER_BLACK_LIST);
+        if (result.size() != 0) {
+            return result;
+        }
+        //不存在使用内置的
+        result = readBlackList(DEFAULT_BLACK_LIST);
+        return result;
+    }
+
+    static List<String> readBlackList(String fileName) {
+        List<String> result = new ArrayList<String>();
+
+        if (fileName == null || fileName.equals("")) {
+            return result;
+        }
+        ClassLoader classLoader;
+        InputStream inputStream;
+        if (DEFAULT_BLACK_LIST.equals(fileName)) {
             classLoader = InternalNameBlackListFilter.class.getClassLoader();
         } else {
             classLoader = Thread.currentThread().getContextClassLoader();
         }
-        final InputStream inputStream = classLoader.getResourceAsStream(blackListFile);
+        inputStream = classLoader.getResourceAsStream(fileName);
+
         if (inputStream != null) {
             Scanner scanner = null;
             try {
@@ -82,11 +107,7 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
                     scanner.close();
                 }
             }
-            //不存在使用内置的
-        } else {
-            result = readBlackList(DEFAULT_BLACK_LIST);
         }
-
         return result;
     }
 
