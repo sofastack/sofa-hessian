@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author <a href="mailto:zhanggeng.zg@antfin.com">zhanggeng</a>
  */
-public abstract class NameBlackListFilter implements ClassNameFilter {
+public class NameBlackListFilter implements ClassNameFilter {
 
     private static Logger      LOGGER                     = judgeLogger();
 
