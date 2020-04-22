@@ -39,10 +39,18 @@ public class NameBlackListFilter implements ClassNameFilter {
     private static Logger judgeLogger() {
 
         try {
-            NameBlackListFilter.class.getClassLoader().loadClass("com.alipay.sofa.common.log.LoggerSpaceManager");
+            Class.forName("com.alipay.sofa.common.log.LoggerSpaceManager", true,
+                    NameBlackListFilter.class.getClassLoader());
         } catch (Throwable e) {
             //do nothing
             return null;
+        }
+        //user can use a specify class to do some extra info in static
+        try {
+            Class.forName("com.alipay.sofa.middleware.log.ConfigLogFactory", true,
+                NameBlackListFilter.class.getClassLoader());
+        } catch (Throwable e) {
+            //do nothing
         }
 
         return com.alipay.sofa.common.log.LoggerSpaceManager.getLoggerBySpace(HESSIAN_SERIALIZE_LOG_NAME,
