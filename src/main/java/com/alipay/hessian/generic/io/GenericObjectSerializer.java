@@ -20,51 +20,24 @@ import com.alipay.hessian.generic.model.GenericObject;
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.hessian.io.AbstractSerializer;
 import com.caucho.hessian.io.Hessian2Output;
-import com.caucho.hessian.util.IdentityIntMap;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-
-import static com.caucho.hessian.io.Hessian2Constants.BC_OBJECT_DIRECT;
-import static com.caucho.hessian.io.Hessian2Constants.OBJECT_DIRECT_MAX;
-import static com.caucho.hessian.io.Hessian2Output.SIZE;
 
 /**
  * @author <a href="mailto:caojie.cj@antfin.com">Jie Cao</a>
  * @since 5.3.0
  */
 public class GenericObjectSerializer extends AbstractSerializer {
+    private ConcurrentHashMap<ObjectDefinition, ObjectDefinition> genericDefinitionMap = new ConcurrentHashMap<ObjectDefinition, ObjectDefinition>();
 
-    private static final Logger                  LOGGER                     = Logger
-                                                                                .getLogger(GenericObjectSerializer.class
-                                                                                    .getName());
-    private static final GenericObjectSerializer INSTANCE                   = new GenericObjectSerializer();
-    private static final AtomicLong              COUNT                      = new AtomicLong(0);
-    private static boolean                       WRITE_DEFINITION_EVERYTIME = Boolean
-                                                                                .parseBoolean(System
-                                                                                    .getProperty(
-                                                                                        "generic_hessian_write_definition_everytime",
-                                                                                        "false"));
-    private static Field                         offsetField;
-    private static Field                         classRefsField;
-    private static Field                         bufferField;
-    static {
-        try {
-            offsetField = Hessian2Output.class.getDeclaredField("_offset");
-            offsetField.setAccessible(true);
 
-            classRefsField = Hessian2Output.class.getDeclaredField("_classRefs");
-            classRefsField.setAccessible(true);
-
-            bufferField = Hessian2Output.class.getDeclaredField("_buffer");
-            bufferField.setAccessible(true);
-        } catch (Exception e) {
-            LOGGER.warning("get Hessian2Output error.");
-        }
-    }
+    private static final Logger LOGGER = Logger
+            .getLogger(GenericObjectSerializer.class
+                    .getName());
+    private static final GenericObjectSerializer INSTANCE = new GenericObjectSerializer();
 
     public static GenericObjectSerializer getInstance() {
         return INSTANCE;
@@ -81,78 +54,37 @@ public class GenericObjectSerializer extends AbstractSerializer {
     }
 
     public void doWriteObject(GenericObject obj, AbstractHessianOutput out) throws IOException {
-
-        try {
-            ObjectDefinition definition = getDefinition(obj);
-
-            if (out.addRef(obj)) {
-                return;
-            }
-
-            String type = obj.getType();
-            if (!WRITE_DEFINITION_EVERYTIME) {
-                int ref = out.writeObjectBegin(type);
-
-                if (ref == -1) {
-                    writeDefinition(definition, out);
-                    out.writeObjectBegin(type);
-                }
-
-                writeInstance(obj, definition, out);
-            } else {
-                Hessian2Output output = (Hessian2Output) out;
-                IdentityIntMap _classRefs = (IdentityIntMap) classRefsField.get(output);
-                if (_classRefs == null) {
-                    _classRefs = new IdentityIntMap(256);
-                    classRefsField.set(output, _classRefs);
-                }
-                int newRef = _classRefs.size();
-                //int ref = _classRefs.put(type, newRef, false);
-                int ref = _classRefs.put(COUNT.incrementAndGet() + "", newRef, false);
-
-                int _offset = (Integer) offsetField.get(output);
-                byte[] _buffer = (byte[]) bufferField.get(output);
-
-                if (SIZE < _offset + 32)
-                    output.flushBuffer();
-
-                _buffer[_offset++] = (byte) 'C';
-                offsetField.set(output, _offset);
-                output.writeString(type);
-
-                writeDefinition(definition, out);
-
-                _offset = (Integer) offsetField.get(output);
-                if (SIZE < _offset + 32)
-                    output.flushBuffer();
-
-                if (ref <= OBJECT_DIRECT_MAX) {
-                    _buffer[_offset++] = (byte) (BC_OBJECT_DIRECT + ref);
-                    offsetField.set(output, _offset);
-                }
-                else {
-                    _buffer[_offset++] = (byte) 'O';
-                    offsetField.set(output, _offset);
-                    out.writeInt(ref);
-                }
-
-                writeInstance(obj, definition, out);
-            }
-        } catch (Throwable t) {
-            throw new IOException(t);
+        if (out.addRef(obj)) {
+            return;
         }
+        String type = obj.getType();
+        ObjectDefinition definition = this.getDefinition(obj);
+        boolean newDefine = ((Hessian2Output) out).newDefineOrWriteRef(definition);
+        // a new definition
+        if (newDefine) {
+            ((Hessian2Output) out).writeTypeName(type);
+            writeDefinition(definition, out);
+            // write ref
+            ((Hessian2Output) out).newDefineOrWriteRef(definition);
+        }
+        // write ref
+        writeInstance(obj, definition, out);
 
     }
 
     private ObjectDefinition getDefinition(GenericObject obj) {
-        Set<String> fieldNames = obj.getFieldNames();
-        String[] _fieldNames = new String[fieldNames.size()];
-        fieldNames.toArray(_fieldNames);
-        return new ObjectDefinition(obj.getType(), _fieldNames);
+        String[] fields = new String[obj.getFieldNames().size()];
+        ObjectDefinition newDefinition = new ObjectDefinition(obj.getType(), obj.getFieldNames().toArray(fields));
+        ObjectDefinition existDefinition = genericDefinitionMap.putIfAbsent(newDefinition, newDefinition);
+        if (existDefinition != null) {
+            return existDefinition;
+        } else {
+            return newDefinition;
+        }
     }
 
     private void writeDefinition(ObjectDefinition definition, AbstractHessianOutput out)
-        throws IOException {
+            throws IOException {
         String[] _fieldNames = definition.getFieldNames();
 
         out.writeClassFieldLength(_fieldNames.length);
@@ -183,7 +115,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
 
     // ObjectDefinition just contains the type and fields' names which are used in Hessian
     static class ObjectDefinition {
-        private final String   _type;
+        private final String _type;
         private final String[] _fieldNames;
 
         ObjectDefinition(String type, String[] fields) {
@@ -198,6 +130,25 @@ public class GenericObjectSerializer extends AbstractSerializer {
         String[] getFieldNames() {
             return _fieldNames;
         }
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ObjectDefinition that = (ObjectDefinition) o;
+
+            if (_type != null ? !_type.equals(that._type) : that._type != null) return false;
+            return Arrays.equals(_fieldNames, that._fieldNames);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = _type != null ? _type.hashCode() : 0;
+            result = 31 * result + Arrays.hashCode(_fieldNames);
+            return result;
+        }
     }
 
     private static FieldSerializer getFieldSerializer(Class type) {
@@ -205,12 +156,12 @@ public class GenericObjectSerializer extends AbstractSerializer {
             return FieldSerializer.SER;
 
         if (int.class.equals(type) || byte.class.equals(type) || short.class.equals(type)
-            || Integer.class.equals(type) || Byte.class.equals(type) || Short.class.equals(type)) {
+                || Integer.class.equals(type) || Byte.class.equals(type) || Short.class.equals(type)) {
             return IntFieldSerializer.SER;
         } else if (long.class.equals(type) || Long.class.equals(type)) {
             return LongFieldSerializer.SER;
         } else if (double.class.equals(type) || float.class.equals(type)
-            || Double.class.equals(type) || Float.class.equals(type)) {
+                || Double.class.equals(type) || Float.class.equals(type)) {
             return DoubleFieldSerializer.SER;
         } else if (boolean.class.equals(type) || Boolean.class.equals(type)) {
             return BooleanFieldSerializer.SER;
@@ -224,7 +175,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new FieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-            throws IOException {
+                throws IOException {
             Object value = obj.getField(field);
             out.writeObject(value);
         }
@@ -234,7 +185,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new BooleanFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-            throws IOException {
+                throws IOException {
             boolean value = (Boolean) obj.getField(field);
             out.writeBoolean(value);
         }
@@ -244,7 +195,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new IntFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-            throws IOException {
+                throws IOException {
             int value = ((Number) obj.getField(field)).intValue();
             out.writeInt(value);
         }
@@ -254,7 +205,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new LongFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-            throws IOException {
+                throws IOException {
             long value = ((Number) obj.getField(field)).longValue();
             out.writeLong(value);
         }
@@ -264,7 +215,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new DoubleFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-            throws IOException {
+                throws IOException {
             double value = ((Number) obj.getField(field)).doubleValue();
             out.writeDouble(value);
         }
@@ -274,7 +225,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
         static final FieldSerializer SER = new StringFieldSerializer();
 
         void serialize(AbstractHessianOutput out, GenericObject obj, String field)
-            throws IOException {
+                throws IOException {
             String value = (String) obj.getField(field);
             out.writeString(value);
         }
