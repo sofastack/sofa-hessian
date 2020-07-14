@@ -30,11 +30,17 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class NameBlackListFilter implements ClassNameFilter {
 
-    private static Logger      LOGGER                     = judgeLogger();
+    private static Logger       LOGGER                     = judgeLogger();
 
     //do not change this
-    public static final String HESSIAN_SERIALIZE_LOG_NAME = "HessianSerializeLog";
-    public static final String CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.middleware.config";
+    public static final String  HESSIAN_SERIALIZE_LOG_NAME = "HessianSerializeLog";
+    public static final String  CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.middleware.config";
+
+    private static final String CLIENT_LOG_LEVEL           = "com.alipay.sofa.middleware.config.log.level";
+    private static final String CLIENT_LOG_LEVEL_DEFAULT   = "INFO";
+    private static final String CLIENT_LOG_ENCODE          = "com.alipay.sofa.middleware.config.log.encode";
+    private static final String COMMON_ENCODE              = "file.encoding";
+    private static final String CLIENT_LOG_ENCODE_DEFAULT  = "UTF-8";
 
     private static Logger judgeLogger() {
 
@@ -43,6 +49,20 @@ public class NameBlackListFilter implements ClassNameFilter {
         } catch (Throwable e) {
             //do nothing
             return null;
+        }
+
+        String logLevel = System.getProperty(CLIENT_LOG_LEVEL);
+        if (logLevel == null || "".equals(logLevel)) {
+            System.setProperty(CLIENT_LOG_LEVEL, CLIENT_LOG_LEVEL_DEFAULT);
+        }
+        String commonEncode = System.getProperty(COMMON_ENCODE);
+        if (commonEncode != null && !"".equals(commonEncode)) {
+            System.setProperty(CLIENT_LOG_ENCODE, commonEncode);
+        } else {
+            String logEncode = System.getProperty(CLIENT_LOG_ENCODE);
+            if (logEncode == null || "".equals(logEncode)) {
+                System.setProperty(CLIENT_LOG_ENCODE, CLIENT_LOG_ENCODE_DEFAULT);
+            }
         }
 
         return com.alipay.sofa.common.log.LoggerSpaceManager.getLoggerBySpace(HESSIAN_SERIALIZE_LOG_NAME,
