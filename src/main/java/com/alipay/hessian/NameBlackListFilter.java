@@ -30,11 +30,11 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class NameBlackListFilter implements ClassNameFilter {
 
-    private static Logger      LOGGER                     = judgeLogger();
+    private static Logger       LOGGER                     = judgeLogger();
 
     //do not change this
-    public static final String HESSIAN_SERIALIZE_LOG_NAME = "HessianSerializeLog";
-    public static final String CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.middleware.config";
+    public static final String  HESSIAN_SERIALIZE_LOG_NAME = "HessianSerializeLog";
+    public static final String  CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.middleware.config";
 
     private static final String CLIENT_LOG_LEVEL           = "com.alipay.sofa.middleware.config.log.level";
     private static final String CLIENT_LOG_LEVEL_DEFAULT   = "INFO";
