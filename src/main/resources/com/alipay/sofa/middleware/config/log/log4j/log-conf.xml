@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- Log4j 1.x config -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- appender -->
+    <appender name="JDKSerializeAppender" class="com.alibaba.common.logging.spi.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/serialize/jdk.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${com.alipay.sofa.middleware.config.log.encode}"/>
+        <param name="threshold" value="${com.alipay.sofa.middleware.config.log.level}"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+        <param name="shouldAsync" value="true"/>
+        <param name="queueLength" value="128"/>
+        <param name="neverBlock" value="true"/>
+        <param name="softReference" value="true" />
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="HessianSerializeAppender" class="com.alibaba.common.logging.spi.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/serialize/hessian.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${com.alipay.sofa.middleware.config.log.encode}"/>
+        <param name="threshold" value="${com.alipay.sofa.middleware.config.log.level}"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+        <param name="shouldAsync" value="true"/>
+        <param name="queueLength" value="128"/>
+        <param name="neverBlock" value="true"/>
+        <param name="softReference" value="true" />
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+
+    <logger name="JDKSerializeLog" additivity="false">
+        <level value="${com.alipay.sofa.middleware.config.log.level}"/>
+        <appender-ref ref="JDKSerializeAppender"/>
+    </logger>
+
+    <logger name="HessianSerializeLog" additivity="false">
+        <level value="${com.alipay.sofa.middleware.config.log.level}"/>
+        <appender-ref ref="HessianSerializeAppender"/>
+    </logger>
+
+</log4j:configuration>
