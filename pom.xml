@@ -4,7 +4,7 @@
 
     <groupId>com.alipay.sofa</groupId>
     <artifactId>hessian</artifactId>
-    <version>3.3.11</version>
+    <version>3.3.12</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
