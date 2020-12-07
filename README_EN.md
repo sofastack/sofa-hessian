@@ -1,6 +1,6 @@
 # SOFA-Hessian
 
-[![Build Status](https://travis-ci.com/sofastack/sofa-hessian.svg?branch=master)](https://travis-ci.com/sofastack/sofa-hessian)
+[![Build Status](https://github.com/sofastack/sofa-hessian/workflows/build/badge.svg?branch=master)](https://github.com/sofastack[![Coverage Status](https://codecov.io/gh/alipay/sofa-hessian/branch/master/graph/badge.svg)](https://codecov.io/gh/alipay/sofa-hessian)
 [![Coverage Status](https://codecov.io/gh/sofastack/sofa-hessian/branch/master/graph/badge.svg)](https://codecov.io/gh/sofastack/sofa-hessian)
 ![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)
 
