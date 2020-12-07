@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <!-- https://github.com/travis-ci/travis-cookbooks/blob/master/cookbooks/travis_build_environment/files/default/ci_user/maven_user_settings.xml -->
+    <mirrors>
+        <mirror>
+            <id>repo1</id>
+            <mirrorOf>central</mirrorOf>
+            <name>Human Readable Name for this Mirror.</name>
+            <url>http://insecure.repo1.maven.org/maven2/</url>
+        </mirror>
+    </mirrors>
+</settings>
