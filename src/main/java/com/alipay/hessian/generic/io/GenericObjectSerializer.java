@@ -113,8 +113,10 @@ public class GenericObjectSerializer extends AbstractSerializer {
                 int _offset = (Integer) offsetField.get(output);
                 byte[] _buffer = (byte[]) bufferField.get(output);
 
-                if (SIZE < _offset + 32)
+                if (SIZE < _offset + 32) {
                     output.flushBuffer();
+                    _offset = 0;
+                }
 
                 _buffer[_offset++] = (byte) 'C';
                 offsetField.set(output, _offset);
@@ -123,8 +125,10 @@ public class GenericObjectSerializer extends AbstractSerializer {
                 writeDefinition(definition, out);
 
                 _offset = (Integer) offsetField.get(output);
-                if (SIZE < _offset + 32)
+                if (SIZE < _offset + 32) {
                     output.flushBuffer();
+                    _offset = 0;
+                }
 
                 if (ref <= OBJECT_DIRECT_MAX) {
                     _buffer[_offset++] = (byte) (BC_OBJECT_DIRECT + ref);
