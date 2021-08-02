@@ -60,10 +60,10 @@ public class GenericObjectSerializerTest {
         byte[] bytes = outputStream.toByteArray();
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         Hessian2Input hessianInput = new Hessian2Input(byteArrayInputStream);
-        try{
+        try {
             Object o = hessianInput.readObject();
             Assert.assertNotNull(o);
-        }catch (Exception e){
+        } catch (Exception e) {
             Assert.fail();
         }
     }
