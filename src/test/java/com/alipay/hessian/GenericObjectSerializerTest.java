@@ -39,10 +39,9 @@ public class GenericObjectSerializerTest {
         GenericSerializerFactory factory = new GenericSerializerFactory();
         output.setSerializerFactory(factory);
 
-        // 1024 + 32
         GenericObject go1 = new GenericObject("com.abc");
         StringBuffer buf = new StringBuffer();
-        // refDef + 970 < 1024 - 32 （do not flush at writeString phase, and flush when write def at the second time）
+        // refDef + 8140 < 1024*8 - 32 （do not flush at writeString phase, and flush when write def at the second time）
         for (int i = 0; i < 8140; i++) {
             buf.append("V");
         }
