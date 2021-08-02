@@ -108,8 +108,10 @@ public class GenericObjectSerializer extends AbstractSerializer {
                 int ref = _classRefs.size();
                 _classRefs.put("" + COUNT.incrementAndGet(), new Integer(ref));
                 int _offset = (Integer) offsetField.get(output);
-                if (HESSIAN2_OUTPUT_BUFFER_SIZE < _offset + 32)
+                if (HESSIAN2_OUTPUT_BUFFER_SIZE < _offset + 32) {
                     output.flush();
+                    _offset = 0;
+                }
 
                 byte[] _buffer = (byte[]) bufferField.get(output);
 
@@ -123,8 +125,10 @@ public class GenericObjectSerializer extends AbstractSerializer {
                 writeDefinition(definition, out);
                 _offset = (Integer) offsetField.get(output);
 
-                if (HESSIAN2_OUTPUT_BUFFER_SIZE < _offset + 32)
+                if (HESSIAN2_OUTPUT_BUFFER_SIZE < _offset + 32) {
                     output.flush();
+                    _offset = 0;
+                }
 
                 _buffer[_offset++] = (byte) 'o';
                 offsetField.set(output, _offset);
