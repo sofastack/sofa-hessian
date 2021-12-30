@@ -106,6 +106,10 @@ public class SerializerFactory extends AbstractSerializerFactory
 
     protected final static boolean isHigherThanJdk8           = isJava8();
 
+    private Map<String, Object>    _typeNotFoundMap           = new ConcurrentHashMap<String, Object>(8);
+
+    private static final Object    NOT_FOUND                  = new Object();
+
     /**
      * Set true if the collection serializer should send the java type.
      */
@@ -453,7 +457,7 @@ public class SerializerFactory extends AbstractSerializerFactory
     public Deserializer getDeserializer(String type)
         throws HessianProtocolException
     {
-        if (type == null || type.equals(""))
+        if (type == null || type.equals("") || _typeNotFoundMap.containsKey(type))
             return null;
 
         if (classNameResolver != null) {
@@ -487,6 +491,7 @@ public class SerializerFactory extends AbstractSerializerFactory
 
                 deserializer = getDeserializer(cl);
             } catch (Exception e) {
+                _typeNotFoundMap.put(type, NOT_FOUND);
                 log.log(Level.FINER, e.toString(), e);
             }
         }
