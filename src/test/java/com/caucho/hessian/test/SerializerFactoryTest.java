@@ -33,6 +33,7 @@ public class SerializerFactoryTest {
 
     @Test
     public void getDeserializerByType() throws Exception {
+        System.setProperty(SerializerFactory.DYNAMIC_LOAD_ENABLE_KEY, "false");
         final SerializerFactory serializerFactory = new SerializerFactory();
         Field typeNotFoundMap = serializerFactory.getClass().getDeclaredField("_typeNotFoundMap");
         typeNotFoundMap.setAccessible(true);
@@ -51,6 +52,54 @@ public class SerializerFactoryTest {
 
         Deserializer d3 = serializerFactory.getDeserializer(notExist);
         Assert.assertNull("NotExistClass Deserializer!", d3);
-
+        System.clearProperty(SerializerFactory.DYNAMIC_LOAD_ENABLE_KEY);
     }
+
+    @Test
+    public void getDeserializerByType2() throws Exception {
+        System.setProperty(SerializerFactory.DYNAMIC_LOAD_ENABLE_KEY, "true");
+        final SerializerFactory serializerFactory = new SerializerFactory();
+        Field typeNotFoundMap = serializerFactory.getClass().getDeclaredField("_typeNotFoundMap");
+        typeNotFoundMap.setAccessible(true);
+        Map<String, Object> map = (Map<String, Object>) typeNotFoundMap.get(serializerFactory);
+
+        final String testClassName = Color.class.getName();
+        Deserializer d1 = serializerFactory.getDeserializer(testClassName);
+        Assert.assertNotNull("TestClass Deserializer!", d1);
+
+        String notExist = "com.test.NotExistClass";
+        Assert.assertNull(map.get(notExist));
+
+        Deserializer d2 = serializerFactory.getDeserializer(notExist);
+        Assert.assertNull("NotExistClass Deserializer!", d2);
+        Assert.assertNull(map.get(notExist));
+
+        Deserializer d3 = serializerFactory.getDeserializer(notExist);
+        Assert.assertNull("NotExistClass Deserializer!", d3);
+        System.clearProperty(SerializerFactory.DYNAMIC_LOAD_ENABLE_KEY);
+    }
+
+    @Test
+    public void getDeserializerByType3() throws Exception {
+        System.clearProperty(SerializerFactory.DYNAMIC_LOAD_ENABLE_KEY);
+        final SerializerFactory serializerFactory = new SerializerFactory();
+        Field typeNotFoundMap = serializerFactory.getClass().getDeclaredField("_typeNotFoundMap");
+        typeNotFoundMap.setAccessible(true);
+        Map<String, Object> map = (Map<String, Object>) typeNotFoundMap.get(serializerFactory);
+
+        final String testClassName = Color.class.getName();
+        Deserializer d1 = serializerFactory.getDeserializer(testClassName);
+        Assert.assertNotNull("TestClass Deserializer!", d1);
+
+        String notExist = "com.test.NotExistClass";
+        Assert.assertNull(map.get(notExist));
+
+        Deserializer d2 = serializerFactory.getDeserializer(notExist);
+        Assert.assertNull("NotExistClass Deserializer!", d2);
+        Assert.assertNull(map.get(notExist));
+
+        Deserializer d3 = serializerFactory.getDeserializer(notExist);
+        Assert.assertNull("NotExistClass Deserializer!", d3);
+    }
+
 }

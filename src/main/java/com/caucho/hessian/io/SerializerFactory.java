@@ -109,6 +109,9 @@ public class SerializerFactory extends AbstractSerializerFactory
     private Map<String, Object>    _typeNotFoundMap           = new ConcurrentHashMap<String, Object>(8);
 
     private static final Object    NOT_FOUND                  = new Object();
+    public static final String     DYNAMIC_LOAD_ENABLE_KEY    = "sofa.serialize.dynamic.load.enable";
+    private boolean                dynamicLoadEnable          = Boolean.parseBoolean(System.getProperty(
+                                                                  DYNAMIC_LOAD_ENABLE_KEY, Boolean.TRUE.toString()));
 
     /**
      * Set true if the collection serializer should send the java type.
@@ -457,7 +460,7 @@ public class SerializerFactory extends AbstractSerializerFactory
     public Deserializer getDeserializer(String type)
         throws HessianProtocolException
     {
-        if (type == null || type.equals("") || _typeNotFoundMap.containsKey(type))
+        if (type == null || type.equals("") || (!dynamicLoadEnable && _typeNotFoundMap.containsKey(type)))
             return null;
 
         if (classNameResolver != null) {
@@ -491,7 +494,9 @@ public class SerializerFactory extends AbstractSerializerFactory
 
                 deserializer = getDeserializer(cl);
             } catch (Exception e) {
-                _typeNotFoundMap.put(type, NOT_FOUND);
+                if (!dynamicLoadEnable) {
+                    _typeNotFoundMap.put(type, NOT_FOUND);
+                }
                 log.log(Level.FINER, e.toString(), e);
             }
         }
