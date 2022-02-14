@@ -80,31 +80,42 @@ import java.util.logging.Logger;
  */
 public class SerializerFactory extends AbstractSerializerFactory
 {
-    private static final Logger    log                        = Logger.getLogger(SerializerFactory.class.getName());
+    private static final Logger                   log                        = Logger.getLogger(SerializerFactory.class
+                                                                                 .getName());
 
-    protected static Deserializer  OBJECT_DESERIALIZER        = new BasicDeserializer(BasicDeserializer.OBJECT);
+    protected static Deserializer                 OBJECT_DESERIALIZER        = new BasicDeserializer(
+                                                                                 BasicDeserializer.OBJECT);
 
-    protected static ConcurrentMap _staticSerializerMap;
-    protected static ConcurrentMap _staticDeserializerMap;
-    protected static ConcurrentMap _staticTypeMap;
+    protected static ConcurrentMap                _staticSerializerMap;
+    protected static ConcurrentMap                _staticDeserializerMap;
+    protected static ConcurrentMap                _staticTypeMap;
 
-    protected Serializer           _defaultSerializer;
+    protected Serializer                          _defaultSerializer;
 
     // Additional factories
-    protected ArrayList            _factories                 = new ArrayList();
+    protected ArrayList                           _factories                 = new ArrayList();
 
-    protected CollectionSerializer _collectionSerializer;
+    protected CollectionSerializer                _collectionSerializer;
 
-    protected Deserializer         _hashMapDeserializer;
-    protected ConcurrentMap        _cachedSerializerMap       = new ConcurrentHashMap();
-    protected ConcurrentMap        _cachedDeserializerMap     = new ConcurrentHashMap();
-    protected ConcurrentMap        _cachedTypeDeserializerMap = new ConcurrentHashMap();
+    protected Deserializer                        _hashMapDeserializer;
+    protected ConcurrentMap                       _cachedSerializerMap       = new ConcurrentHashMap();
+    protected ConcurrentMap                       _cachedDeserializerMap     = new ConcurrentHashMap();
+    protected ConcurrentMap                       _cachedTypeDeserializerMap = new ConcurrentHashMap();
 
-    protected boolean              _isAllowNonSerializable;
+    protected boolean                             _isAllowNonSerializable;
 
-    protected ClassNameResolver    classNameResolver          = ClassNameResolverBuilder.buildDefault();
+    protected ClassNameResolver                   classNameResolver          = ClassNameResolverBuilder.buildDefault();
 
-    protected final static boolean isHigherThanJdk8           = isJava8();
+    protected final static boolean                isHigherThanJdk8           = isJava8();
+
+    private Map<ClassLoader, Map<String, Object>> _typeNotFoundMap           = new ConcurrentHashMap<ClassLoader, Map<String, Object>>(
+                                                                                 8);
+
+    private static final Object                   NOT_FOUND                  = new Object();
+    public static final String                    DYNAMIC_LOAD_ENABLE_KEY    = "sofa.serialize.dynamic.load.enable";
+    private boolean                               dynamicLoadEnable          = Boolean.parseBoolean(System.getProperty(
+                                                                                 DYNAMIC_LOAD_ENABLE_KEY,
+                                                                                 Boolean.FALSE.toString()));
 
     /**
      * Set true if the collection serializer should send the java type.
@@ -480,13 +491,34 @@ public class SerializerFactory extends AbstractSerializerFactory
             deserializer = new ArrayDeserializer(subDeserializer);
         }
         else {
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
             try {
-                ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                if (!dynamicLoadEnable) {
+                    Map<String, Object> typeMap = _typeNotFoundMap.get(loader);
+                    if (typeMap != null) {
+                        if (typeMap.containsKey(type)) {
+                            return null;
+                        }
+                    }
+                }
 
                 Class cl = Class.forName(type, false, loader);
 
                 deserializer = getDeserializer(cl);
             } catch (Exception e) {
+                if (!dynamicLoadEnable) {
+                    Map<String, Object> typeMap = _typeNotFoundMap.get(loader);
+                    if (typeMap == null) {
+                        synchronized (this) {
+                            typeMap = _typeNotFoundMap.get(loader);
+                            if (typeMap == null) {
+                                _typeNotFoundMap.put(loader, new ConcurrentHashMap<String, Object>(8));
+                                typeMap = _typeNotFoundMap.get(loader);
+                            }
+                        }
+                    }
+                    typeMap.put(type, NOT_FOUND);
+                }
                 log.log(Level.FINER, e.toString(), e);
             }
         }
