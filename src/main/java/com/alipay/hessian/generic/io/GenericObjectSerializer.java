@@ -47,7 +47,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
                                                                                 .parseBoolean(System
                                                                                     .getProperty(
                                                                                         "generic_hessian_write_definition_everytime",
-                                                                                        "false"));
+                                                                                        "true"));
     private static Field                         offsetField;
     private static Field                         classRefsField;
     private static Field                         bufferField;
