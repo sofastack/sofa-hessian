@@ -43,7 +43,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
                                                                                  .parseBoolean(System
                                                                                      .getProperty(
                                                                                          "generic_hessian_write_definition_everytime",
-                                                                                         "false"));
+                                                                                         "true"));
 
     // 值等于 com.caucho.hessian.io.Hessian2Output.SIZE
     private static final int                     HESSIAN2_OUTPUT_BUFFER_SIZE = 1024;
