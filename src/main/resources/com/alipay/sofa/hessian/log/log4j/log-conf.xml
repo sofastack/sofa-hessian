@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- Log4j 1.x config -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- appender -->
+    <appender name="JDKSerializeAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/serialize/jdk.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${file.encoding}"/>
+        <param name="threshold" value="error"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p %-32t - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="HessianSerializeAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/serialize/hessian.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${file.encoding}"/>
+        <param name="threshold" value="error"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p %-32t - %m%n"/>
+        </layout>
+    </appender>
+
+
+    <logger name="JDKSerializeLog" additivity="false">
+        <level value="${com.alipay.sofa.hessian.log.level}"/>
+        <appender-ref ref="JDKSerializeAppender"/>
+    </logger>
+
+    <logger name="HessianSerializeLog" additivity="false">
+        <level value="${com.alipay.sofa.hessian.log.level}"/>
+        <appender-ref ref="HessianSerializeAppender"/>
+    </logger>
+
+</log4j:configuration>
