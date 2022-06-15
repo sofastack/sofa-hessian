@@ -34,11 +34,11 @@ public class NameBlackListFilter implements ClassNameFilter {
 
     //do not change this
     public static final String  HESSIAN_SERIALIZE_LOG_NAME = "HessianSerializeLog";
-    public static final String  CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.middleware.config";
+    public static final String  CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.hessian";
 
-    private static final String CLIENT_LOG_LEVEL           = "com.alipay.sofa.middleware.config.log.level";
+    private static final String CLIENT_LOG_LEVEL           = "com.alipay.sofa.hessian.log.level";
     private static final String CLIENT_LOG_LEVEL_DEFAULT   = "INFO";
-    private static final String CLIENT_LOG_ENCODE          = "com.alipay.sofa.middleware.config.log.encode";
+    private static final String CLIENT_LOG_ENCODE          = "com.alipay.sofa.hessian.log.encode";
     private static final String COMMON_ENCODE              = "file.encoding";
     private static final String CLIENT_LOG_ENCODE_DEFAULT  = "UTF-8";
 

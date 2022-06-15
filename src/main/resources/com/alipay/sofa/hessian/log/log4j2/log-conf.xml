@@ -4,8 +4,8 @@
 <Configuration status="OFF">
     <properties>
         <property name="LOG_HOME">${sys:logging.path}/serialize</property>
-        <Property name="LOG_LEVEL">${sys:com.alipay.sofa.middleware.config.log.level}</Property>
-        <Property name="LOG_ENCODE">${sys:com.alipay.sofa.middleware.config.log.encode}</Property>
+        <Property name="LOG_LEVEL">${sys:com.alipay.sofa.hessian.log.level}</Property>
+        <Property name="LOG_ENCODE">${sys:com.alipay.sofa.hessian.log.encode}</Property>
     </properties>
 
     <!-- appenders -->
