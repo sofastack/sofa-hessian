@@ -3,8 +3,8 @@
 <!-- Logback config -->
 <configuration>
     <property scope="local" name="LOG_HOME" value="${logging.path}/serialize"/>
-    <property scope="local" name="LOG_LEVEL" value="${com.alipay.sofa.middleware.config.log.level}"/>
-    <property scope="local" name="LOG_ENCODE" value="${com.alipay.sofa.middleware.config.log.encode}"/>
+    <property scope="local" name="LOG_LEVEL" value="${com.alipay.sofa.hessian.log.level}"/>
+    <property scope="local" name="LOG_ENCODE" value="${com.alipay.sofa.hessian.log.encode}"/>
 
     <!-- appenders -->
     <appender name="JDKSerializeAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
