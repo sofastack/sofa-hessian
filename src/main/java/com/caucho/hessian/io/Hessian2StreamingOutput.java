@@ -54,9 +54,8 @@ import java.io.OutputStream;
 /**
  * Output stream for Hessian 2 streaming requests.
  */
-public class Hessian2StreamingOutput
-{
-    private Hessian2Output _out;
+public class Hessian2StreamingOutput {
+    private final Hessian2Output _out;
 
     /**
      * Creates a new Hessian output stream, initialized with an
@@ -64,27 +63,23 @@ public class Hessian2StreamingOutput
      *
      * @param os the underlying output stream.
      */
-    public Hessian2StreamingOutput(OutputStream os)
-    {
+    public Hessian2StreamingOutput(OutputStream os) {
         _out = new Hessian2Output(os);
     }
 
-    public void setCloseStreamOnClose(boolean isClose)
-    {
-        _out.setCloseStreamOnClose(isClose);
+    public boolean isCloseStreamOnClose() {
+        return _out.isCloseStreamOnClose();
     }
 
-    public boolean isCloseStreamOnClose()
-    {
-        return _out.isCloseStreamOnClose();
+    public void setCloseStreamOnClose(boolean isClose) {
+        _out.setCloseStreamOnClose(isClose);
     }
 
     /**
      * Writes any object to the output stream.
      */
     public void writeObject(Object object)
-        throws IOException
-    {
+        throws IOException {
         _out.writeStreamingObject(object);
     }
 
@@ -92,8 +87,7 @@ public class Hessian2StreamingOutput
      * Flushes the output.
      */
     public void flush()
-        throws IOException
-    {
+        throws IOException {
         _out.flush();
     }
 
@@ -101,8 +95,7 @@ public class Hessian2StreamingOutput
      * Close the output.
      */
     public void close()
-        throws IOException
-    {
+        throws IOException {
         _out.close();
     }
 }

@@ -55,8 +55,8 @@ import java.io.InputStream;
  * Input stream to a specific channel.
  */
 public class MuxInputStream extends InputStream {
-    private MuxServer     server;
     protected InputStream is;
+    private MuxServer     server;
     private int           channel;
 
     private String        url;
@@ -66,16 +66,14 @@ public class MuxInputStream extends InputStream {
     /**
      * Null argument constructor.
      */
-    public MuxInputStream()
-    {
+    public MuxInputStream() {
     }
 
     /**
      * Initialize the multiplexor with input and output streams.
      */
     protected void init(MuxServer server, int channel)
-        throws IOException
-    {
+        throws IOException {
         this.server = server;
         this.channel = channel;
 
@@ -89,32 +87,28 @@ public class MuxInputStream extends InputStream {
      * this.
      */
     protected InputStream getInputStream()
-        throws IOException
-    {
+        throws IOException {
         if (is == null && server != null)
             is = server.readChannel(channel);
 
         return is;
     }
 
-    void setInputStream(InputStream is)
-    {
+    void setInputStream(InputStream is) {
         this.is = is;
     }
 
     /**
      * Gets the channel of the connection.
      */
-    public int getChannel()
-    {
+    public int getChannel() {
         return channel;
     }
 
     /**
      * Returns the request's URL
      */
-    public String getURL()
-    {
+    public String getURL() {
         return url;
     }
 
@@ -122,8 +116,7 @@ public class MuxInputStream extends InputStream {
      * Writes a data byte to the output stream.
      */
     public int read()
-        throws IOException
-    {
+        throws IOException {
         if (chunkLength <= 0) {
             readToData(false);
 
@@ -139,8 +132,7 @@ public class MuxInputStream extends InputStream {
      * Complete writing to the stream, closing the channel.
      */
     public void close()
-        throws IOException
-    {
+        throws IOException {
         skipToEnd();
     }
 
@@ -148,8 +140,7 @@ public class MuxInputStream extends InputStream {
      * Skips data until the end of the channel.
      */
     private void skipToEnd()
-        throws IOException
-    {
+        throws IOException {
         InputStream is = getInputStream();
 
         if (is == null)
@@ -193,8 +184,7 @@ public class MuxInputStream extends InputStream {
      * Reads tags, until getting data.
      */
     void readToData(boolean returnOnYield)
-        throws IOException
-    {
+        throws IOException {
         InputStream is = getInputStream();
 
         if (is == null)
@@ -234,8 +224,7 @@ public class MuxInputStream extends InputStream {
      * Subclasses will extend this to read values.
      */
     protected void readTag(int tag)
-        throws IOException
-    {
+        throws IOException {
         int length = (is.read() << 8) + is.read();
         is.skip(length);
     }
@@ -246,8 +235,7 @@ public class MuxInputStream extends InputStream {
      * @return the utf-8 encoded string
      */
     protected String readUTF()
-        throws IOException
-    {
+        throws IOException {
         int len = (is.read() << 8) + is.read();
 
         StringBuffer sb = new StringBuffer();
@@ -260,18 +248,15 @@ public class MuxInputStream extends InputStream {
             else if (d1 < 0x80) {
                 len--;
                 sb.append((char) d1);
-            }
-            else if ((d1 & 0xe0) == 0xc0) {
+            } else if ((d1 & 0xe0) == 0xc0) {
                 len -= 2;
                 sb.append(((d1 & 0x1f) << 6) + (is.read() & 0x3f));
-            }
-            else if ((d1 & 0xf0) == 0xe0) {
+            } else if ((d1 & 0xf0) == 0xe0) {
                 len -= 3;
                 sb.append(((d1 & 0x0f) << 12) +
                     ((is.read() & 0x3f) << 6) +
                     (is.read() & 0x3f));
-            }
-            else
+            } else
                 throw new IOException("utf-8 encoding error");
         }
 

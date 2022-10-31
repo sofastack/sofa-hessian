@@ -23,19 +23,18 @@ import com.caucho.hessian.io.AbstractSerializer;
 import java.io.IOException;
 
 /**
- * 
  * @author <a href="mailto:caojie.cj@antfin.com">Jie Cao</a>
  * @since 5.3.0
  */
 public class GenericClassSerializer extends AbstractSerializer {
 
-    private static GenericClassSerializer instance = new GenericClassSerializer();
+    private static final GenericClassSerializer instance = new GenericClassSerializer();
+
+    private GenericClassSerializer() {
+    }
 
     public static GenericClassSerializer getInstance() {
         return instance;
-    }
-
-    private GenericClassSerializer() {
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {
@@ -44,7 +43,6 @@ public class GenericClassSerializer extends AbstractSerializer {
         if (genericClass == null) {
             out.writeNull();
         } else if (out.addRef(obj)) {
-            return;
         } else {
             int ref = out.writeObjectBegin("java.lang.Class");
 

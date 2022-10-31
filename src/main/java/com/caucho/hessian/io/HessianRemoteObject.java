@@ -52,7 +52,7 @@ package com.caucho.hessian.io;
  * Interface for any hessian remote object.
  */
 public interface HessianRemoteObject {
-    public String getHessianType();
+    String getHessianType();
 
-    public String getHessianURL();
+    String getHessianURL();
 }

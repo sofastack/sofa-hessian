@@ -39,7 +39,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
                                                                                      .getName());
     private static final GenericObjectSerializer INSTANCE                    = new GenericObjectSerializer();
     private static final AtomicLong              COUNT                       = new AtomicLong(0);
-    private static boolean                       WRITE_DEFINITION_EVERYTIME  = Boolean
+    private static final boolean                 WRITE_DEFINITION_EVERYTIME  = Boolean
                                                                                  .parseBoolean(System
                                                                                      .getProperty(
                                                                                          "generic_hessian_write_definition_everytime",
@@ -51,6 +51,7 @@ public class GenericObjectSerializer extends AbstractSerializer {
     private static Field                         offsetField;
     private static Field                         classRefsField;
     private static Field                         bufferField;
+
     static {
         try {
             offsetField = Hessian2Output.class.getDeclaredField("_offset");
@@ -66,11 +67,31 @@ public class GenericObjectSerializer extends AbstractSerializer {
         }
     }
 
+    private GenericObjectSerializer() {
+    }
+
     public static GenericObjectSerializer getInstance() {
         return INSTANCE;
     }
 
-    private GenericObjectSerializer() {
+    private static FieldSerializer getFieldSerializer(Class type) {
+        if (type == null)
+            return FieldSerializer.SER;
+
+        if (int.class.equals(type) || byte.class.equals(type) || short.class.equals(type)
+            || Integer.class.equals(type) || Byte.class.equals(type) || Short.class.equals(type)) {
+            return IntFieldSerializer.SER;
+        } else if (long.class.equals(type) || Long.class.equals(type)) {
+            return LongFieldSerializer.SER;
+        } else if (double.class.equals(type) || float.class.equals(type)
+            || Double.class.equals(type) || Float.class.equals(type)) {
+            return DoubleFieldSerializer.SER;
+        } else if (boolean.class.equals(type) || Boolean.class.equals(type)) {
+            return BooleanFieldSerializer.SER;
+        } else if (String.class.equals(type)) {
+            return StringFieldSerializer.SER;
+        } else
+            return FieldSerializer.SER;
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {
@@ -196,26 +217,6 @@ public class GenericObjectSerializer extends AbstractSerializer {
         String[] getFieldNames() {
             return _fieldNames;
         }
-    }
-
-    private static FieldSerializer getFieldSerializer(Class type) {
-        if (type == null)
-            return FieldSerializer.SER;
-
-        if (int.class.equals(type) || byte.class.equals(type) || short.class.equals(type)
-            || Integer.class.equals(type) || Byte.class.equals(type) || Short.class.equals(type)) {
-            return IntFieldSerializer.SER;
-        } else if (long.class.equals(type) || Long.class.equals(type)) {
-            return LongFieldSerializer.SER;
-        } else if (double.class.equals(type) || float.class.equals(type)
-            || Double.class.equals(type) || Float.class.equals(type)) {
-            return DoubleFieldSerializer.SER;
-        } else if (boolean.class.equals(type) || Boolean.class.equals(type)) {
-            return BooleanFieldSerializer.SER;
-        } else if (String.class.equals(type)) {
-            return StringFieldSerializer.SER;
-        } else
-            return FieldSerializer.SER;
     }
 
     static class FieldSerializer {

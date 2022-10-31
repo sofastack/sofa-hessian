@@ -31,12 +31,12 @@ import java.util.Map;
 public class GenericMapSerializer extends AbstractSerializer {
     private static final GenericMapSerializer instance = new GenericMapSerializer();
 
-    public static GenericMapSerializer getInstance() {
-        return instance;
-    }
-
     private GenericMapSerializer() {
 
+    }
+
+    public static GenericMapSerializer getInstance() {
+        return instance;
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {

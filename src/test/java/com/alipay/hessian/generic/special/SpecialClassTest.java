@@ -28,11 +28,18 @@ import com.caucho.hessian.io.SerializerFactory;
 import com.caucho.hessian.test.Color;
 import org.junit.Test;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author xuanbei
@@ -42,6 +49,7 @@ public class SpecialClassTest {
 
     /**
      * 这个用例说明hessian写入的InputStram,反序列化时是byte[], 不兼容
+     *
      * @throws Exception
      */
     @Test
@@ -64,6 +72,7 @@ public class SpecialClassTest {
 
     /**
      * 这个用例说明目前的GenericObject结构是支持Throwable的
+     *
      * @throws Exception
      */
     @Test
@@ -89,6 +98,7 @@ public class SpecialClassTest {
 
     /**
      * 这个用例说明hessian写入的Iterator,反序列化时是ArrayList, 不兼容
+     *
      * @throws Exception
      */
     @Test
@@ -116,6 +126,7 @@ public class SpecialClassTest {
 
     /**
      * 这个用例说明hessian写入的Enumeration,反序列化时时是ArrayList, 不兼容
+     *
      * @throws Exception
      */
     @Test
@@ -224,6 +235,7 @@ public class SpecialClassTest {
 
     /**
      * 检测Enum的序列化情况
+     *
      * @throws Exception
      */
     @Test
@@ -246,7 +258,7 @@ public class SpecialClassTest {
         assertEquals(GenericObject.class, o.getClass());
         Object obj = GenericUtils.convertToObject(o);
         assertEquals(obj.getClass(), Color.class);
-        assertTrue(obj == Color.BLANK);
+        assertSame(obj, Color.BLANK);
 
         GenericObject col = GenericUtils.convertToGenericObject(obj);
         bout = new ByteArrayOutputStream();
@@ -261,11 +273,12 @@ public class SpecialClassTest {
         hin.setSerializerFactory(new SerializerFactory());
         o = hin.readObject();
         assertEquals(o.getClass(), Color.class);
-        assertTrue(o == Color.BLANK);
+        assertSame(o, Color.BLANK);
     }
 
     /**
      * 检测Calendar的序列化情况
+     *
      * @throws Exception
      */
     @Test
@@ -325,6 +338,7 @@ public class SpecialClassTest {
 
     /**
      * 这个用例说明hessian写入的Enumeration,反序列化时时是ArrayList, 不兼容
+     *
      * @throws Exception
      */
     @Test

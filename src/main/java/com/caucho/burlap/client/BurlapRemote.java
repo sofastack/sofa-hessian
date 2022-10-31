@@ -60,10 +60,9 @@ public class BurlapRemote {
      * Creates a new Burlap remote object.
      *
      * @param type the remote stub interface
-     * @param url the remote url
+     * @param url  the remote url
      */
-    public BurlapRemote(String type, String url)
-    {
+    public BurlapRemote(String type, String url) {
         this.type = type;
         this.url = url;
     }
@@ -71,47 +70,41 @@ public class BurlapRemote {
     /**
      * Creates an uninitialized Burlap remote.
      */
-    public BurlapRemote()
-    {
+    public BurlapRemote() {
     }
 
     /**
      * Returns the remote api class name.
      */
-    public String getType()
-    {
+    public String getType() {
         return type;
     }
 
     /**
      * Returns the remote URL.
      */
-    public String getURL()
-    {
+    public String getURL() {
         return url;
     }
 
     /**
      * Sets the remote URL.
      */
-    public void setURL(String url)
-    {
+    public void setURL(String url) {
         this.url = url;
     }
 
     /**
      * Defines the hashcode.
      */
-    public int hashCode()
-    {
+    public int hashCode() {
         return url.hashCode();
     }
 
     /**
      * Defines equality
      */
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (!(obj instanceof BurlapRemote))
             return false;
 
@@ -123,8 +116,7 @@ public class BurlapRemote {
     /**
      * Readable version of the remote.
      */
-    public String toString()
-    {
+    public String toString() {
         return "[Remote " + url + "]";
     }
 }

@@ -69,17 +69,17 @@ abstract public class AbstractHessianOutput {
     protected SerializerFactory _serializerFactory;
 
     /**
-     * Sets the serializer factory.
-     */
-    public void setSerializerFactory(SerializerFactory factory) {
-        _serializerFactory = factory;
-    }
-
-    /**
      * Gets the serializer factory.
      */
     public SerializerFactory getSerializerFactory() {
         return _serializerFactory;
+    }
+
+    /**
+     * Sets the serializer factory.
+     */
+    public void setSerializerFactory(SerializerFactory factory) {
+        _serializerFactory = factory;
     }
 
     /**

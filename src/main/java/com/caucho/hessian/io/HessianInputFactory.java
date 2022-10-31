@@ -48,28 +48,25 @@
 
 package com.caucho.hessian.io;
 
-import java.util.logging.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Logger;
 
-public class HessianInputFactory
-{
+public class HessianInputFactory {
     public static final Logger log = Logger.getLogger(HessianInputFactory.class.getName());
 
     private SerializerFactory  _serializerFactory;
 
-    public void setSerializerFactory(SerializerFactory factory)
-    {
-        _serializerFactory = factory;
-    }
-
-    public SerializerFactory getSerializerFactory()
-    {
+    public SerializerFactory getSerializerFactory() {
         return _serializerFactory;
     }
 
+    public void setSerializerFactory(SerializerFactory factory) {
+        _serializerFactory = factory;
+    }
+
     public AbstractHessianInput open(InputStream is)
-        throws IOException
-    {
+        throws IOException {
         int code = is.read();
 
         int major = is.read();
@@ -84,8 +81,7 @@ public class HessianInputFactory
                     AbstractHessianInput in = new Hessian2Input(is);
                     in.setSerializerFactory(_serializerFactory);
                     return in;
-                }
-                else {
+                } else {
                     AbstractHessianInput in = new HessianInput(is);
                     in.setSerializerFactory(_serializerFactory);
                     return in;

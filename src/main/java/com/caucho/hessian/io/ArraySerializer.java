@@ -55,8 +55,7 @@ import java.io.IOException;
  */
 public class ArraySerializer extends AbstractSerializer {
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (out.addRef(obj))
             return;
 
@@ -75,8 +74,7 @@ public class ArraySerializer extends AbstractSerializer {
     /**
      * Returns the &lt;type> name for a &lt;list>.
      */
-    private String getArrayType(Class cl)
-    {
+    private String getArrayType(Class cl) {
         if (cl.isArray())
             return '[' + getArrayType(cl.getComponentType());
 

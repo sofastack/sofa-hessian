@@ -16,7 +16,11 @@
  */
 package com.alipay.hessian.generic.list;
 
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.AbstractDeserializer;
+import com.caucho.hessian.io.AbstractHessianInput;
+import com.caucho.hessian.io.HessianFieldException;
+import com.caucho.hessian.io.IOExceptionWrapper;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -24,12 +28,30 @@ import java.util.HashMap;
 
 public class MyListDeserializer extends AbstractDeserializer {
 
-    private Class   _type;
-    private HashMap _fieldMap;
+    private final Class   _type;
+    private final HashMap _fieldMap;
 
     public MyListDeserializer(Class cl) {
         _type = cl;
         _fieldMap = getFieldMap(cl);
+    }
+
+    static void logDeserializeError(Field field, Object obj, Object value, Throwable e)
+        throws IOException {
+        String fieldName = (field.getDeclaringClass().getName() + "." + field.getName());
+
+        if (e instanceof HessianFieldException)
+            throw (HessianFieldException) e;
+        else if (e instanceof IOException)
+            throw new HessianFieldException(fieldName + ": " + e.getMessage(), e);
+
+        if (value != null)
+            throw new HessianFieldException(fieldName + ": " + value.getClass().getName() + " ("
+                + value + ")" + " cannot be assigned to "
+                + field.getType().getName());
+        else
+            throw new HessianFieldException(fieldName + ": " + field.getType().getName()
+                + " cannot be assigned from null", e);
     }
 
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
@@ -114,24 +136,6 @@ public class MyListDeserializer extends AbstractDeserializer {
                 logDeserializeError(_field, obj, value, e);
             }
         }
-    }
-
-    static void logDeserializeError(Field field, Object obj, Object value, Throwable e)
-        throws IOException {
-        String fieldName = (field.getDeclaringClass().getName() + "." + field.getName());
-
-        if (e instanceof HessianFieldException)
-            throw (HessianFieldException) e;
-        else if (e instanceof IOException)
-            throw new HessianFieldException(fieldName + ": " + e.getMessage(), e);
-
-        if (value != null)
-            throw new HessianFieldException(fieldName + ": " + value.getClass().getName() + " ("
-                + value + ")" + " cannot be assigned to "
-                + field.getType().getName());
-        else
-            throw new HessianFieldException(fieldName + ": " + field.getType().getName()
-                + " cannot be assigned from null", e);
     }
 
 }

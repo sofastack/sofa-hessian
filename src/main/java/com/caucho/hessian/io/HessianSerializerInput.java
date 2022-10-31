@@ -92,16 +92,14 @@ public class HessianSerializerInput extends HessianInput {
      *
      * @param is the underlying input stream.
      */
-    public HessianSerializerInput(InputStream is)
-    {
+    public HessianSerializerInput(InputStream is) {
         super(is);
     }
 
     /**
      * Creates an uninitialized Hessian input stream.
      */
-    public HessianSerializerInput()
-    {
+    public HessianSerializerInput() {
     }
 
     /**
@@ -109,8 +107,7 @@ public class HessianSerializerInput extends HessianInput {
      * a Map.
      */
     protected Object readObjectImpl(Class cl)
-        throws IOException
-    {
+        throws IOException {
         try {
             Object obj = cl.newInstance();
 
@@ -131,8 +128,7 @@ public class HessianSerializerInput extends HessianInput {
                 if (field != null) {
                     Object value = readObject(field.getType());
                     field.set(obj, value);
-                }
-                else {
+                } else {
                     Object value = readObject();
                 }
             }
@@ -142,8 +138,8 @@ public class HessianSerializerInput extends HessianInput {
 
             // if there's a readResolve method, call it
             try {
-                Method method = cl.getMethod("readResolve", new Class[0]);
-                return method.invoke(obj, new Object[0]);
+                Method method = cl.getMethod("readResolve");
+                return method.invoke(obj);
             } catch (Exception e) {
             }
 
@@ -158,8 +154,7 @@ public class HessianSerializerInput extends HessianInput {
     /**
      * Creates a map of the classes fields.
      */
-    protected HashMap getFieldMap(Class cl)
-    {
+    protected HashMap getFieldMap(Class cl) {
         HashMap fieldMap = new HashMap();
 
         for (; cl != null; cl = cl.getSuperclass()) {

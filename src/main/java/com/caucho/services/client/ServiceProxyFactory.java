@@ -56,7 +56,7 @@ package com.caucho.services.client;
  * URL url = new URL("http://localhost:8080/ejb/hello");
  * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
  * </pre>
- *
+ * <p>
  * After creation, the stub can be like a regular Java class.  Because
  * it makes remote calls, it can throw more exceptions than a Java class.
  * In particular, it may throw protocol exceptions.
@@ -73,9 +73,8 @@ public interface ServiceProxyFactory {
      *
      * @param api the interface the proxy class needs to implement
      * @param url the URL where the client object is located.
-     *
      * @return a proxy to the object with the specified interface.
      */
-    public Object create(Class api, String url)
+    Object create(Class api, String url)
         throws java.net.MalformedURLException;
 }

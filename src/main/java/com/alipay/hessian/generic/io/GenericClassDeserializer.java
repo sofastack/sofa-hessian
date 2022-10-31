@@ -56,11 +56,11 @@ public class GenericClassDeserializer extends AbstractDeserializer {
         _primClasses.put("java.lang.String", String.class);
     }
 
-    public static GenericClassDeserializer getInstance() {
-        return instance;
+    private GenericClassDeserializer() {
     }
 
-    private GenericClassDeserializer() {
+    public static GenericClassDeserializer getInstance() {
+        return instance;
     }
 
     /**

@@ -63,8 +63,7 @@ public class GenericService implements Service {
      * Initialize the service instance.
      */
     public void init(ServletConfig config)
-        throws ServletException
-    {
+        throws ServletException {
         this.config = config;
 
         init();
@@ -74,55 +73,48 @@ public class GenericService implements Service {
      * Initialize the service instance.
      */
     public void init()
-        throws ServletException
-    {
+        throws ServletException {
     }
 
     /**
      * Returns the named initialization parameter.
      */
-    public String getInitParameter(String name)
-    {
+    public String getInitParameter(String name) {
         return this.config.getInitParameter(name);
     }
 
     /**
      * Returns the servlet context.
      */
-    public ServletConfig getServletConfig()
-    {
+    public ServletConfig getServletConfig() {
         return this.config;
     }
 
     /**
      * Returns the servlet context.
      */
-    public ServletContext getServletContext()
-    {
+    public ServletContext getServletContext() {
         return this.config.getServletContext();
     }
 
     /**
      * Logs a message to the error stream.
      */
-    public void log(String message)
-    {
+    public void log(String message) {
         getServletContext().log(message);
     }
 
     /**
      * Returns the servlet request object for the request.
      */
-    public ServletRequest getRequest()
-    {
+    public ServletRequest getRequest() {
         return ServiceContext.getRequest();
     }
 
     /**
      * Returns the service identifier for the request.
      */
-    public String getServiceName()
-    {
+    public String getServiceName() {
         return ServiceContext.getServiceName();
     }
 
@@ -131,23 +123,20 @@ public class GenericService implements Service {
      *
      * @deprecated
      */
-    public String getServiceId()
-    {
+    public String getServiceId() {
         return getServiceName();
     }
 
     /**
      * Returns the object identifier for the request.
      */
-    public String getObjectId()
-    {
+    public String getObjectId() {
         return ServiceContext.getObjectId();
     }
 
     /**
      * Cleanup the service instance.
      */
-    public void destroy()
-    {
+    public void destroy() {
     }
 }

@@ -48,7 +48,16 @@
 
 package com.caucho.hessian.client;
 
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.AbstractHessianInput;
+import com.caucho.hessian.io.AbstractHessianOutput;
+import com.caucho.hessian.io.Hessian2Input;
+import com.caucho.hessian.io.Hessian2Output;
+import com.caucho.hessian.io.HessianDebugInputStream;
+import com.caucho.hessian.io.HessianInput;
+import com.caucho.hessian.io.HessianOutput;
+import com.caucho.hessian.io.HessianRemoteObject;
+import com.caucho.hessian.io.HessianRemoteResolver;
+import com.caucho.hessian.io.SerializerFactory;
 import com.caucho.services.client.ServiceProxyFactory;
 
 import javax.naming.Context;
@@ -110,32 +119,44 @@ import java.util.logging.Logger;
  * password are set.
  */
 public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
-    protected static Logger       log                    = Logger.getLogger(HessianProxyFactory.class.getName());
+    protected static Logger             log                    = Logger.getLogger(HessianProxyFactory.class.getName());
+    private final HessianRemoteResolver _resolver;
+    private SerializerFactory           _serializerFactory;
+    private String                      _user;
+    private String                      _password;
+    private String                      _basicAuth;
 
-    private SerializerFactory     _serializerFactory;
-    private HessianRemoteResolver _resolver;
+    private boolean                     _isOverloadEnabled     = false;
 
-    private String                _user;
-    private String                _password;
-    private String                _basicAuth;
+    private boolean                     _isHessian2Reply       = false;
+    private boolean                     _isHessian2Request     = false;
 
-    private boolean               _isOverloadEnabled     = false;
+    private boolean                     _isChunkedPost         = false;
+    private boolean                     _isDebug               = false;
 
-    private boolean               _isHessian2Reply       = false;
-    private boolean               _isHessian2Request     = false;
+    private long                        _readTimeout           = -1;
 
-    private boolean               _isChunkedPost         = false;
-    private boolean               _isDebug               = false;
-
-    private long                  _readTimeout           = -1;
-
-    private String                _connectionFactoryName = "jms/ConnectionFactory";
+    private String                      _connectionFactoryName = "jms/ConnectionFactory";
 
     /**
      * Creates the new proxy factory.
      */
     public HessianProxyFactory() {
         _resolver = new HessianProxyResolver(this);
+    }
+
+    public static char encode(long d) {
+        d &= 0x3f;
+        if (d < 26)
+            return (char) (d + 'A');
+        else if (d < 52)
+            return (char) (d + 'a' - 26);
+        else if (d < 62)
+            return (char) (d + '0' - 52);
+        else if (d == 62)
+            return '+';
+        else
+            return '/';
     }
 
     /**
@@ -163,17 +184,17 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
     }
 
     /**
-     * Sets the debug
-     */
-    public void setDebug(boolean isDebug) {
-        _isDebug = isDebug;
-    }
-
-    /**
      * Gets the debug
      */
     public boolean isDebug() {
         return _isDebug;
+    }
+
+    /**
+     * Sets the debug
+     */
+    public void setDebug(boolean isDebug) {
+        _isDebug = isDebug;
     }
 
     /**
@@ -193,15 +214,15 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
     /**
      * Set true if should use chunked encoding on the request.
      */
-    public void setChunkedPost(boolean isChunked) {
-        _isChunkedPost = isChunked;
+    public boolean isChunkedPost() {
+        return _isChunkedPost;
     }
 
     /**
      * Set true if should use chunked encoding on the request.
      */
-    public boolean isChunkedPost() {
-        return _isChunkedPost;
+    public void setChunkedPost(boolean isChunked) {
+        _isChunkedPost = isChunked;
     }
 
     /**
@@ -243,13 +264,6 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
     }
 
     /**
-     * Sets the serializer factory.
-     */
-    public void setSerializerFactory(SerializerFactory factory) {
-        _serializerFactory = factory;
-    }
-
-    /**
      * Gets the serializer factory.
      */
     public SerializerFactory getSerializerFactory() {
@@ -257,6 +271,13 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
             _serializerFactory = new SerializerFactory();
 
         return _serializerFactory;
+    }
+
+    /**
+     * Sets the serializer factory.
+     */
+    public void setSerializerFactory(SerializerFactory factory) {
+        _serializerFactory = factory;
     }
 
     /**
@@ -486,19 +507,5 @@ public class HessianProxyFactory implements ServiceProxyFactory, ObjectFactory {
         }
 
         return cb.toString();
-    }
-
-    public static char encode(long d) {
-        d &= 0x3f;
-        if (d < 26)
-            return (char) (d + 'A');
-        else if (d < 52)
-            return (char) (d + 'a' - 26);
-        else if (d < 62)
-            return (char) (d + '0' - 52);
-        else if (d == 62)
-            return '+';
-        else
-            return '/';
     }
 }

@@ -59,14 +59,12 @@ import java.io.IOException;
  * Deserializing an MBeanOperationInfo valued object
  */
 public class MBeanOperationInfoDeserializer extends AbstractDeserializer {
-    public Class getType()
-    {
+    public Class getType() {
         return MBeanOperationInfo.class;
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         String name = null;
         String type = null;
         String description = null;
@@ -86,8 +84,7 @@ public class MBeanOperationInfoDeserializer extends AbstractDeserializer {
                 impact = in.readInt();
             else if ("signature".equals(key)) {
                 sig = (MBeanParameterInfo[]) in.readObject(MBeanParameterInfo[].class);
-            }
-            else {
+            } else {
                 in.readObject();
             }
         }

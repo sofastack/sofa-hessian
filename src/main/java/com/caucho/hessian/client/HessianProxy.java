@@ -57,28 +57,28 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.WeakHashMap;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Proxy implementation for Hessian clients.  Applications will generally
  * use HessianProxyFactory to create proxy clients.
  */
 public class HessianProxy implements InvocationHandler {
-    private static final Logger         log        = Logger.getLogger(HessianProxy.class.getName());
+    private static final Logger               log        = Logger.getLogger(HessianProxy.class.getName());
 
-    private HessianProxyFactory         _factory;
-    private WeakHashMap<Method, String> _mangleMap = new WeakHashMap<Method, String>();
-    private URL                         _url;
+    private final HessianProxyFactory         _factory;
+    private final WeakHashMap<Method, String> _mangleMap = new WeakHashMap<Method, String>();
+    private final URL                         _url;
 
-    HessianProxy(HessianProxyFactory factory, URL url)
-    {
+    HessianProxy(HessianProxyFactory factory, URL url) {
         _factory = factory;
         _url = url;
     }
@@ -86,21 +86,19 @@ public class HessianProxy implements InvocationHandler {
     /**
      * Returns the proxy's URL.
      */
-    public URL getURL()
-    {
+    public URL getURL() {
         return _url;
     }
 
     /**
      * Handles the object invocation.
      *
-     * @param proxy the proxy object to invoke
+     * @param proxy  the proxy object to invoke
      * @param method the method to call
-     * @param args the arguments to the proxy object
+     * @param args   the arguments to the proxy object
      */
     public Object invoke(Object proxy, Method method, Object[] args)
-        throws Throwable
-    {
+        throws Throwable {
         String mangleName;
 
         synchronized (_mangleMap) {
@@ -116,13 +114,12 @@ public class HessianProxy implements InvocationHandler {
                 && params.length == 1 && params[0].equals(Object.class)) {
                 Object value = args[0];
                 if (value == null || !Proxy.isProxyClass(value.getClass()))
-                    return new Boolean(false);
+                    return Boolean.FALSE;
 
                 HessianProxy handler = (HessianProxy) Proxy.getInvocationHandler(value);
 
-                return new Boolean(_url.equals(handler.getURL()));
-            }
-            else if (methodName.equals("hashCode") && params.length == 0)
+                return Boolean.valueOf(_url.equals(handler.getURL()));
+            } else if (methodName.equals("hashCode") && params.length == 0)
                 return new Integer(_url.hashCode());
             else if (methodName.equals("getHessianType"))
                 return proxy.getClass().getInterfaces()[0].getName();
@@ -186,7 +183,7 @@ public class HessianProxy implements InvocationHandler {
                     if (is != null)
                         is.close();
 
-                    throw new HessianProtocolException(code + ": " + sb.toString());
+                    throw new HessianProtocolException(code + ": " + sb);
                 }
             }
 
@@ -202,8 +199,7 @@ public class HessianProxy implements InvocationHandler {
                 value = new ResultInputStream(httpConn, is, in, (InputStream) value);
                 is = null;
                 httpConn = null;
-            }
-            else
+            } else
                 in.completeReply();
 
             return value;
@@ -226,8 +222,7 @@ public class HessianProxy implements InvocationHandler {
         }
     }
 
-    protected String mangleName(Method method)
-    {
+    protected String mangleName(Method method) {
         Class[] param = method.getParameterTypes();
 
         if (param == null || param.length == 0)
@@ -237,8 +232,7 @@ public class HessianProxy implements InvocationHandler {
     }
 
     protected URLConnection sendRequest(String methodName, Object[] args)
-        throws IOException
-    {
+        throws IOException {
         URLConnection conn = null;
 
         conn = _factory.openConnection(_url);
@@ -290,8 +284,7 @@ public class HessianProxy implements InvocationHandler {
         ResultInputStream(HttpURLConnection conn,
                           InputStream is,
                           AbstractHessianInput in,
-                          InputStream hessianIs)
-        {
+                          InputStream hessianIs) {
             _conn = conn;
             _connIs = is;
             _in = in;
@@ -299,8 +292,7 @@ public class HessianProxy implements InvocationHandler {
         }
 
         public int read()
-            throws IOException
-        {
+            throws IOException {
             if (_hessianIs != null) {
                 int value = _hessianIs.read();
 
@@ -308,14 +300,12 @@ public class HessianProxy implements InvocationHandler {
                     close();
 
                 return value;
-            }
-            else
+            } else
                 return -1;
         }
 
         public int read(byte[] buffer, int offset, int length)
-            throws IOException
-        {
+            throws IOException {
             if (_hessianIs != null) {
                 int value = _hessianIs.read(buffer, offset, length);
 
@@ -323,14 +313,12 @@ public class HessianProxy implements InvocationHandler {
                     close();
 
                 return value;
-            }
-            else
+            } else
                 return -1;
         }
 
         public void close()
-            throws IOException
-        {
+            throws IOException {
             HttpURLConnection conn = _conn;
             _conn = null;
 

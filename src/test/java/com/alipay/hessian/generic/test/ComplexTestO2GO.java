@@ -37,7 +37,7 @@ import static org.junit.Assert.assertSame;
  * Serialize: Hessian --> Deserialize: GenericHessian
  */
 public class ComplexTestO2GO {
-    private static ComplexDataGenerator dg = new ComplexDataGenerator();
+    private static final ComplexDataGenerator dg = new ComplexDataGenerator();
 
     @Test
     public void singlePerson() throws IOException {

@@ -60,23 +60,20 @@ public class BurlapProtocolException extends IOException {
     /**
      * Zero-arg constructor.
      */
-    public BurlapProtocolException()
-    {
+    public BurlapProtocolException() {
     }
 
     /**
      * Create the exception.
      */
-    public BurlapProtocolException(String message)
-    {
+    public BurlapProtocolException(String message) {
         super(message);
     }
 
     /**
      * Create the exception.
      */
-    public BurlapProtocolException(String message, Throwable rootCause)
-    {
+    public BurlapProtocolException(String message, Throwable rootCause) {
         super(message);
 
         this.rootCause = rootCause;
@@ -85,8 +82,7 @@ public class BurlapProtocolException extends IOException {
     /**
      * Create the exception.
      */
-    public BurlapProtocolException(Throwable rootCause)
-    {
+    public BurlapProtocolException(Throwable rootCause) {
         super(String.valueOf(rootCause));
 
         this.rootCause = rootCause;
@@ -95,8 +91,7 @@ public class BurlapProtocolException extends IOException {
     /**
      * Returns the underlying cause.
      */
-    public Throwable getRootCause()
-    {
+    public Throwable getRootCause() {
         return rootCause;
     }
 }

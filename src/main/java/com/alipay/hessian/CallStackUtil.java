@@ -17,7 +17,6 @@
 package com.alipay.hessian;
 
 /**
- *
  * @author ruoshan
  * @version $Id: CallStackUtil.java, v 0.1 2019年02月13日 11:29 ruoshan Exp $
  */

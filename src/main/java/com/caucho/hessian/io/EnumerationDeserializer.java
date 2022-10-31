@@ -57,8 +57,7 @@ import java.util.Vector;
 public class EnumerationDeserializer extends AbstractListDeserializer {
     private static EnumerationDeserializer _deserializer;
 
-    public static EnumerationDeserializer create()
-    {
+    public static EnumerationDeserializer create() {
         if (_deserializer == null)
             _deserializer = new EnumerationDeserializer();
 
@@ -66,8 +65,7 @@ public class EnumerationDeserializer extends AbstractListDeserializer {
     }
 
     public Object readList(AbstractHessianInput in, int length)
-        throws IOException
-    {
+        throws IOException {
         Vector list = new Vector();
 
         in.addRef(list);

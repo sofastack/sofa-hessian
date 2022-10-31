@@ -57,8 +57,7 @@ import java.util.Enumeration;
 public class EnumerationSerializer extends AbstractSerializer {
     private static EnumerationSerializer _serializer;
 
-    public static EnumerationSerializer create()
-    {
+    public static EnumerationSerializer create() {
         if (_serializer == null)
             _serializer = new EnumerationSerializer();
 
@@ -66,8 +65,7 @@ public class EnumerationSerializer extends AbstractSerializer {
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         Enumeration iter = (Enumeration) obj;
 
         boolean hasEnd = out.writeListBegin(-1, null);

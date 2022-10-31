@@ -81,7 +81,7 @@ public class ClassNameResolverTest {
                     return className;
                 }
             });
-            Assert.assertTrue(resolver.filters.size() == 2);
+            Assert.assertEquals(2, resolver.filters.size());
         } finally {
             resolver.filters = old;
         }
@@ -114,11 +114,11 @@ public class ClassNameResolverTest {
 
             resolver.addFilter(filter1);
             resolver.addFilter(filter2);
-            Assert.assertTrue(resolver.filters.size() == 2);
+            Assert.assertEquals(2, resolver.filters.size());
             resolver.removeFilter(filter2);
-            Assert.assertTrue(resolver.filters.size() == 1);
+            Assert.assertEquals(1, resolver.filters.size());
             resolver.removeFilter(filter1);
-            Assert.assertTrue(resolver.filters.size() == 0);
+            Assert.assertEquals(0, resolver.filters.size());
         } finally {
             resolver.filters = old;
         }
@@ -151,7 +151,7 @@ public class ClassNameResolverTest {
 
             resolver.addFilter(filter1);
             resolver.addFilter(filter2);
-            Assert.assertTrue(resolver.filters.size() == 2);
+            Assert.assertEquals(2, resolver.filters.size());
 
             Assert.assertEquals(resolver.resolve("xxx"), "axxxb");
         } finally {
@@ -180,7 +180,7 @@ public class ClassNameResolverTest {
                 return className;
             }
         });
-        Assert.assertTrue(resolver.filters.size() == 2);
+        Assert.assertEquals(2, resolver.filters.size());
 
         final AtomicBoolean run = new AtomicBoolean(true);
         final AtomicBoolean error = new AtomicBoolean(false); // 有没有发生异常，例如死锁等

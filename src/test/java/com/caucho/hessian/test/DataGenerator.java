@@ -17,7 +17,7 @@
 package com.caucho.hessian.test;
 
 /**
-*
+ *
  */
 public interface DataGenerator {
 
@@ -32,7 +32,7 @@ public interface DataGenerator {
      * R N
      * </pre></code>
      */
-    public Object generateNull();
+    Object generateNull();
 
     //
     // boolean
@@ -45,7 +45,7 @@ public interface DataGenerator {
      * T
      * </pre></code>
      */
-    public Object generateTrue();
+    Object generateTrue();
 
     /**
      * Boolean false
@@ -54,7 +54,7 @@ public interface DataGenerator {
      * F
      * </pre></code>
      */
-    public Object generateFalse();
+    Object generateFalse();
 
     //
     // integers
@@ -67,7 +67,7 @@ public interface DataGenerator {
      * R x90
      * </pre></code>
      */
-    public int generateInt_0();
+    int generateInt_0();
 
     /**
      * Result of integer 1
@@ -76,7 +76,7 @@ public interface DataGenerator {
      * R x91
      * </pre></code>
      */
-    public int generateInt_1();
+    int generateInt_1();
 
     /**
      * Result of integer 47
@@ -85,7 +85,7 @@ public interface DataGenerator {
      * R xbf
      * </pre></code>
      */
-    public int generateInt_47();
+    int generateInt_47();
 
     /**
      * Result of integer -16
@@ -94,7 +94,7 @@ public interface DataGenerator {
      * R x80
      * </pre></code>
      */
-    public int generateInt_m16();
+    int generateInt_m16();
 
     // two byte integers
 
@@ -105,7 +105,7 @@ public interface DataGenerator {
      * R xc8 x30
      * </pre></code>
      */
-    public int generateInt_0x30();
+    int generateInt_0x30();
 
     /**
      * Result of integer x7ff
@@ -114,7 +114,7 @@ public interface DataGenerator {
      * R xcf xff
      * </pre></code>
      */
-    public int generateInt_0x7ff();
+    int generateInt_0x7ff();
 
     /**
      * Result of integer -17
@@ -123,7 +123,7 @@ public interface DataGenerator {
      * R xc7 xef
      * </pre></code>
      */
-    public int generateInt_m17();
+    int generateInt_m17();
 
     /**
      * Result of integer -0x800
@@ -132,7 +132,7 @@ public interface DataGenerator {
      * R xc0 x00
      * </pre></code>
      */
-    public int generateInt_m0x800();
+    int generateInt_m0x800();
 
     /**
      * Result of integer 0x800
@@ -141,7 +141,7 @@ public interface DataGenerator {
      * R xd4 x08 x00
      * </pre></code>
      */
-    public int generateInt_0x800();
+    int generateInt_0x800();
 
     /**
      * Result of integer 0x3ffff
@@ -150,7 +150,7 @@ public interface DataGenerator {
      * R xd7 xff xff
      * </pre></code>
      */
-    public int generateInt_0x3ffff();
+    int generateInt_0x3ffff();
 
     /**
      * Result of integer -0x801
@@ -159,7 +159,7 @@ public interface DataGenerator {
      * R xd3 xf8 x00
      * </pre></code>
      */
-    public int generateInt_m0x801();
+    int generateInt_m0x801();
 
     /**
      * Result of integer m0x40000
@@ -168,7 +168,7 @@ public interface DataGenerator {
      * R xd0 x00 x00
      * </pre></code>
      */
-    public int generateInt_m0x40000();
+    int generateInt_m0x40000();
 
     // 5 byte integers
 
@@ -179,7 +179,7 @@ public interface DataGenerator {
      * R I x00 x04 x00 x00
      * </pre></code>
      */
-    public int generateInt_0x40000();
+    int generateInt_0x40000();
 
     /**
      * Result of integer 0x7fffffff
@@ -188,7 +188,7 @@ public interface DataGenerator {
      * R I x7f xff xff xff
      * </pre></code>
      */
-    public int generateInt_0x7fffffff();
+    int generateInt_0x7fffffff();
 
     /**
      * Result of integer m0x40001
@@ -197,7 +197,7 @@ public interface DataGenerator {
      * R I xff xf3 xff xf
      * </pre></code>
      */
-    public int generateInt_m0x40001();
+    int generateInt_m0x40001();
 
     /**
      * Result of integer -0x80000000
@@ -206,7 +206,7 @@ public interface DataGenerator {
      * R I x80 x00 x00 x00
      * </pre></code>
      */
-    public int generateInt_m0x80000000();
+    int generateInt_m0x80000000();
 
     //
     // longs
@@ -219,7 +219,7 @@ public interface DataGenerator {
      * R xe0
      * </pre></code>
      */
-    public long generateLong_0();
+    long generateLong_0();
 
     /**
      * Result of long 1
@@ -228,7 +228,7 @@ public interface DataGenerator {
      * R xe1
      * </pre></code>
      */
-    public long generateLong_1();
+    long generateLong_1();
 
     /**
      * Result of long 15
@@ -237,7 +237,7 @@ public interface DataGenerator {
      * R xef
      * </pre></code>
      */
-    public long generateLong_15();
+    long generateLong_15();
 
     /**
      * Result of long -8
@@ -246,7 +246,7 @@ public interface DataGenerator {
      * R xd8
      * </pre></code>
      */
-    public long generateLong_m8();
+    long generateLong_m8();
 
     // two byte longs
 
@@ -257,7 +257,7 @@ public interface DataGenerator {
      * R xf8 x10
      * </pre></code>
      */
-    public long generateLong_0x10();
+    long generateLong_0x10();
 
     /**
      * Result of long x7ff
@@ -266,7 +266,7 @@ public interface DataGenerator {
      * R xff xff
      * </pre></code>
      */
-    public long generateLong_0x7ff();
+    long generateLong_0x7ff();
 
     /**
      * Result of long -9
@@ -275,7 +275,7 @@ public interface DataGenerator {
      * R xf7 xf7
      * </pre></code>
      */
-    public long generateLong_m9();
+    long generateLong_m9();
 
     /**
      * Result of long -0x800
@@ -284,7 +284,7 @@ public interface DataGenerator {
      * R xf0 x00
      * </pre></code>
      */
-    public long generateLong_m0x800();
+    long generateLong_m0x800();
 
     /**
      * Result of long 0x800
@@ -293,7 +293,7 @@ public interface DataGenerator {
      * R x3c x08 x00
      * </pre></code>
      */
-    public long generateLong_0x800();
+    long generateLong_0x800();
 
     /**
      * Result of long 0x3ffff
@@ -302,7 +302,7 @@ public interface DataGenerator {
      * R x3f xff xff
      * </pre></code>
      */
-    public long generateLong_0x3ffff();
+    long generateLong_0x3ffff();
 
     /**
      * Result of long -0x801
@@ -311,7 +311,7 @@ public interface DataGenerator {
      * R x3b xf7 xff
      * </pre></code>
      */
-    public long generateLong_m0x801();
+    long generateLong_m0x801();
 
     /**
      * Result of long m0x40000
@@ -320,7 +320,7 @@ public interface DataGenerator {
      * R x38 x00 x00
      * </pre></code>
      */
-    public long generateLong_m0x40000();
+    long generateLong_m0x40000();
 
     // 5 byte longs
 
@@ -331,7 +331,7 @@ public interface DataGenerator {
      * R x59 x00 x04 x00 x00
      * </pre></code>
      */
-    public long generateLong_0x40000();
+    long generateLong_0x40000();
 
     /**
      * Result of long 0x7fffffff
@@ -340,7 +340,7 @@ public interface DataGenerator {
      * R x59 x7f xff xff xff
      * </pre></code>
      */
-    public long generateLong_0x7fffffff();
+    long generateLong_0x7fffffff();
 
     /**
      * Result of long m0x40001
@@ -349,7 +349,7 @@ public interface DataGenerator {
      * R x59 xff xf3 xff xf
      * </pre></code>
      */
-    public long generateLong_m0x40001();
+    long generateLong_m0x40001();
 
     /**
      * Result of long -0x80000000
@@ -358,7 +358,7 @@ public interface DataGenerator {
      * R x59 x80 x00 x00 x00
      * </pre></code>
      */
-    public long generateLong_m0x80000000();
+    long generateLong_m0x80000000();
 
     /**
      * Result of long 0x80000000
@@ -367,7 +367,7 @@ public interface DataGenerator {
      * R L x00 x00 x00 x00 x80 x00 x00 x00
      * </pre></code>
      */
-    public long generateLong_0x80000000();
+    long generateLong_0x80000000();
 
     /**
      * Result of long -0x80000001
@@ -376,7 +376,7 @@ public interface DataGenerator {
      * R L xff xff xff xff x7f xff xff xff
      * </pre></code>
      */
-    public long generateLong_m0x80000001();
+    long generateLong_m0x80000001();
 
     //
     // doubles
@@ -389,7 +389,7 @@ public interface DataGenerator {
      * R x5b
      * </pre></code>
      */
-    public double generateDouble_0_0();
+    double generateDouble_0_0();
 
     /**
      * Result of double 1.0
@@ -398,7 +398,7 @@ public interface DataGenerator {
      * R x5c
      * </pre></code>
      */
-    public double generateDouble_1_0();
+    double generateDouble_1_0();
 
     /**
      * Result of double 2.0
@@ -407,7 +407,7 @@ public interface DataGenerator {
      * R x5d x02
      * </pre></code>
      */
-    public double generateDouble_2_0();
+    double generateDouble_2_0();
 
     /**
      * Result of double 127.0
@@ -416,7 +416,7 @@ public interface DataGenerator {
      * R x5d x7f
      * </pre></code>
      */
-    public double generateDouble_127_0();
+    double generateDouble_127_0();
 
     /**
      * Result of double -128.0
@@ -425,7 +425,7 @@ public interface DataGenerator {
      * R x5d x80
      * </pre></code>
      */
-    public double generateDouble_m128_0();
+    double generateDouble_m128_0();
 
     /**
      * Result of double 128.0
@@ -434,7 +434,7 @@ public interface DataGenerator {
      * R x5e x00 x80
      * </pre></code>
      */
-    public double generateDouble_128_0();
+    double generateDouble_128_0();
 
     /**
      * Result of double -129.0
@@ -443,7 +443,7 @@ public interface DataGenerator {
      * R x5e xff x7f
      * </pre></code>
      */
-    public double generateDouble_m129_0();
+    double generateDouble_m129_0();
 
     /**
      * Result of double 32767.0
@@ -452,7 +452,7 @@ public interface DataGenerator {
      * R x5e x7f xff
      * </pre></code>
      */
-    public double generateDouble_32767_0();
+    double generateDouble_32767_0();
 
     /**
      * Result of double -32768.0
@@ -461,7 +461,7 @@ public interface DataGenerator {
      * R x5e x80 x80
      * </pre></code>
      */
-    public double generateDouble_m32768_0();
+    double generateDouble_m32768_0();
 
     /**
      * Result of double 0.001
@@ -470,7 +470,7 @@ public interface DataGenerator {
      * R x5f x00 x00 x00 x01
      * </pre></code>
      */
-    public double generateDouble_0_001();
+    double generateDouble_0_001();
 
     /**
      * Result of double -0.001
@@ -479,7 +479,7 @@ public interface DataGenerator {
      * R x5f xff xff xff xff
      * </pre></code>
      */
-    public double generateDouble_m0_001();
+    double generateDouble_m0_001();
 
     /**
      * Result of double 65.536
@@ -488,7 +488,7 @@ public interface DataGenerator {
      * R x5f x00 x01 x00 x00
      * </pre></code>
      */
-    public double generateDouble_65_536();
+    double generateDouble_65_536();
 
     /**
      * Result of double 3.14159
@@ -497,7 +497,7 @@ public interface DataGenerator {
      * D x40 x09 x21 xf9 xf0 x1b x86 x6e
      * </pre></code>
      */
-    public double generateDouble_3_14159();
+    double generateDouble_3_14159();
 
     //
     // date
@@ -510,7 +510,7 @@ public interface DataGenerator {
      * x4a x00 x00 x00 x00
      * </pre></code>
      */
-    public Object generateDate_0();
+    Object generateDate_0();
 
     /**
      * Date by millisecond (05-08-1998 07:51 GMT)
@@ -519,7 +519,7 @@ public interface DataGenerator {
      * x4a x00 x00 x00 xd0 x4b x92 x84 xb8
      * </pre></code>
      */
-    public Object generateDate_1();
+    Object generateDate_1();
 
     /**
      * Date by minute (05-08-1998 07:51 GMT)
@@ -528,7 +528,7 @@ public interface DataGenerator {
      * x4b x00 xe3 x83 x8f
      * </pre></code>
      */
-    public Object generateDate_2();
+    Object generateDate_2();
 
     //
     // string length
@@ -541,7 +541,7 @@ public interface DataGenerator {
      * x00
      * </pre></code>
      */
-    public String generateString_0();
+    String generateString_0();
 
     /**
      * A null string
@@ -550,7 +550,7 @@ public interface DataGenerator {
      * N
      * </pre></code>
      */
-    public String generateString_null();
+    String generateString_null();
 
     /**
      * A one-length string
@@ -559,7 +559,7 @@ public interface DataGenerator {
      * x01 a
      * </pre></code>
      */
-    public String generateString_1();
+    String generateString_1();
 
     /**
      * A 31-length string
@@ -568,7 +568,7 @@ public interface DataGenerator {
      * x0f 0123456789012345678901234567890
      * </pre></code>
      */
-    public String generateString_31();
+    String generateString_31();
 
     /**
      * A 32-length string
@@ -577,7 +577,7 @@ public interface DataGenerator {
      * x30 x02 01234567890123456789012345678901
      * </pre></code>
      */
-    public String generateString_32();
+    String generateString_32();
 
     /**
      * A 1023-length string
@@ -586,7 +586,7 @@ public interface DataGenerator {
      * x33 xff 000 01234567890123456789012345678901...
      * </pre></code>
      */
-    public String generateString_1023();
+    String generateString_1023();
 
     /**
      * A 1024-length string
@@ -595,7 +595,7 @@ public interface DataGenerator {
      * S x04 x00 000 01234567890123456789012345678901...
      * </pre></code>
      */
-    public String generateString_1024();
+    String generateString_1024();
 
     /**
      * A 65536-length string
@@ -605,7 +605,7 @@ public interface DataGenerator {
      * S x04 x00 000 01234567890123456789012345678901...
      * </pre></code>
      */
-    public String generateString_65536();
+    String generateString_65536();
 
     //
     // binary length
@@ -618,7 +618,7 @@ public interface DataGenerator {
      * x20
      * </pre></code>
      */
-    public Object generateBinary_0();
+    Object generateBinary_0();
 
     /**
      * A null string
@@ -627,7 +627,7 @@ public interface DataGenerator {
      * N
      * </pre></code>
      */
-    public Object generateBinary_null();
+    Object generateBinary_null();
 
     /**
      * A one-length string
@@ -636,7 +636,7 @@ public interface DataGenerator {
      * x01 0
      * </pre></code>
      */
-    public Object generateBinary_1();
+    Object generateBinary_1();
 
     /**
      * A 15-length binary
@@ -645,7 +645,7 @@ public interface DataGenerator {
      * x2f 0123456789012345
      * </pre></code>
      */
-    public Object generateBinary_15();
+    Object generateBinary_15();
 
     /**
      * A 16-length binary
@@ -654,7 +654,7 @@ public interface DataGenerator {
      * x34 x10 01234567890123456789012345678901
      * </pre></code>
      */
-    public Object generateBinary_16();
+    Object generateBinary_16();
 
     /**
      * A 1023-length binary
@@ -663,7 +663,7 @@ public interface DataGenerator {
      * x37 xff 000 01234567890123456789012345678901...
      * </pre></code>
      */
-    public Object generateBinary_1023();
+    Object generateBinary_1023();
 
     /**
      * A 1024-length binary
@@ -672,7 +672,7 @@ public interface DataGenerator {
      * B x04 x00 000 01234567890123456789012345678901...
      * </pre></code>
      */
-    public Object generateBinary_1024();
+    Object generateBinary_1024();
 
     /**
      * A 65536-length binary
@@ -682,7 +682,7 @@ public interface DataGenerator {
      * B x04 x00 000 01234567890123456789012345678901...
      * </pre></code>
      */
-    public Object generateBinary_65536();
+    Object generateBinary_65536();
 
     //
     // lists
@@ -695,7 +695,7 @@ public interface DataGenerator {
      * x78
      * </pre></code>
      */
-    public Object generateUntypedFixedList_0();
+    Object generateUntypedFixedList_0();
 
     /**
      * 1-length untyped list
@@ -704,7 +704,7 @@ public interface DataGenerator {
      * x79 x01 1
      * </pre></code>
      */
-    public Object generateUntypedFixedList_1();
+    Object generateUntypedFixedList_1();
 
     /**
      * 7-length untyped list
@@ -713,7 +713,7 @@ public interface DataGenerator {
      * x7f x01 1 x01 2 x01 3 x01 4 x01 5 x01 6 x01 7
      * </pre></code>
      */
-    public Object generateUntypedFixedList_7();
+    Object generateUntypedFixedList_7();
 
     /**
      * 8-length untyped list
@@ -722,7 +722,7 @@ public interface DataGenerator {
      * X x98 x01 1 x01 2 x01 3 x01 4 x01 5 x01 6 x01 7 x01 8
      * </pre></code>
      */
-    public Object generateUntypedFixedList_8();
+    Object generateUntypedFixedList_8();
 
     /**
      * Zero-length typed list (String array)
@@ -731,7 +731,7 @@ public interface DataGenerator {
      * x70 x07 [string
      * </pre></code>
      */
-    public Object generateTypedFixedList_0();
+    Object generateTypedFixedList_0();
 
     /**
      * 1-length typed list (String array)
@@ -740,7 +740,7 @@ public interface DataGenerator {
      * x71 x07 [string x01 1
      * </pre></code>
      */
-    public Object generateTypedFixedList_1();
+    Object generateTypedFixedList_1();
 
     /**
      * 7-length typed list (String array)
@@ -749,7 +749,7 @@ public interface DataGenerator {
      * x77 x07 [string x01 1 x01 2 x01 3 x01 4 x01 5 x01 6 x01 7
      * </pre></code>
      */
-    public Object generateTypedFixedList_7();
+    Object generateTypedFixedList_7();
 
     /**
      * 8-length typed list (String array)
@@ -758,7 +758,7 @@ public interface DataGenerator {
      * V x07 [stringx98 x01 1 x01 2 x01 3 x01 4 x01 5 x01 6 x01 7 x01 8
      * </pre></code>
      */
-    public Object generateTypedFixedList_8();
+    Object generateTypedFixedList_8();
 
     //
     // untyped maps
@@ -771,7 +771,7 @@ public interface DataGenerator {
      * H Z
      * </pre></code>
      */
-    public Object generateUntypedMap_0();
+    Object generateUntypedMap_0();
 
     /**
      * untyped map with string key
@@ -780,7 +780,7 @@ public interface DataGenerator {
      * H x01 a x90 Z
      * </pre></code>
      */
-    public Object generateUntypedMap_1();
+    Object generateUntypedMap_1();
 
     /**
      * untyped map with int key
@@ -789,7 +789,7 @@ public interface DataGenerator {
      * H x90 x01 a x91 x01 b Z
      * </pre></code>
      */
-    public Object generateUntypedMap_2();
+    Object generateUntypedMap_2();
 
     /**
      * untyped map with list key
@@ -798,7 +798,7 @@ public interface DataGenerator {
      * H x71 x01 a x90 Z
      * </pre></code>
      */
-    public Object generateUntypedMap_3();
+    Object generateUntypedMap_3();
 
     //
     // typed maps
@@ -811,7 +811,7 @@ public interface DataGenerator {
      * M x13 java.lang.Hashtable Z
      * </pre></code>
      */
-    public Object generateTypedMap_0();
+    Object generateTypedMap_0();
 
     /**
      * untyped map with string key
@@ -820,7 +820,7 @@ public interface DataGenerator {
      * M x13 java.lang.Hashtable x01 a x90 Z
      * </pre></code>
      */
-    public Object generateTypedMap_1();
+    Object generateTypedMap_1();
 
     /**
      * typed map with int key
@@ -829,7 +829,7 @@ public interface DataGenerator {
      * M x13 java.lang.Hashtable x90 x01 a x91 x01 b Z
      * </pre></code>
      */
-    public Object generateTypedMap_2();
+    Object generateTypedMap_2();
 
     /**
      * typed map with list key
@@ -838,7 +838,7 @@ public interface DataGenerator {
      * M x13 java.lang.Hashtable x71 x01 a x90 Z
      * </pre></code>
      */
-    public Object generateTypedMap_3();
+    Object generateTypedMap_3();
 
     //
     // objects
@@ -851,7 +851,7 @@ public interface DataGenerator {
      * C x1a A0 x90 x60
      * </pre></code>
      */
-    public Object generateObject_0();
+    Object generateObject_0();
 
     /**
      * Returns 16 object types
@@ -876,7 +876,7 @@ public interface DataGenerator {
      *  C x1b A15 x90 x6f
      *  C x1b A16 x90 O xa0
      */
-    public Object generateObject_16();
+    Object generateObject_16();
 
     /**
      * Simple object with one field
@@ -885,7 +885,7 @@ public interface DataGenerator {
      * C x22 TestObject x91 x06 _value x60 x90
      * </pre></code>
      */
-    public Object generateObject_1();
+    Object generateObject_1();
 
     /**
      * Simple two objects with one field
@@ -897,7 +897,7 @@ public interface DataGenerator {
      *   x60 x91
      * </pre></code>
      */
-    public Object generateObject_2();
+    Object generateObject_2();
 
     /**
      * Simple repeated object
@@ -909,7 +909,7 @@ public interface DataGenerator {
      *   Q x91
      * </pre></code>
      */
-    public Object generateObject_2a();
+    Object generateObject_2a();
 
     /**
      * Two object with equals
@@ -921,7 +921,7 @@ public interface DataGenerator {
      *   x60 x90
      * </pre></code>
      */
-    public Object generateObject_2b();
+    Object generateObject_2b();
 
     /**
      * Circular object
@@ -931,6 +931,6 @@ public interface DataGenerator {
      *   x60 x01 a Q \x90x
      * </pre></code>
      */
-    public Object generateObject_3();
+    Object generateObject_3();
 
 }

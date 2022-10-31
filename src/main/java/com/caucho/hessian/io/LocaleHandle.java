@@ -54,15 +54,13 @@ import java.util.Locale;
  * Handle for a locale object.
  */
 public class LocaleHandle implements java.io.Serializable {
-    private String value;
+    private final String value;
 
-    public LocaleHandle(String locale)
-    {
+    public LocaleHandle(String locale) {
         this.value = locale;
     }
 
-    private Object readResolve()
-    {
+    private Object readResolve() {
         String s = this.value;
 
         if (s == null)

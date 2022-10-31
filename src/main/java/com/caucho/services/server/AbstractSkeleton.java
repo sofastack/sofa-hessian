@@ -56,19 +56,17 @@ import java.util.HashMap;
  * Proxy class for Hessian services.
  */
 abstract public class AbstractSkeleton {
-    private Class   _apiClass;
-    private Class   _homeClass;
-    private Class   _objectClass;
-
-    private HashMap _methodMap = new HashMap();
+    private final Class   _apiClass;
+    private final HashMap _methodMap = new HashMap();
+    private Class         _homeClass;
+    private Class         _objectClass;
 
     /**
      * Create a new hessian skeleton.
      *
      * @param apiClass the API interface
      */
-    protected AbstractSkeleton(Class apiClass)
-    {
+    protected AbstractSkeleton(Class apiClass) {
         _apiClass = apiClass;
 
         Method[] methodList = apiClass.getMethods();
@@ -88,72 +86,14 @@ abstract public class AbstractSkeleton {
     }
 
     /**
-     * Returns the API class of the current object.
-     */
-    public String getAPIClassName()
-    {
-        return _apiClass.getName();
-    }
-
-    /**
-     * Returns the API class of the factory/home.
-     */
-    public String getHomeClassName()
-    {
-        if (_homeClass != null)
-            return _homeClass.getName();
-        else
-            return getAPIClassName();
-    }
-
-    /**
-     * Sets the home API class.
-     */
-    public void setHomeClass(Class homeAPI)
-    {
-        _homeClass = homeAPI;
-    }
-
-    /**
-     * Returns the API class of the object URLs
-     */
-    public String getObjectClassName()
-    {
-        if (_objectClass != null)
-            return _objectClass.getName();
-        else
-            return getAPIClassName();
-    }
-
-    /**
-     * Sets the object API class.
-     */
-    public void setObjectClass(Class objectAPI)
-    {
-        _objectClass = objectAPI;
-    }
-
-    /**
-     * Returns the method by the mangled name.
-     *
-     * @param mangledName the name passed by the protocol
-     */
-    protected Method getMethod(String mangledName)
-    {
-        return (Method) _methodMap.get(mangledName);
-    }
-
-    /**
      * Creates a unique mangled method name based on the method name and
      * the method parameters.
      *
      * @param method the method to mangle
      * @param isFull if true, mangle the full classname
-     *
      * @return a mangled string.
      */
-    public static String mangleName(Method method, boolean isFull)
-    {
+    public static String mangleName(Method method, boolean isFull) {
         StringBuffer sb = new StringBuffer();
 
         sb.append(method.getName());
@@ -170,8 +110,7 @@ abstract public class AbstractSkeleton {
     /**
      * Mangles a classname.
      */
-    public static String mangleClass(Class cl, boolean isFull)
-    {
+    public static String mangleClass(Class cl, boolean isFull) {
         String name = cl.getName();
 
         if (name.equals("boolean") || name.equals("java.lang.Boolean"))
@@ -198,8 +137,7 @@ abstract public class AbstractSkeleton {
             return "binary";
         else if (cl.isArray()) {
             return "[" + mangleClass(cl.getComponentType(), isFull);
-        }
-        else if (name.equals("org.w3c.dom.Node")
+        } else if (name.equals("org.w3c.dom.Node")
             || name.equals("org.w3c.dom.Element")
             || name.equals("org.w3c.dom.Document"))
             return "xml";
@@ -212,5 +150,55 @@ abstract public class AbstractSkeleton {
             else
                 return name;
         }
+    }
+
+    /**
+     * Returns the API class of the current object.
+     */
+    public String getAPIClassName() {
+        return _apiClass.getName();
+    }
+
+    /**
+     * Returns the API class of the factory/home.
+     */
+    public String getHomeClassName() {
+        if (_homeClass != null)
+            return _homeClass.getName();
+        else
+            return getAPIClassName();
+    }
+
+    /**
+     * Sets the home API class.
+     */
+    public void setHomeClass(Class homeAPI) {
+        _homeClass = homeAPI;
+    }
+
+    /**
+     * Returns the API class of the object URLs
+     */
+    public String getObjectClassName() {
+        if (_objectClass != null)
+            return _objectClass.getName();
+        else
+            return getAPIClassName();
+    }
+
+    /**
+     * Sets the object API class.
+     */
+    public void setObjectClass(Class objectAPI) {
+        _objectClass = objectAPI;
+    }
+
+    /**
+     * Returns the method by the mangled name.
+     *
+     * @param mangledName the name passed by the protocol
+     */
+    protected Method getMethod(String mangledName) {
+        return (Method) _methodMap.get(mangledName);
     }
 }

@@ -60,16 +60,15 @@ import java.lang.reflect.Method;
  * Proxy class for Burlap services.
  */
 public class BurlapSkeleton extends AbstractSkeleton {
-    private Object _service;
+    private final Object _service;
 
     /**
      * Create a new burlap skeleton.
      *
-     * @param service the underlying service object.
+     * @param service  the underlying service object.
      * @param apiClass the API interface
      */
-    public BurlapSkeleton(Object service, Class apiClass)
-    {
+    public BurlapSkeleton(Object service, Class apiClass) {
         super(apiClass);
 
         _service = service;
@@ -78,12 +77,11 @@ public class BurlapSkeleton extends AbstractSkeleton {
     /**
      * Invoke the object with the request from the input stream.
      *
-     * @param in the Burlap input stream
+     * @param in  the Burlap input stream
      * @param out the Burlap output stream
      */
     public void invoke(BurlapInput in, BurlapOutput out)
-        throws Throwable
-    {
+        throws Throwable {
         in.readCall();
 
         ServiceContext context = ServiceContext.getContext();
@@ -99,8 +97,7 @@ public class BurlapSkeleton extends AbstractSkeleton {
         Method method = getMethod(methodName);
 
         if (method != null) {
-        }
-        else if ("_burlap_getAttribute".equals(in.getMethod())) {
+        } else if ("_burlap_getAttribute".equals(in.getMethod())) {
             String attrName = in.readString();
             in.completeCall();
 
@@ -119,8 +116,7 @@ public class BurlapSkeleton extends AbstractSkeleton {
 
             out.completeReply();
             return;
-        }
-        else if (method == null) {
+        } else if (method == null) {
             out.startReply();
             out.writeFault("NoSuchMethodException",
                 "The service has no method named: " + in.getMethod(),

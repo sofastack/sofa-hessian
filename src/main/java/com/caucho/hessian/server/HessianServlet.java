@@ -48,7 +48,13 @@
 
 package com.caucho.hessian.server;
 
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.AbstractHessianOutput;
+import com.caucho.hessian.io.Hessian2Input;
+import com.caucho.hessian.io.Hessian2Output;
+import com.caucho.hessian.io.HessianDebugInputStream;
+import com.caucho.hessian.io.HessianDebugOutputStream;
+import com.caucho.hessian.io.HessianOutput;
+import com.caucho.hessian.io.SerializerFactory;
 import com.caucho.services.server.GenericService;
 import com.caucho.services.server.Service;
 import com.caucho.services.server.ServiceContext;
@@ -61,8 +67,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.util.logging.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Servlet for serving Hessian services.
@@ -83,85 +94,67 @@ public class HessianServlet extends GenericServlet {
 
     private boolean           _isDebug;
 
-    public HessianServlet()
-    {
+    public HessianServlet() {
         _log = Logger.getLogger(HessianServlet.class.getName());
     }
 
-    public String getServletInfo()
-    {
+    public String getServletInfo() {
         return "Hessian Servlet";
     }
 
     /**
      * Sets the home api.
      */
-    public void setHomeAPI(Class api)
-    {
+    public void setHomeAPI(Class api) {
         _homeAPI = api;
     }
 
     /**
      * Sets the home implementation
      */
-    public void setHome(Object home)
-    {
+    public void setHome(Object home) {
         _homeImpl = home;
     }
 
     /**
      * Sets the object api.
      */
-    public void setObjectAPI(Class api)
-    {
+    public void setObjectAPI(Class api) {
         _objectAPI = api;
     }
 
     /**
      * Sets the object implementation
      */
-    public void setObject(Object object)
-    {
+    public void setObject(Object object) {
         _objectImpl = object;
     }
 
     /**
      * Sets the service class.
      */
-    public void setService(Object service)
-    {
+    public void setService(Object service) {
         setHome(service);
-    }
-
-    /**
-     * Sets the api-class.
-     */
-    public void setAPIClass(Class api)
-    {
-        setHomeAPI(api);
     }
 
     /**
      * Gets the api-class.
      */
-    public Class getAPIClass()
-    {
+    public Class getAPIClass() {
         return _homeAPI;
     }
 
     /**
-     * Sets the serializer factory.
+     * Sets the api-class.
      */
-    public void setSerializerFactory(SerializerFactory factory)
-    {
-        _serializerFactory = factory;
+    public void setAPIClass(Class api) {
+        setHomeAPI(api);
     }
 
     /**
      * Gets the serializer factory.
      */
-    public SerializerFactory getSerializerFactory()
-    {
+    public SerializerFactory getSerializerFactory() {
         if (_serializerFactory == null)
             _serializerFactory = new SerializerFactory();
 
@@ -169,26 +162,30 @@ public class HessianServlet extends GenericServlet {
     }
 
     /**
+     * Sets the serializer factory.
+     */
+    public void setSerializerFactory(SerializerFactory factory) {
+        _serializerFactory = factory;
+    }
+
+    /**
      * Sets the serializer send collection java type.
      */
-    public void setSendCollectionType(boolean sendType)
-    {
+    public void setSendCollectionType(boolean sendType) {
         getSerializerFactory().setSendCollectionType(sendType);
     }
 
     /**
      * Sets the debugging flag.
      */
-    public void setDebug(boolean isDebug)
-    {
+    public void setDebug(boolean isDebug) {
         _isDebug = isDebug;
     }
 
     /**
      * Sets the debugging log name.
      */
-    public void setLogName(String name)
-    {
+    public void setLogName(String name) {
         _log = Logger.getLogger(name);
     }
 
@@ -196,14 +193,12 @@ public class HessianServlet extends GenericServlet {
      * Initialize the service, including the service object.
      */
     public void init(ServletConfig config)
-        throws ServletException
-    {
+        throws ServletException {
         super.init(config);
 
         try {
             if (_homeImpl != null) {
-            }
-            else if (getInitParameter("home-class") != null) {
+            } else if (getInitParameter("home-class") != null) {
                 String className = getInitParameter("home-class");
 
                 Class homeClass = loadClass(className);
@@ -211,8 +206,7 @@ public class HessianServlet extends GenericServlet {
                 _homeImpl = homeClass.newInstance();
 
                 init(_homeImpl);
-            }
-            else if (getInitParameter("service-class") != null) {
+            } else if (getInitParameter("service-class") != null) {
                 String className = getInitParameter("service-class");
 
                 Class homeClass = loadClass(className);
@@ -220,8 +214,7 @@ public class HessianServlet extends GenericServlet {
                 _homeImpl = homeClass.newInstance();
 
                 init(_homeImpl);
-            }
-            else {
+            } else {
                 if (getClass().equals(HessianServlet.class))
                     throw new ServletException("server must extend HessianServlet");
 
@@ -229,18 +222,15 @@ public class HessianServlet extends GenericServlet {
             }
 
             if (_homeAPI != null) {
-            }
-            else if (getInitParameter("home-api") != null) {
+            } else if (getInitParameter("home-api") != null) {
                 String className = getInitParameter("home-api");
 
                 _homeAPI = loadClass(className);
-            }
-            else if (getInitParameter("api-class") != null) {
+            } else if (getInitParameter("api-class") != null) {
                 String className = getInitParameter("api-class");
 
                 _homeAPI = loadClass(className);
-            }
-            else if (_homeImpl != null) {
+            } else if (_homeImpl != null) {
                 _homeAPI = findRemoteAPI(_homeImpl.getClass());
 
                 if (_homeAPI == null)
@@ -248,8 +238,7 @@ public class HessianServlet extends GenericServlet {
             }
 
             if (_objectImpl != null) {
-            }
-            else if (getInitParameter("object-class") != null) {
+            } else if (getInitParameter("object-class") != null) {
                 String className = getInitParameter("object-class");
 
                 Class objectClass = loadClass(className);
@@ -260,13 +249,11 @@ public class HessianServlet extends GenericServlet {
             }
 
             if (_objectAPI != null) {
-            }
-            else if (getInitParameter("object-api") != null) {
+            } else if (getInitParameter("object-api") != null) {
                 String className = getInitParameter("object-api");
 
                 _objectAPI = loadClass(className);
-            }
-            else if (_objectImpl != null)
+            } else if (_objectImpl != null)
                 _objectAPI = _objectImpl.getClass();
 
             _homeSkeleton = new HessianSkeleton(_homeImpl, _homeAPI);
@@ -276,8 +263,7 @@ public class HessianServlet extends GenericServlet {
             if (_objectImpl != null) {
                 _objectSkeleton = new HessianSkeleton(_objectImpl, _objectAPI);
                 _objectSkeleton.setHomeClass(_homeAPI);
-            }
-            else
+            } else
                 _objectSkeleton = _homeSkeleton;
 
             if ("true".equals(getInitParameter("debug")))
@@ -289,8 +275,7 @@ public class HessianServlet extends GenericServlet {
         }
     }
 
-    private Class findRemoteAPI(Class implClass)
-    {
+    private Class findRemoteAPI(Class implClass) {
         if (implClass == null || implClass.equals(GenericService.class))
             return null;
 
@@ -303,8 +288,7 @@ public class HessianServlet extends GenericServlet {
     }
 
     private Class loadClass(String className)
-        throws ClassNotFoundException
-    {
+        throws ClassNotFoundException {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
         if (loader != null)
@@ -314,11 +298,9 @@ public class HessianServlet extends GenericServlet {
     }
 
     private void init(Object service)
-        throws ServletException
-    {
+        throws ServletException {
         if (!this.getClass().equals(HessianServlet.class)) {
-        }
-        else if (service instanceof Service)
+        } else if (service instanceof Service)
             ((Service) service).init(getServletConfig());
         else if (service instanceof Servlet)
             ((Servlet) service).init(getServletConfig());
@@ -329,8 +311,7 @@ public class HessianServlet extends GenericServlet {
      * Once the bean's selected, it will be applied.
      */
     public void service(ServletRequest request, ServletResponse response)
-        throws IOException, ServletException
-    {
+        throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
@@ -403,44 +384,37 @@ public class HessianServlet extends GenericServlet {
     }
 
     static class LogWriter extends Writer {
-        private Logger        _log;
-        private StringBuilder _sb = new StringBuilder();
+        private final Logger        _log;
+        private final StringBuilder _sb = new StringBuilder();
 
-        LogWriter(Logger log)
-        {
+        LogWriter(Logger log) {
             _log = log;
         }
 
-        public void write(char ch)
-        {
+        public void write(char ch) {
             if (ch == '\n' && _sb.length() > 0) {
                 _log.fine(_sb.toString());
                 _sb.setLength(0);
-            }
-            else
-                _sb.append((char) ch);
+            } else
+                _sb.append(ch);
         }
 
-        public void write(char[] buffer, int offset, int length)
-        {
+        public void write(char[] buffer, int offset, int length) {
             for (int i = 0; i < length; i++) {
                 char ch = buffer[offset + i];
 
                 if (ch == '\n' && _sb.length() > 0) {
                     _log.fine(_sb.toString());
                     _sb.setLength(0);
-                }
-                else
-                    _sb.append((char) ch);
+                } else
+                    _sb.append(ch);
             }
         }
 
-        public void flush()
-        {
+        public void flush() {
         }
 
-        public void close()
-        {
+        public void close() {
         }
     }
 }

@@ -55,27 +55,24 @@ import java.lang.reflect.Constructor;
  * Deserializing a string valued object
  */
 public class StringValueDeserializer extends AbstractDeserializer {
-    private Class       _cl;
-    private Constructor _constructor;
+    private final Class       _cl;
+    private final Constructor _constructor;
 
-    public StringValueDeserializer(Class cl)
-    {
+    public StringValueDeserializer(Class cl) {
         try {
             _cl = cl;
-            _constructor = cl.getConstructor(new Class[] { String.class });
+            _constructor = cl.getConstructor(String.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Class getType()
-    {
+    public Class getType() {
         return _cl;
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         String value = null;
 
         while (!in.isEnd()) {
@@ -97,8 +94,7 @@ public class StringValueDeserializer extends AbstractDeserializer {
     }
 
     public Object readObject(AbstractHessianInput in, String[] fieldNames)
-        throws IOException
-    {
+        throws IOException {
         String value = null;
 
         for (int i = 0; i < fieldNames.length; i++) {
@@ -116,13 +112,12 @@ public class StringValueDeserializer extends AbstractDeserializer {
     }
 
     private Object create(String value)
-        throws IOException
-    {
+        throws IOException {
         if (value == null)
             throw new IOException(_cl.getName() + " expects name.");
 
         try {
-            return _constructor.newInstance(new Object[] { value });
+            return _constructor.newInstance(value);
         } catch (Exception e) {
             throw new IOExceptionWrapper(e);
         }

@@ -62,5 +62,5 @@ public interface HessianMetaInfoAPI {
      * <li>java.primary.key.class - the EJB primary key class
      * </ul>
      */
-    public Object _hessian_getAttribute(String name);
+    Object _hessian_getAttribute(String name);
 }

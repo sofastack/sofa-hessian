@@ -58,11 +58,9 @@ public class BeanSerializerFactory extends SerializerFactory {
      * bean-style serialization instead of field serialization.
      *
      * @param cl the class of the object that needs to be serialized.
-     *
      * @return a serializer object for the serialization.
      */
-    protected Serializer getDefaultSerializer(Class cl)
-    {
+    protected Serializer getDefaultSerializer(Class cl) {
         return new BeanSerializer(cl);
     }
 
@@ -72,11 +70,9 @@ public class BeanSerializerFactory extends SerializerFactory {
      * bean-style serialization instead of field serialization.
      *
      * @param cl the class of the object that needs to be serialized.
-     *
      * @return a serializer object for the serialization.
      */
-    protected Deserializer getDefaultDeserializer(Class cl)
-    {
+    protected Deserializer getDefaultDeserializer(Class cl) {
         return new BeanDeserializer(cl);
     }
 }

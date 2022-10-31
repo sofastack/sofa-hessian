@@ -62,16 +62,14 @@ public class MuxOutputStream extends OutputStream {
     /**
      * Null argument constructor.
      */
-    public MuxOutputStream()
-    {
+    public MuxOutputStream() {
     }
 
     /**
      * Initialize the multiplexor with input and output streams.
      */
     protected void init(MuxServer server, int channel)
-        throws IOException
-    {
+        throws IOException {
         this.server = server;
         this.channel = channel;
         this.os = null;
@@ -82,8 +80,7 @@ public class MuxOutputStream extends OutputStream {
      * this.
      */
     protected OutputStream getOutputStream()
-        throws IOException
-    {
+        throws IOException {
         if (os == null && server != null)
             os = server.writeChannel(channel);
 
@@ -93,8 +90,7 @@ public class MuxOutputStream extends OutputStream {
     /**
      * Gets the channel of the connection.
      */
-    public int getChannel()
-    {
+    public int getChannel() {
         return channel;
     }
 
@@ -102,8 +98,7 @@ public class MuxOutputStream extends OutputStream {
      * Writes a URL to the stream.
      */
     public void writeURL(String url)
-        throws IOException
-    {
+        throws IOException {
         writeUTF('U', url);
     }
 
@@ -111,8 +106,7 @@ public class MuxOutputStream extends OutputStream {
      * Writes a data byte to the output stream.
      */
     public void write(int ch)
-        throws IOException
-    {
+        throws IOException {
         OutputStream os = getOutputStream();
 
         os.write('D');
@@ -125,8 +119,7 @@ public class MuxOutputStream extends OutputStream {
      * Writes data to the output stream.
      */
     public void write(byte[] buffer, int offset, int length)
-        throws IOException
-    {
+        throws IOException {
         OutputStream os = getOutputStream();
 
         for (; length > 0x8000; length -= 0x8000) {
@@ -148,8 +141,7 @@ public class MuxOutputStream extends OutputStream {
      * Flush data to the output stream.
      */
     public void yield()
-        throws IOException
-    {
+        throws IOException {
         OutputStream os = this.os;
         this.os = null;
 
@@ -161,8 +153,7 @@ public class MuxOutputStream extends OutputStream {
      * Flush data to the output stream.
      */
     public void flush()
-        throws IOException
-    {
+        throws IOException {
         OutputStream os = this.os;
         this.os = null;
 
@@ -174,8 +165,7 @@ public class MuxOutputStream extends OutputStream {
      * Complete writing to the stream, closing the channel.
      */
     public void close()
-        throws IOException
-    {
+        throws IOException {
         if (server != null) {
             OutputStream os = getOutputStream();
             this.os = null;
@@ -190,12 +180,11 @@ public class MuxOutputStream extends OutputStream {
     /**
      * Writes a UTF-8 string.
      *
-     * @param code the HMUX code identifying the string
+     * @param code   the HMUX code identifying the string
      * @param string the string to write
      */
     protected void writeUTF(int code, String string)
-        throws IOException
-    {
+        throws IOException {
         OutputStream os = getOutputStream();
 
         os.write(code);
@@ -225,8 +214,7 @@ public class MuxOutputStream extends OutputStream {
             else if (ch < 0x800) {
                 os.write(0xc0 + (ch >> 6) & 0x1f);
                 os.write(0x80 + (ch & 0x3f));
-            }
-            else {
+            } else {
                 os.write(0xe0 + (ch >> 12) & 0xf);
                 os.write(0x80 + ((ch >> 6) & 0x3f));
                 os.write(0x80 + (ch & 0x3f));

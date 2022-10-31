@@ -54,9 +54,8 @@ import java.io.InputStream;
 /**
  * Output stream for Hessian 2 streaming requests.
  */
-public class Hessian2StreamingInput
-{
-    private Hessian2Input _in;
+public class Hessian2StreamingInput {
+    private final Hessian2Input _in;
 
     /**
      * Creates a new Hessian input stream, initialized with an
@@ -64,8 +63,7 @@ public class Hessian2StreamingInput
      *
      * @param is the underlying output stream.
      */
-    public Hessian2StreamingInput(InputStream is)
-    {
+    public Hessian2StreamingInput(InputStream is) {
         _in = new Hessian2Input(new StreamingInputStream(is));
     }
 
@@ -73,8 +71,7 @@ public class Hessian2StreamingInput
      * Read the next object
      */
     public Object readObject()
-        throws IOException
-    {
+        throws IOException {
         return _in.readStreamingObject();
     }
 
@@ -82,23 +79,20 @@ public class Hessian2StreamingInput
      * Close the output.
      */
     public void close()
-        throws IOException
-    {
+        throws IOException {
         _in.close();
     }
 
     static class StreamingInputStream extends InputStream {
-        private InputStream _is;
-        private int         _length;
+        private final InputStream _is;
+        private int               _length;
 
-        StreamingInputStream(InputStream is)
-        {
+        StreamingInputStream(InputStream is) {
             _is = is;
         }
 
         public int read()
-            throws IOException
-        {
+            throws IOException {
             InputStream is = _is;
 
             while (_length == 0) {
@@ -124,8 +118,7 @@ public class Hessian2StreamingInput
         }
 
         public int read(byte[] buffer, int offset, int length)
-            throws IOException
-        {
+            throws IOException {
             InputStream is = _is;
 
             while (_length == 0) {

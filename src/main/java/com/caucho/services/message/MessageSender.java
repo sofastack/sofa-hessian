@@ -77,9 +77,8 @@ public interface MessageSender {
      *
      * @param headers any message headers
      * @param message the message data
-     *
-     * @exception MessageServiceException if the message cannot be delivered
+     * @throws MessageServiceException if the message cannot be delivered
      */
-    public void send(HashMap headers, Object message)
+    void send(HashMap headers, Object message)
         throws MessageServiceException;
 }

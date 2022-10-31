@@ -59,15 +59,13 @@ public class BurlapServiceException extends Exception {
     /**
      * Zero-arg constructor.
      */
-    public BurlapServiceException()
-    {
+    public BurlapServiceException() {
     }
 
     /**
      * Create the exception.
      */
-    public BurlapServiceException(String message, String code, Object detail)
-    {
+    public BurlapServiceException(String message, String code, Object detail) {
         super(message);
         this.code = code;
         this.detail = detail;
@@ -76,16 +74,14 @@ public class BurlapServiceException extends Exception {
     /**
      * Returns the code.
      */
-    public String getCode()
-    {
+    public String getCode() {
         return code;
     }
 
     /**
      * Returns the detail.
      */
-    public Object getDetail()
-    {
+    public Object getDetail() {
         return detail;
     }
 }

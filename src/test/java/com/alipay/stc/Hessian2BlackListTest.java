@@ -37,7 +37,7 @@ import java.util.Map;
 
 /**
  * <p>自定义对象，数组，List，Map 命中黑名单的case</p>
- * 
+ *
  * @author <a href="mailto:zhanggeng.zg@antfin.com">GengZhang</a>
  */
 public class Hessian2BlackListTest {

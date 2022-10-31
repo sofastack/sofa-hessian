@@ -103,11 +103,10 @@ public final class SofaResponse implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SofaResponse[");
-        sb.append("sofa-rpc exception=").append(isError).append(", ");
-        sb.append("sofa-rpc errorMsg=").append(errorMsg).append(", ");
-        sb.append("appResponse=").append(appResponse).append("]");
-        return sb.toString();
+        String sb = "SofaResponse[" +
+            "sofa-rpc exception=" + isError + ", " +
+            "sofa-rpc errorMsg=" + errorMsg + ", " +
+            "appResponse=" + appResponse + "]";
+        return sb;
     }
 }

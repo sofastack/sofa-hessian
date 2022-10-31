@@ -38,7 +38,7 @@ import static org.junit.Assert.assertSame;
  */
 public class ComplexTestGO2O {
 
-    private static ComplexDataGenerator dg = new ComplexDataGenerator();
+    private static final ComplexDataGenerator dg = new ComplexDataGenerator();
 
     @Test
     public void singlePerson() throws IOException {

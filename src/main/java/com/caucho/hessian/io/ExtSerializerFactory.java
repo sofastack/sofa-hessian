@@ -54,28 +54,26 @@ import java.util.HashMap;
  * Factory for returning serialization methods.
  */
 public class ExtSerializerFactory extends AbstractSerializerFactory {
-    private HashMap _serializerMap   = new HashMap();
-    private HashMap _deserializerMap = new HashMap();
+    private final HashMap _serializerMap   = new HashMap();
+    private final HashMap _deserializerMap = new HashMap();
 
     /**
      * Adds a serializer.
      *
-     * @param cl the class of the serializer
+     * @param cl         the class of the serializer
      * @param serializer the serializer
      */
-    public void addSerializer(Class cl, Serializer serializer)
-    {
+    public void addSerializer(Class cl, Serializer serializer) {
         _serializerMap.put(cl, serializer);
     }
 
     /**
      * Adds a deserializer.
      *
-     * @param cl the class of the deserializer
+     * @param cl           the class of the deserializer
      * @param deserializer the deserializer
      */
-    public void addDeserializer(Class cl, Deserializer deserializer)
-    {
+    public void addDeserializer(Class cl, Deserializer deserializer) {
         _deserializerMap.put(cl, deserializer);
     }
 
@@ -83,12 +81,10 @@ public class ExtSerializerFactory extends AbstractSerializerFactory {
      * Returns the serializer for a class.
      *
      * @param cl the class of the object that needs to be serialized.
-     *
      * @return a serializer object for the serialization.
      */
     public Serializer getSerializer(Class cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         return (Serializer) _serializerMap.get(cl);
     }
 
@@ -96,12 +92,10 @@ public class ExtSerializerFactory extends AbstractSerializerFactory {
      * Returns the deserializer for a class.
      *
      * @param cl the class of the object that needs to be deserialized.
-     *
      * @return a deserializer object for the serialization.
      */
     public Deserializer getDeserializer(Class cl)
-        throws HessianProtocolException
-    {
+        throws HessianProtocolException {
         return (Deserializer) _deserializerMap.get(cl);
     }
 }

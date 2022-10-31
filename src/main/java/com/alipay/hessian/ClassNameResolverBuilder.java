@@ -27,7 +27,7 @@ public class ClassNameResolverBuilder {
 
     /**
      * Build default ClassNameResolver
-     * 
+     *
      * @return Default ClassNameResolver
      */
     public static ClassNameResolver buildDefault() {

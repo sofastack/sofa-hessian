@@ -39,7 +39,7 @@ import static org.junit.Assert.assertSame;
  * Created by qiwei.lqw on 2016/7/8.
  */
 public class ComplexTestMix {
-    private static ComplexDataGenerator dg = new ComplexDataGenerator();
+    private static final ComplexDataGenerator dg = new ComplexDataGenerator();
 
     //check deserialize same byte stream with both SerializeFactory and GenericSerializerFactory
     // Not Supported

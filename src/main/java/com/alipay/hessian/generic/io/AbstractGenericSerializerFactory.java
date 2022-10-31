@@ -30,7 +30,6 @@ public abstract class AbstractGenericSerializerFactory extends AbstractSerialize
      * Returns the deserializer for type.
      *
      * @param type the name of the object that needs to be deserialized.
-     *
      * @return a deserializer object for the serialization.
      */
     abstract public Deserializer getDeserializer(String type) throws HessianProtocolException;

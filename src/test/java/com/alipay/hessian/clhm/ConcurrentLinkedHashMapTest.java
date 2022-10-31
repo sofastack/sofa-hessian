@@ -33,18 +33,18 @@ public class ConcurrentLinkedHashMapTest {
         map.put(1, 1);
         map.put(2, 2);
         // 12
-        Assert.assertTrue(map.size() == 2);
+        Assert.assertEquals(2, map.size());
 
         map.put(3, 3);
         map.put(4, 4);
         // 234
-        Assert.assertTrue(map.size() == 3);
-        Assert.assertTrue(map.get(1) == null);
+        Assert.assertEquals(3, map.size());
+        Assert.assertNull(map.get(1));
 
         map.get(2);
         map.get(3);
         map.put(1, 1);
         // 132
-        Assert.assertTrue(map.get(4) == null);
+        Assert.assertNull(map.get(4));
     }
 }

@@ -30,7 +30,7 @@ public interface ClassNameFilter {
      *
      * @return 顺序
      */
-    public int order();
+    int order();
 
     /**
      * 决定类名，例如进行过滤，转换，等等。
@@ -38,5 +38,5 @@ public interface ClassNameFilter {
      * @param className 类名
      * @return 类名
      */
-    public String resolve(String className) throws IOException;
+    String resolve(String className) throws IOException;
 }

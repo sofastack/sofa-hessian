@@ -75,24 +75,21 @@ public class BurlapServlet extends GenericServlet {
 
     private BurlapSkeleton _skeleton;
 
-    public String getServletInfo()
-    {
+    public String getServletInfo() {
         return "Burlap Servlet";
     }
 
     /**
      * Sets the service class.
      */
-    public void setService(Object service)
-    {
+    public void setService(Object service) {
         _service = service;
     }
 
     /**
      * Sets the api-class.
      */
-    public void setAPIClass(Class apiClass)
-    {
+    public void setAPIClass(Class apiClass) {
         _apiClass = apiClass;
     }
 
@@ -100,8 +97,7 @@ public class BurlapServlet extends GenericServlet {
      * Initialize the service, including the service object.
      */
     public void init(ServletConfig config)
-        throws ServletException
-    {
+        throws ServletException {
         super.init(config);
 
         try {
@@ -116,8 +112,7 @@ public class BurlapServlet extends GenericServlet {
                         serviceClass = Class.forName(className, false, loader);
                     else
                         serviceClass = Class.forName(className);
-                }
-                else {
+                } else {
                     if (getClass().equals(BurlapServlet.class))
                         throw new ServletException("server must extend BurlapServlet");
 
@@ -144,8 +139,7 @@ public class BurlapServlet extends GenericServlet {
                         _apiClass = Class.forName(className, false, loader);
                     else
                         _apiClass = Class.forName(className);
-                }
-                else
+                } else
                     _apiClass = _service.getClass();
             }
 
@@ -162,8 +156,7 @@ public class BurlapServlet extends GenericServlet {
      * Once the bean's selected, it will be applied.
      */
     public void service(ServletRequest request, ServletResponse response)
-        throws IOException, ServletException
-    {
+        throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 

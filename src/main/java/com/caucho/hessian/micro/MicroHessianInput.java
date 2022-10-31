@@ -83,23 +83,20 @@ public class MicroHessianInput {
      *
      * @param is the underlying input stream.
      */
-    public MicroHessianInput(InputStream is)
-    {
+    public MicroHessianInput(InputStream is) {
         init(is);
     }
 
     /**
      * Creates an uninitialized Hessian input stream.
      */
-    public MicroHessianInput()
-    {
+    public MicroHessianInput() {
     }
 
     /**
      * Initialize the hessian stream with the underlying input stream.
      */
-    public void init(InputStream is)
-    {
+    public void init(InputStream is) {
         this.is = is;
     }
 
@@ -113,8 +110,7 @@ public class MicroHessianInput {
      * </pre>
      */
     public void startReply()
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         if (tag != 'r')
@@ -134,8 +130,7 @@ public class MicroHessianInput {
      * </pre>
      */
     public void completeReply()
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         if (tag != 'z')
@@ -151,8 +146,7 @@ public class MicroHessianInput {
      * </pre>
      */
     public boolean readBoolean()
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         switch (tag) {
@@ -173,8 +167,7 @@ public class MicroHessianInput {
      * </pre>
      */
     public int readInt()
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         if (tag != 'I')
@@ -196,8 +189,7 @@ public class MicroHessianInput {
      * </pre>
      */
     public long readLong()
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         if (tag != 'L')
@@ -229,8 +221,7 @@ public class MicroHessianInput {
      * </pre>
      */
     public long readUTCDate()
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         if (tag != 'd')
@@ -262,8 +253,7 @@ public class MicroHessianInput {
      * </pre>
      */
     public String readString()
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         if (tag == 'N')
@@ -288,8 +278,7 @@ public class MicroHessianInput {
      * </pre>
      */
     public byte[] readBytes()
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         if (tag == 'N')
@@ -315,8 +304,7 @@ public class MicroHessianInput {
      * Reads an arbitrary object the input stream.
      */
     public Object readObject(Class expectedClass)
-        throws IOException
-    {
+        throws IOException {
         int tag = is.read();
 
         switch (tag) {
@@ -324,10 +312,10 @@ public class MicroHessianInput {
                 return null;
 
             case 'T':
-                return new Boolean(true);
+                return Boolean.TRUE;
 
             case 'F':
-                return new Boolean(false);
+                return Boolean.FALSE;
 
             case 'I': {
                 int b32 = is.read();
@@ -413,8 +401,7 @@ public class MicroHessianInput {
      * Reads a string from the underlying stream.
      */
     protected String readStringImpl(int length)
-        throws IOException
-    {
+        throws IOException {
         StringBuffer sb = new StringBuffer();
 
         for (int i = 0; i < length; i++) {
@@ -427,31 +414,27 @@ public class MicroHessianInput {
                 int v = ((ch & 0x1f) << 6) + (ch1 & 0x3f);
 
                 sb.append((char) v);
-            }
-            else if ((ch & 0xf0) == 0xe0) {
+            } else if ((ch & 0xf0) == 0xe0) {
                 int ch1 = is.read();
                 int ch2 = is.read();
                 int v = ((ch & 0x0f) << 12) + ((ch1 & 0x3f) << 6) + (ch2 & 0x3f);
 
                 sb.append((char) v);
-            }
-            else
+            } else
                 throw new IOException("bad utf-8 encoding");
         }
 
         return sb.toString();
     }
 
-    protected IOException expect(String expect, int ch)
-    {
+    protected IOException expect(String expect, int ch) {
         if (ch < 0)
             return protocolException("expected " + expect + " at end of file");
         else
             return protocolException("expected " + expect + " at " + (char) ch);
     }
 
-    protected IOException protocolException(String message)
-    {
+    protected IOException protocolException(String message) {
         return new IOException(message);
     }
 }

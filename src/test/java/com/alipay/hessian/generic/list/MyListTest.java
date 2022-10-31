@@ -82,7 +82,7 @@ public class MyListTest {
                 return genericObject;
             }
         });
-        MyList myList = (MyList) GenericUtils.convertToObject(o1);
+        MyList myList = GenericUtils.convertToObject(o1);
         Assert.assertEquals("aaaaa", myList.getName());
         Assert.assertEquals(1, myList.size());
         Assert.assertEquals(123, myList.get(0));

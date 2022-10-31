@@ -55,25 +55,20 @@ import java.io.IOException;
  */
 public class ClassSerializer extends AbstractSerializer {
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         Class cl = (Class) obj;
 
         if (cl == null) {
             out.writeNull();
-        }
-        else if (out.addRef(obj)) {
-            return;
-        }
-        else {
+        } else if (out.addRef(obj)) {
+        } else {
             int ref = out.writeObjectBegin("java.lang.Class");
 
             if (ref < -1) {
                 out.writeString("name");
                 out.writeString(cl.getName());
                 out.writeMapEnd();
-            }
-            else {
+            } else {
                 if (ref == -1) {
                     out.writeInt(1);
                     out.writeString("name");

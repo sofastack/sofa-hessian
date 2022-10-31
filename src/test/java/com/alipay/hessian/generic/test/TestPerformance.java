@@ -30,9 +30,9 @@ import java.io.IOException;
  * Created by qiwei.lqw on 2016/7/7.
  */
 public class TestPerformance {
-    private static ComplexDataGenerator dg         = new ComplexDataGenerator();
+    private static final ComplexDataGenerator dg         = new ComplexDataGenerator();
 
-    private static final int            TEST_TIMES = 100000;
+    private static final int                  TEST_TIMES = 100000;
 
     @Test
     public void testHessian2Serialize() throws IOException {

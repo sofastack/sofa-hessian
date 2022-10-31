@@ -55,17 +55,14 @@ import java.io.PrintWriter;
 /**
  * Debugging input stream for Hessian requests.
  */
-public class HessianDebugInputStream extends InputStream
-{
-    private InputStream       _is;
-
-    private HessianDebugState _state;
+public class HessianDebugInputStream extends InputStream {
+    private final HessianDebugState _state;
+    private InputStream             _is;
 
     /**
      * Creates an uninitialized Hessian input stream.
      */
-    public HessianDebugInputStream(InputStream is, PrintWriter dbg)
-    {
+    public HessianDebugInputStream(InputStream is, PrintWriter dbg) {
         _is = is;
 
         _state = new HessianDebugState(dbg);
@@ -75,8 +72,7 @@ public class HessianDebugInputStream extends InputStream
      * Reads a character.
      */
     public int read()
-        throws IOException
-    {
+        throws IOException {
         int ch;
 
         InputStream is = _is;
@@ -95,8 +91,7 @@ public class HessianDebugInputStream extends InputStream
      * closes the stream.
      */
     public void close()
-        throws IOException
-    {
+        throws IOException {
         InputStream is = _is;
         _is = null;
 

@@ -27,8 +27,8 @@ import java.util.logging.Level;
 
 public class MyListSerializer extends AbstractSerializer {
 
-    private Field[]           _fields;
-    private FieldSerializer[] _fieldSerializers;
+    private final Field[]           _fields;
+    private final FieldSerializer[] _fieldSerializers;
 
     public MyListSerializer(Class cl) {
         try {

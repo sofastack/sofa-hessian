@@ -58,14 +58,12 @@ import java.io.IOException;
  * Deserializing an MBeanParameterInfo valued object
  */
 public class MBeanParameterInfoDeserializer extends AbstractDeserializer {
-    public Class getType()
-    {
+    public Class getType() {
         return MBeanParameterInfo.class;
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         String name = null;
         String type = null;
         String description = null;

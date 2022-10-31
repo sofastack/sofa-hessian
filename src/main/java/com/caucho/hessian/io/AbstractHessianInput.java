@@ -71,8 +71,7 @@ abstract public class AbstractHessianInput {
     /**
      * Initialize the Hessian stream with the underlying input stream.
      */
-    public void init(InputStream is)
-    {
+    public void init(InputStream is) {
     }
 
     /**
@@ -83,24 +82,21 @@ abstract public class AbstractHessianInput {
     /**
      * Sets the resolver used to lookup remote objects.
      */
-    public void setRemoteResolver(HessianRemoteResolver resolver)
-    {
-        this.resolver = resolver;
+    public HessianRemoteResolver getRemoteResolver() {
+        return resolver;
     }
 
     /**
      * Sets the resolver used to lookup remote objects.
      */
-    public HessianRemoteResolver getRemoteResolver()
-    {
-        return resolver;
+    public void setRemoteResolver(HessianRemoteResolver resolver) {
+        this.resolver = resolver;
     }
 
     /**
      * Sets the serializer factory.
      */
-    public void setSerializerFactory(SerializerFactory ser)
-    {
+    public void setSerializerFactory(SerializerFactory ser) {
     }
 
     /**
@@ -117,8 +113,7 @@ abstract public class AbstractHessianInput {
      * For backward compatibility with HessianSkeleton
      */
     public void skipOptionalCall()
-        throws IOException
-    {
+        throws IOException {
     }
 
     /**
@@ -369,8 +364,7 @@ abstract public class AbstractHessianInput {
     /**
      * Resets the references for streaming.
      */
-    public void resetReferences()
-    {
+    public void resetReferences() {
     }
 
     /**
@@ -422,7 +416,6 @@ abstract public class AbstractHessianInput {
         throws IOException;
 
     public void close()
-        throws IOException
-    {
+        throws IOException {
     }
 }

@@ -25,16 +25,32 @@ import com.caucho.hessian.io.SerializerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by qiwei.lqw on 2016/7/5.
  */
 public class SimpleTestO2GO {
-    private static SimpleDataGenerator dg = new SimpleDataGenerator();
+    private static final SimpleDataGenerator dg = new SimpleDataGenerator();
+
+    public static boolean compareByteArray(Object a, Object b) {
+        byte[] ba = (byte[]) a;
+        byte[] bb = (byte[]) b;
+
+        if (ba.length != bb.length)
+            return false;
+        for (int i = 0; i < ba.length; ++i)
+            if (ba[i] != bb[i])
+                return false;
+
+        return true;
+    }
 
     @org.junit.Test
     public void testNull() throws IOException {
@@ -374,14 +390,10 @@ public class SimpleTestO2GO {
         assertEquals(dg.generateUntypedFixedList_7(), hin.readObject());
         assertEquals(dg.generateUntypedFixedList_8(), hin.readObject());
 
-        assertTrue(Arrays.equals((Object[]) dg.generateTypedFixedList_0(),
-            (Object[]) hin.readObject()));
-        assertTrue(Arrays.equals((Object[]) dg.generateTypedFixedList_1(),
-            (Object[]) hin.readObject()));
-        assertTrue(Arrays.equals((Object[]) dg.generateTypedFixedList_7(),
-            (Object[]) hin.readObject()));
-        assertTrue(Arrays.equals((Object[]) dg.generateTypedFixedList_8(),
-            (Object[]) hin.readObject()));
+        assertArrayEquals((Object[]) dg.generateTypedFixedList_0(), (Object[]) hin.readObject());
+        assertArrayEquals((Object[]) dg.generateTypedFixedList_1(), (Object[]) hin.readObject());
+        assertArrayEquals((Object[]) dg.generateTypedFixedList_7(), (Object[]) hin.readObject());
+        assertArrayEquals((Object[]) dg.generateTypedFixedList_8(), (Object[]) hin.readObject());
 
         hin.close();
     }
@@ -504,18 +516,5 @@ public class SimpleTestO2GO {
 
         hin.close();
 
-    }
-
-    public static boolean compareByteArray(Object a, Object b) {
-        byte[] ba = (byte[]) a;
-        byte[] bb = (byte[]) b;
-
-        if (ba.length != bb.length)
-            return false;
-        for (int i = 0; i < ba.length; ++i)
-            if (ba[i] != bb[i])
-                return false;
-
-        return true;
     }
 }

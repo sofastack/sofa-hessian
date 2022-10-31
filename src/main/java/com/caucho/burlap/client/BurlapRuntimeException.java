@@ -57,23 +57,20 @@ public class BurlapRuntimeException extends RuntimeException {
     /**
      * Zero-arg constructor.
      */
-    public BurlapRuntimeException()
-    {
+    public BurlapRuntimeException() {
     }
 
     /**
      * Create the exception.
      */
-    public BurlapRuntimeException(String message)
-    {
+    public BurlapRuntimeException(String message) {
         super(message);
     }
 
     /**
      * Create the exception.
      */
-    public BurlapRuntimeException(String message, Throwable rootCause)
-    {
+    public BurlapRuntimeException(String message, Throwable rootCause) {
         super(message);
 
         this.rootCause = rootCause;
@@ -82,8 +79,7 @@ public class BurlapRuntimeException extends RuntimeException {
     /**
      * Create the exception.
      */
-    public BurlapRuntimeException(Throwable rootCause)
-    {
+    public BurlapRuntimeException(Throwable rootCause) {
         super(String.valueOf(rootCause));
 
         this.rootCause = rootCause;
@@ -92,16 +88,14 @@ public class BurlapRuntimeException extends RuntimeException {
     /**
      * Returns the underlying cause.
      */
-    public Throwable getRootCause()
-    {
+    public Throwable getRootCause() {
         return this.rootCause;
     }
 
     /**
      * Returns the underlying cause.
      */
-    public Throwable getCause()
-    {
+    public Throwable getCause() {
         return this.rootCause;
     }
 }

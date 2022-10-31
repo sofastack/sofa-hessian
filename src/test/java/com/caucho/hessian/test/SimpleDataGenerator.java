@@ -18,7 +18,11 @@ package com.caucho.hessian.test;
 
 import com.alipay.hessian.generic.model.GenericObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * The test service is a Hessian 2.0 protocol test for developers of

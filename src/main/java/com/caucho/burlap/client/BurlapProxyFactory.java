@@ -79,15 +79,15 @@ import java.util.Hashtable;
  * String url = "http://localhost:8080/ejb/hello";
  * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
  * </pre>
- *
+ * <p>
  * After creation, the stub can be like a regular Java class.  Because
  * it makes remote calls, it can throw more exceptions than a Java class.
  * In particular, it may throw protocol exceptions.
- *
+ * <p>
  * The factory can also be configured as a JNDI resource.  The factory
  * expects to parameters: "type" and "url", corresponding to the two
  * arguments to <code>create</code>
- *
+ * <p>
  * In Resin 3.0, the above example would be configured as:
  * <pre>
  * &lt;reference>
@@ -97,7 +97,7 @@ import java.util.Hashtable;
  *         type="test.HelloHome"/>
  * &lt;/reference>
  * </pre>
- *
+ * <p>
  * To get the above resource, use JNDI as follows:
  * <pre>
  * Context ic = new InitialContext();
@@ -112,27 +112,39 @@ import java.util.Hashtable;
  * password are set.
  */
 public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
-    private BurlapRemoteResolver _resolver;
+    private final BurlapRemoteResolver _resolver;
 
-    private String               _user;
-    private String               _password;
-    private String               _basicAuth;
+    private String                     _user;
+    private String                     _password;
+    private String                     _basicAuth;
 
-    private boolean              _isOverloadEnabled = false;
+    private boolean                    _isOverloadEnabled = false;
 
     /**
      * Creates the new proxy factory.
      */
-    public BurlapProxyFactory()
-    {
+    public BurlapProxyFactory() {
         _resolver = new BurlapProxyResolver(this);
+    }
+
+    public static char encode(long d) {
+        d &= 0x3f;
+        if (d < 26)
+            return (char) (d + 'A');
+        else if (d < 52)
+            return (char) (d + 'a' - 26);
+        else if (d < 62)
+            return (char) (d + '0' - 52);
+        else if (d == 62)
+            return '+';
+        else
+            return '/';
     }
 
     /**
      * Sets the user.
      */
-    public void setUser(String user)
-    {
+    public void setUser(String user) {
         _user = user;
         _basicAuth = null;
     }
@@ -140,8 +152,7 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
     /**
      * Sets the password.
      */
-    public void setPassword(String password)
-    {
+    public void setPassword(String password) {
         _password = password;
         _basicAuth = null;
     }
@@ -149,24 +160,21 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
     /**
      * Returns true if overloaded methods are allowed (using mangling)
      */
-    public boolean isOverloadEnabled()
-    {
+    public boolean isOverloadEnabled() {
         return _isOverloadEnabled;
     }
 
     /**
      * set true if overloaded methods are allowed (using mangling)
      */
-    public void setOverloadEnabled(boolean isOverloadEnabled)
-    {
+    public void setOverloadEnabled(boolean isOverloadEnabled) {
         _isOverloadEnabled = isOverloadEnabled;
     }
 
     /**
      * Returns the remote resolver.
      */
-    public BurlapRemoteResolver getRemoteResolver()
-    {
+    public BurlapRemoteResolver getRemoteResolver() {
         return _resolver;
     }
 
@@ -174,8 +182,7 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
      * Creates the URL connection.
      */
     protected URLConnection openConnection(URL url)
-        throws IOException
-    {
+        throws IOException {
         URLConnection conn = url.openConnection();
 
         conn.setDoOutput(true);
@@ -195,12 +202,10 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
      * the java.api.class value from _hessian_
      *
      * @param url the URL where the client object is located.
-     *
      * @return a proxy to the object with the specified interface.
      */
     public Object create(String url)
-        throws MalformedURLException, ClassNotFoundException
-    {
+        throws MalformedURLException, ClassNotFoundException {
         BurlapMetaInfoAPI metaInfo;
 
         metaInfo = (BurlapMetaInfoAPI) create(BurlapMetaInfoAPI.class, url);
@@ -227,14 +232,12 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
      * HelloHome hello = (HelloHome) factory.create(HelloHome.class, url);
      * </pre>
      *
-     * @param api the interface the proxy class needs to implement
+     * @param api     the interface the proxy class needs to implement
      * @param urlName the URL where the client object is located.
-     *
      * @return a proxy to the object with the specified interface.
      */
     public Object create(Class api, String urlName)
-        throws MalformedURLException
-    {
+        throws MalformedURLException {
         URL url = new URL(urlName);
 
         try {
@@ -259,16 +262,14 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
             handler);
     }
 
-    public AbstractBurlapInput getBurlapInput(InputStream is)
-    {
+    public AbstractBurlapInput getBurlapInput(InputStream is) {
         AbstractBurlapInput in = new BurlapInput(is);
         in.setRemoteResolver(getRemoteResolver());
 
         return in;
     }
 
-    public BurlapOutput getBurlapOutput(OutputStream os)
-    {
+    public BurlapOutput getBurlapOutput(OutputStream os) {
         BurlapOutput out = new BurlapOutput(os);
 
         return out;
@@ -280,8 +281,7 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
     public Object getObjectInstance(Object obj, Name name,
                                     Context nameCtx,
                                     Hashtable<?, ?> environment)
-        throws Exception
-    {
+        throws Exception {
         Reference ref = (Reference) obj;
 
         String api = null;
@@ -320,8 +320,7 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
     /**
      * Creates the Base64 value.
      */
-    private String base64(String value)
-    {
+    private String base64(String value) {
         StringBuffer cb = new StringBuffer();
 
         int i = 0;
@@ -345,8 +344,7 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
             cb.append(encode(chunk >> 12));
             cb.append(encode(chunk >> 6));
             cb.append('=');
-        }
-        else if (i < value.length()) {
+        } else if (i < value.length()) {
             long chunk = (int) value.charAt(i);
             chunk <<= 16;
 
@@ -357,20 +355,5 @@ public class BurlapProxyFactory implements ServiceProxyFactory, ObjectFactory {
         }
 
         return cb.toString();
-    }
-
-    public static char encode(long d)
-    {
-        d &= 0x3f;
-        if (d < 26)
-            return (char) (d + 'A');
-        else if (d < 52)
-            return (char) (d + 'a' - 26);
-        else if (d < 62)
-            return (char) (d + '0' - 52);
-        else if (d == 62)
-            return '+';
-        else
-            return '/';
     }
 }

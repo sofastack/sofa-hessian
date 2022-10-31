@@ -31,7 +31,7 @@ package com.alipay.hessian.clhm;
  *
  * @author ben.manes@gmail.com (Ben Manes)
  * @see <a href="http://code.google.com/p/concurrentlinkedhashmap/">
- *      http://code.google.com/p/concurrentlinkedhashmap/</a>
+ * http://code.google.com/p/concurrentlinkedhashmap/</a>
  */
 @ThreadSafe
 public interface EvictionListener<K, V> {
@@ -39,7 +39,7 @@ public interface EvictionListener<K, V> {
     /**
      * A call-back notification that the entry was evicted.
      *
-     * @param key the entry's key
+     * @param key   the entry's key
      * @param value the entry's value
      */
     void onEviction(K key, V value);

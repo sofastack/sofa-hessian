@@ -18,7 +18,7 @@ package com.alipay.hessian.generic.exception;
 
 /**
  * 转换异常
- * 
+ *
  * @author <a href="mailto:caojie.cj@antfin.com">Jie Cao</a>
  * @since 5.3.0
  */

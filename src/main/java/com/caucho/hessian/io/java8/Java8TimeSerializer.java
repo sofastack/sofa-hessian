@@ -26,7 +26,7 @@ import java.lang.reflect.Constructor;
 public class Java8TimeSerializer<T> extends AbstractSerializer {
 
     // Type of handle
-    private Class<T> handleType;
+    private final Class<T> handleType;
 
     private Java8TimeSerializer(Class<T> handleType) {
         this.handleType = handleType;

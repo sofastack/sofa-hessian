@@ -31,12 +31,12 @@ import java.util.Iterator;
 public class GenericCollectionSerializer extends AbstractSerializer {
     private static final GenericCollectionSerializer instance = new GenericCollectionSerializer();
 
-    public static GenericCollectionSerializer getInstance() {
-        return instance;
-    }
-
     private GenericCollectionSerializer() {
 
+    }
+
+    public static GenericCollectionSerializer getInstance() {
+        return instance;
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {

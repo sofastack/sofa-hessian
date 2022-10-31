@@ -21,6 +21,7 @@ import java.util.List;
 public class NameBlackListFilterManager {
     /**
      * rebuild cache.
+     *
      * @param blackList
      */
     public static void rebuildBlackList(List<String> blackList) {

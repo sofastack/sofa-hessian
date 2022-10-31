@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /**
  * Sofa RPC request base class
- *
+ * <p>
  * This class contains all data which RPC request object need
  * If want add other data you should extend this class
  *
@@ -31,44 +31,52 @@ public abstract class RequestBase implements Serializable {
 
     private static final long  serialVersionUID = -7323141575870688636L;
 
-    /** invoke method */
+    /**
+     * invoke method
+     */
     private String             methodName;
 
-    /** invoke method arguments name */
+    /**
+     * invoke method arguments name
+     */
     private String[]           methodArgSigs;
 
-    /** invoke method arguments object */
+    /**
+     * invoke method arguments object
+     */
     private transient Object[] methodArgs;
 
-    /** traget service unique name */
+    /**
+     * traget service unique name
+     */
     private String             targetServiceUniqueName;
 
     public String getMethodName() {
         return methodName;
     }
 
-    public Object[] getMethodArgs() {
-        return methodArgs;
-    }
-
-    public String[] getMethodArgSigs() {
-        return methodArgSigs;
-    }
-
-    public String getTargetServiceUniqueName() {
-        return targetServiceUniqueName;
-    }
-
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    public Object[] getMethodArgs() {
+        return methodArgs;
     }
 
     public void setMethodArgs(Object[] methodArgs) {
         this.methodArgs = methodArgs;
     }
 
+    public String[] getMethodArgSigs() {
+        return methodArgSigs;
+    }
+
     public void setMethodArgSigs(String[] methodArgSigs) {
         this.methodArgSigs = methodArgSigs;
+    }
+
+    public String getTargetServiceUniqueName() {
+        return targetServiceUniqueName;
     }
 
     public void setTargetServiceUniqueName(String targetServiceUniqueName) {

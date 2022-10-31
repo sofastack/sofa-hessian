@@ -59,14 +59,12 @@ import java.io.IOException;
  * Deserializing an ObjectInstance valued object
  */
 public class ObjectInstanceDeserializer extends AbstractDeserializer {
-    public Class getType()
-    {
+    public Class getType() {
         return ObjectInstance.class;
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         String className = null;
         ObjectName objectName = null;
 

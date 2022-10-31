@@ -13,11 +13,11 @@ import java.lang.annotation.Target;
 
 /**
  * GuardedBy
- *
+ * <p>
  * The field or method to which this annotation is applied can only be accessed
  * when holding a particular lock, which may be a built-in (synchronization)
  * lock, or may be an explicit java.util.concurrent.Lock.
- *
+ * <p>
  * The argument determines which lock guards the annotated field or method: this :
  * The string literal "this" means that this field is guarded by the class in
  * which it is defined. class-name.this : For inner classes, it may be necessary

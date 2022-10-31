@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 
 /**
  * ThreadSafe
- *
+ * <p>
  * The class to which this annotation is applied is thread-safe. This means that
  * no sequences of accesses (reads and writes to public fields, calls to public
  * methods) may put the object into an invalid state, regardless of the

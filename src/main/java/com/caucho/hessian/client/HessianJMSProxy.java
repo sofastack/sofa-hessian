@@ -51,7 +51,13 @@ package com.caucho.hessian.client;
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.jms.util.BytesMessageOutputStream;
 
-import javax.jms.*;
+import javax.jms.BytesMessage;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -62,23 +68,22 @@ import java.lang.reflect.Proxy;
 import java.util.logging.Logger;
 
 /**
- * Proxy implementation for Hessian clients using JMS.  Applications will 
+ * Proxy implementation for Hessian clients using JMS.  Applications will
  * generally use HessianProxyFactory to create proxy clients.
  */
 public class HessianJMSProxy implements InvocationHandler {
-    protected static Logger     log = Logger.getLogger(HessianJMSProxy.class.getName());
+    protected static Logger           log = Logger.getLogger(HessianJMSProxy.class.getName());
 
-    private HessianProxyFactory _factory;
+    private final HessianProxyFactory _factory;
 
-    private MessageProducer     _producer;
-    private Session             _jmsSession;
-    private Connection          _jmsConnection;
-    private String              _outboundName;
+    private final MessageProducer     _producer;
+    private final Session             _jmsSession;
+    private final Connection          _jmsConnection;
+    private final String              _outboundName;
 
     HessianJMSProxy(HessianProxyFactory factory,
                     String outboundName, String connectionFactoryName)
-                                                                      throws NamingException, JMSException
-    {
+                                                                      throws NamingException, JMSException {
         _factory = factory;
         _outboundName = outboundName;
 
@@ -97,21 +102,19 @@ public class HessianJMSProxy implements InvocationHandler {
         _producer = _jmsSession.createProducer(outboundDestination);
     }
 
-    public String getOutboundName()
-    {
+    public String getOutboundName() {
         return _outboundName;
     }
 
     /**
      * Handles the object invocation.
      *
-     * @param proxy the proxy object to invoke
+     * @param proxy  the proxy object to invoke
      * @param method the method to call
-     * @param args the arguments to the proxy object
+     * @param args   the arguments to the proxy object
      */
     public Object invoke(Object proxy, Method method, Object[] args)
-        throws Throwable
-    {
+        throws Throwable {
         String methodName = method.getName();
         Class[] params = method.getParameterTypes();
 
@@ -120,18 +123,17 @@ public class HessianJMSProxy implements InvocationHandler {
             params.length == 1 && params[0].equals(Object.class)) {
             Object value = args[0];
             if (value == null || !Proxy.isProxyClass(value.getClass()))
-                return new Boolean(false);
+                return Boolean.FALSE;
 
             InvocationHandler handler = Proxy.getInvocationHandler(value);
 
             if (!(handler instanceof HessianJMSProxy))
-                return new Boolean(false);
+                return Boolean.FALSE;
 
             String otherOutboundName = ((HessianJMSProxy) handler).getOutboundName();
 
-            return new Boolean(_outboundName.equals(otherOutboundName));
-        }
-        else if (methodName.equals("hashCode") && params.length == 0)
+            return Boolean.valueOf(_outboundName.equals(otherOutboundName));
+        } else if (methodName.equals("hashCode") && params.length == 0)
             return new Integer(_outboundName.hashCode());
         else if (methodName.equals("getHessianType"))
             return proxy.getClass().getInterfaces()[0].getName();
@@ -142,8 +144,7 @@ public class HessianJMSProxy implements InvocationHandler {
 
         try {
             if (!_factory.isOverloadEnabled()) {
-            }
-            else if (args != null)
+            } else if (args != null)
                 methodName = methodName + "__" + args.length;
             else
                 methodName = methodName + "__0";
@@ -157,8 +158,7 @@ public class HessianJMSProxy implements InvocationHandler {
     }
 
     private void sendRequest(String methodName, Object[] args)
-        throws JMSException, IOException
-    {
+        throws JMSException, IOException {
         BytesMessage message = _jmsSession.createBytesMessage();
 
         BytesMessageOutputStream os = new BytesMessageOutputStream(message);

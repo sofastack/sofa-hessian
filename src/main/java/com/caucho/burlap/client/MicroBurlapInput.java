@@ -79,18 +79,30 @@ import java.util.Vector;
  * </pre>
  */
 public class MicroBurlapInput {
-    private static int     base64Decode[];
+    private static final int[] base64Decode;
 
-    private InputStream    is;
-    protected int          peek;
-    protected boolean      peekTag;
-    protected Date         date;
-    protected Calendar     utcCalendar;
-    private Calendar       localCalendar;
-    protected Vector       refs;
-    protected String       method;
-    protected StringBuffer sbuf   = new StringBuffer();
-    protected StringBuffer entity = new StringBuffer();
+    static {
+        base64Decode = new int[256];
+        for (int i = 'A'; i <= 'Z'; i++)
+            base64Decode[i] = i - 'A';
+        for (int i = 'a'; i <= 'z'; i++)
+            base64Decode[i] = i - 'a' + 26;
+        for (int i = '0'; i <= '9'; i++)
+            base64Decode[i] = i - '0' + 52;
+        base64Decode['+'] = 62;
+        base64Decode['/'] = 63;
+    }
+
+    protected int              peek;
+    protected boolean          peekTag;
+    protected Date             date;
+    protected Calendar         utcCalendar;
+    protected Vector           refs;
+    protected String           method;
+    protected StringBuffer     sbuf   = new StringBuffer();
+    protected StringBuffer     entity = new StringBuffer();
+    private InputStream        is;
+    private Calendar           localCalendar;
 
     /**
      * Creates a new Burlap input stream, initialized with an
@@ -98,23 +110,20 @@ public class MicroBurlapInput {
      *
      * @param is the underlying input stream.
      */
-    public MicroBurlapInput(InputStream is)
-    {
+    public MicroBurlapInput(InputStream is) {
         init(is);
     }
 
     /**
      * Creates an uninitialized Burlap input stream.
      */
-    public MicroBurlapInput()
-    {
+    public MicroBurlapInput() {
     }
 
     /**
      * Returns a call's method.
      */
-    public String getMethod()
-    {
+    public String getMethod() {
         return method;
     }
 
@@ -123,8 +132,7 @@ public class MicroBurlapInput {
      * Applications can use <code>init(InputStream)</code> to reuse
      * MicroBurlapInput to save garbage collection.
      */
-    public void init(InputStream is)
-    {
+    public void init(InputStream is) {
         this.is = is;
         this.refs = null;
     }
@@ -140,8 +148,7 @@ public class MicroBurlapInput {
      * </pre>
      */
     public void startCall()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("burlap:call");
         expectStartTag("method");
         method = parseString();
@@ -157,8 +164,7 @@ public class MicroBurlapInput {
      * </pre>
      */
     public void completeCall()
-        throws IOException
-    {
+        throws IOException {
         expectEndTag("burlap:call");
     }
 
@@ -167,14 +173,12 @@ public class MicroBurlapInput {
      * If the reply has a fault, throws the exception.
      */
     public Object readReply(Class expectedClass)
-        throws Exception
-    {
+        throws Exception {
         if (startReply()) {
             Object value = readObject(expectedClass);
             completeReply();
             return value;
-        }
-        else {
+        } else {
             Hashtable fault = readFault();
 
             Object detail = fault.get("detail");
@@ -203,8 +207,7 @@ public class MicroBurlapInput {
      * @return true if success, false for fault.
      */
     public boolean startReply()
-        throws IOException
-    {
+        throws IOException {
         this.refs = null;
 
         expectStartTag("burlap:reply");
@@ -216,8 +219,7 @@ public class MicroBurlapInput {
         if (tag.equals("fault")) {
             peekTag = true;
             return false;
-        }
-        else {
+        } else {
             peekTag = true;
             return true;
         }
@@ -231,8 +233,7 @@ public class MicroBurlapInput {
      * </pre>
      */
     public void completeReply()
-        throws IOException
-    {
+        throws IOException {
         expectEndTag("burlap:reply");
     }
 
@@ -240,8 +241,7 @@ public class MicroBurlapInput {
      * Reads a boolean value from the input stream.
      */
     public boolean readBoolean()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("boolean");
 
         int value = parseInt();
@@ -255,8 +255,7 @@ public class MicroBurlapInput {
      * Reads an integer value from the input stream.
      */
     public int readInt()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("int");
 
         int value = parseInt();
@@ -270,8 +269,7 @@ public class MicroBurlapInput {
      * Reads a long value from the input stream.
      */
     public long readLong()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("long");
 
         long value = parseLong();
@@ -285,8 +283,7 @@ public class MicroBurlapInput {
      * Reads a date value from the input stream.
      */
     public long readUTCDate()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("date");
 
         if (utcCalendar == null)
@@ -303,8 +300,7 @@ public class MicroBurlapInput {
      * Reads a date value from the input stream.
      */
     public long readLocalDate()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("date");
 
         if (localCalendar == null)
@@ -321,8 +317,7 @@ public class MicroBurlapInput {
      * Reads a remote value from the input stream.
      */
     public BurlapRemote readRemote()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("remote");
 
         String type = readType();
@@ -347,8 +342,7 @@ public class MicroBurlapInput {
      * </pre>
      */
     public String readString()
-        throws IOException
-    {
+        throws IOException {
         if (!parseTag())
             throw new BurlapProtocolException("expected <string>");
 
@@ -356,15 +350,13 @@ public class MicroBurlapInput {
         if (tag.equals("null")) {
             expectEndTag("null");
             return null;
-        }
-        else if (tag.equals("string")) {
+        } else if (tag.equals("string")) {
             sbuf.setLength(0);
             parseString(sbuf);
             String value = sbuf.toString();
             expectEndTag("string");
             return value;
-        }
-        else
+        } else
             throw expectBeginTag("string", tag);
     }
 
@@ -375,8 +367,7 @@ public class MicroBurlapInput {
      * or a &lt;base64>.
      */
     public byte[] readBytes()
-        throws IOException
-    {
+        throws IOException {
         if (!parseTag())
             throw new BurlapProtocolException("expected <base64>");
 
@@ -384,14 +375,12 @@ public class MicroBurlapInput {
         if (tag.equals("null")) {
             expectEndTag("null");
             return null;
-        }
-        else if (tag.equals("base64")) {
+        } else if (tag.equals("base64")) {
             sbuf.setLength(0);
             byte[] value = parseBytes();
             expectEndTag("base64");
             return value;
-        }
-        else
+        } else
             throw expectBeginTag("base64", tag);
     }
 
@@ -399,8 +388,7 @@ public class MicroBurlapInput {
      * Reads an arbitrary object the input stream.
      */
     public Object readObject(Class expectedClass)
-        throws IOException
-    {
+        throws IOException {
         if (!parseTag())
             throw new BurlapProtocolException("expected <tag>");
 
@@ -408,71 +396,60 @@ public class MicroBurlapInput {
         if (tag.equals("null")) {
             expectEndTag("null");
             return null;
-        }
-        else if (tag.equals("boolean")) {
+        } else if (tag.equals("boolean")) {
             int value = parseInt();
             expectEndTag("boolean");
-            return new Boolean(value != 0);
-        }
-        else if (tag.equals("int")) {
+            return Boolean.valueOf(value != 0);
+        } else if (tag.equals("int")) {
             int value = parseInt();
             expectEndTag("int");
             return new Integer(value);
-        }
-        else if (tag.equals("long")) {
+        } else if (tag.equals("long")) {
             long value = parseLong();
             expectEndTag("long");
             return new Long(value);
-        }
-        else if (tag.equals("string")) {
+        } else if (tag.equals("string")) {
             sbuf.setLength(0);
             parseString(sbuf);
             String value = sbuf.toString();
             expectEndTag("string");
             return value;
-        }
-        else if (tag.equals("xml")) {
+        } else if (tag.equals("xml")) {
             sbuf.setLength(0);
             parseString(sbuf);
             String value = sbuf.toString();
             expectEndTag("xml");
             return value;
-        }
-        else if (tag.equals("date")) {
+        } else if (tag.equals("date")) {
             if (utcCalendar == null)
                 utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
             long value = parseDate(utcCalendar);
             expectEndTag("date");
             return new Date(value);
-        }
-        else if (tag.equals("map")) {
+        } else if (tag.equals("map")) {
             String type = readType();
 
             return readMap(expectedClass, type);
-        }
-        else if (tag.equals("list")) {
+        } else if (tag.equals("list")) {
             String type = readType();
 
             int length = readLength();
 
             return readList(expectedClass, type, length);
-        }
-        else if (tag.equals("ref")) {
+        } else if (tag.equals("ref")) {
             int value = parseInt();
             expectEndTag("ref");
 
             return refs.elementAt(value);
-        }
-        else if (tag.equals("remote")) {
+        } else if (tag.equals("remote")) {
             String type = readType();
             String url = readString();
 
             expectEndTag("remote");
 
             return resolveRemote(type, url);
-        }
-        else
+        } else
             return readExtensionObject(expectedClass, tag);
     }
 
@@ -484,8 +461,7 @@ public class MicroBurlapInput {
      * </pre>
      */
     public String readType()
-        throws IOException
-    {
+        throws IOException {
         if (!parseTag())
             throw new BurlapProtocolException("expected <type>");
 
@@ -510,8 +486,7 @@ public class MicroBurlapInput {
      * </pre>
      */
     public int readLength()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("length");
 
         int ch = skipWhitespace();
@@ -534,8 +509,7 @@ public class MicroBurlapInput {
      * Resolves a remote object.
      */
     public Object resolveRemote(String type, String url)
-        throws IOException
-    {
+        throws IOException {
         return new BurlapRemote(type, url);
     }
 
@@ -543,8 +517,7 @@ public class MicroBurlapInput {
      * Reads a fault.
      */
     public Hashtable readFault()
-        throws IOException
-    {
+        throws IOException {
         expectStartTag("fault");
 
         Hashtable map = new Hashtable();
@@ -568,11 +541,10 @@ public class MicroBurlapInput {
      * Reads an object from the input stream.
      *
      * @param expectedClass the calling routine's expected class
-     * @param type the type from the stream
+     * @param type          the type from the stream
      */
     public Object readMap(Class expectedClass, String type)
-        throws IOException
-    {
+        throws IOException {
         Hashtable map = new Hashtable();
         if (refs == null)
             refs = new Vector();
@@ -595,8 +567,7 @@ public class MicroBurlapInput {
      * Reads object unknown to MicroBurlapInput.
      */
     protected Object readExtensionObject(Class expectedClass, String tag)
-        throws IOException
-    {
+        throws IOException {
         throw new BurlapProtocolException("unknown object tag <" + tag + ">");
     }
 
@@ -604,12 +575,11 @@ public class MicroBurlapInput {
      * Reads a list object from the input stream.
      *
      * @param expectedClass the calling routine's expected class
-     * @param type the type from the stream
-     * @param length the expected length, -1 for unspecified length
+     * @param type          the type from the stream
+     * @param length        the expected length, -1 for unspecified length
      */
     public Object readList(Class expectedClass, String type, int length)
-        throws IOException
-    {
+        throws IOException {
         Vector list = new Vector();
         if (refs == null)
             refs = new Vector();
@@ -632,8 +602,7 @@ public class MicroBurlapInput {
      * Parses an integer value from the stream.
      */
     protected int parseInt()
-        throws IOException
-    {
+        throws IOException {
         int sign = 1;
         int value = 0;
 
@@ -657,8 +626,7 @@ public class MicroBurlapInput {
      * Parses a long value from the stream.
      */
     protected long parseLong()
-        throws IOException
-    {
+        throws IOException {
         long sign = 1;
         long value = 0;
 
@@ -683,8 +651,7 @@ public class MicroBurlapInput {
      * Parses a date value from the stream.
      */
     protected long parseDate(Calendar calendar)
-        throws IOException
-    {
+        throws IOException {
         int ch = skipWhitespace();
 
         int year = 0;
@@ -773,8 +740,7 @@ public class MicroBurlapInput {
      * string buffer is used for the result.
      */
     protected String parseString()
-        throws IOException
-    {
+        throws IOException {
         StringBuffer sbuf = new StringBuffer();
 
         return parseString(sbuf).toString();
@@ -785,8 +751,7 @@ public class MicroBurlapInput {
      * string buffer is used for the result.
      */
     protected StringBuffer parseString(StringBuffer sbuf)
-        throws IOException
-    {
+        throws IOException {
         int ch = read();
 
         for (; ch >= 0 && ch != '<'; ch = read()) {
@@ -804,8 +769,7 @@ public class MicroBurlapInput {
 
                         sbuf.append((char) v);
                     }
-                }
-                else {
+                } else {
                     StringBuffer entityBuffer = new StringBuffer();
 
                     for (; ch >= 'a' && ch <= 'z'; ch = read())
@@ -828,23 +792,20 @@ public class MicroBurlapInput {
 
                 if (ch != ';')
                     throw expectedChar("';'", ch);
-            }
-            else if (ch < 0x80)
+            } else if (ch < 0x80)
                 sbuf.append((char) ch);
             else if ((ch & 0xe0) == 0xc0) {
                 int ch1 = read();
                 int v = ((ch & 0x1f) << 6) + (ch1 & 0x3f);
 
                 sbuf.append((char) v);
-            }
-            else if ((ch & 0xf0) == 0xe0) {
+            } else if ((ch & 0xf0) == 0xe0) {
                 int ch1 = read();
                 int ch2 = read();
                 int v = ((ch & 0x0f) << 12) + ((ch1 & 0x3f) << 6) + (ch2 & 0x3f);
 
                 sbuf.append((char) v);
-            }
-            else
+            } else
                 throw new BurlapProtocolException("bad utf-8 encoding");
         }
 
@@ -857,8 +818,7 @@ public class MicroBurlapInput {
      * Parses a byte array.
      */
     protected byte[] parseBytes()
-        throws IOException
-    {
+        throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         parseBytes(bos);
@@ -870,8 +830,7 @@ public class MicroBurlapInput {
      * Parses a byte array.
      */
     protected ByteArrayOutputStream parseBytes(ByteArrayOutputStream bos)
-        throws IOException
-    {
+        throws IOException {
         int ch;
         for (ch = read(); ch >= 0 && ch != '<'; ch = read()) {
             int b1 = ch;
@@ -888,16 +847,14 @@ public class MicroBurlapInput {
                 bos.write(chunk >> 16);
                 bos.write(chunk >> 8);
                 bos.write(chunk);
-            }
-            else if (b3 != '=') {
+            } else if (b3 != '=') {
                 int chunk = ((base64Decode[b1] << 12) +
                     (base64Decode[b2] << 6) +
                         (base64Decode[b3]));
 
                 bos.write(chunk >> 8);
                 bos.write(chunk);
-            }
-            else {
+            } else {
                 int chunk = ((base64Decode[b1] << 6) +
                         (base64Decode[b2]));
 
@@ -912,8 +869,7 @@ public class MicroBurlapInput {
     }
 
     protected void expectStartTag(String tag)
-        throws IOException
-    {
+        throws IOException {
         if (!parseTag())
             throw new BurlapProtocolException("expected <" + tag + ">");
 
@@ -922,8 +878,7 @@ public class MicroBurlapInput {
     }
 
     protected void expectEndTag(String tag)
-        throws IOException
-    {
+        throws IOException {
         if (parseTag())
             throw new BurlapProtocolException("expected </" + tag + ">");
 
@@ -935,8 +890,7 @@ public class MicroBurlapInput {
      * Parses a tag.  Returns true if it's a start tag.
      */
     protected boolean parseTag()
-        throws IOException
-    {
+        throws IOException {
         if (peekTag) {
             peekTag = false;
             return true;
@@ -967,19 +921,16 @@ public class MicroBurlapInput {
         return isStartTag;
     }
 
-    protected IOException expectedChar(String expect, int actualChar)
-    {
+    protected IOException expectedChar(String expect, int actualChar) {
         return new BurlapProtocolException("expected " + expect + " at " +
             (char) actualChar + "'");
     }
 
-    protected IOException expectBeginTag(String expect, String tag)
-    {
+    protected IOException expectBeginTag(String expect, String tag) {
         return new BurlapProtocolException("expected <" + expect + "> at <" + tag + ">");
     }
 
-    private boolean isTagChar(int ch)
-    {
+    private boolean isTagChar(int ch) {
         return (ch >= 'a' && ch <= 'z' ||
             ch >= 'A' && ch <= 'Z' ||
             ch >= '0' && ch <= '9' ||
@@ -987,8 +938,7 @@ public class MicroBurlapInput {
     }
 
     protected int skipWhitespace()
-        throws IOException
-    {
+        throws IOException {
         int ch = read();
 
         for (; ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'; ch = read()) {
@@ -998,14 +948,12 @@ public class MicroBurlapInput {
     }
 
     protected boolean isWhitespace(int ch)
-        throws IOException
-    {
+        throws IOException {
         return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
     }
 
     protected int read()
-        throws IOException
-    {
+        throws IOException {
         if (peek > 0) {
             int value = peek;
             peek = 0;
@@ -1013,17 +961,5 @@ public class MicroBurlapInput {
         }
 
         return is.read();
-    }
-
-    static {
-        base64Decode = new int[256];
-        for (int i = 'A'; i <= 'Z'; i++)
-            base64Decode[i] = i - 'A';
-        for (int i = 'a'; i <= 'z'; i++)
-            base64Decode[i] = i - 'a' + 26;
-        for (int i = '0'; i <= '9'; i++)
-            base64Decode[i] = i - '0' + 52;
-        base64Decode['+'] = 62;
-        base64Decode['/'] = 63;
     }
 }

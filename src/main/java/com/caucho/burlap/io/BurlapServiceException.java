@@ -58,15 +58,13 @@ public class BurlapServiceException extends HessianServiceException {
     /**
      * Zero-arg constructor.
      */
-    public BurlapServiceException()
-    {
+    public BurlapServiceException() {
     }
 
     /**
      * Create the exception.
      */
-    public BurlapServiceException(String message, String code, Object detail)
-    {
+    public BurlapServiceException(String message, String code, Object detail) {
         super(message, code, detail);
     }
 }

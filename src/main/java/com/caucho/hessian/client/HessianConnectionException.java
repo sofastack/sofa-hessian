@@ -57,31 +57,27 @@ public class HessianConnectionException extends HessianException {
     /**
      * Zero-arg constructor.
      */
-    public HessianConnectionException()
-    {
+    public HessianConnectionException() {
     }
 
     /**
      * Create the exception.
      */
-    public HessianConnectionException(String message)
-    {
+    public HessianConnectionException(String message) {
         super(message);
     }
 
     /**
      * Create the exception.
      */
-    public HessianConnectionException(String message, Throwable rootCause)
-    {
+    public HessianConnectionException(String message, Throwable rootCause) {
         super(message, rootCause);
     }
 
     /**
      * Create the exception.
      */
-    public HessianConnectionException(Throwable rootCause)
-    {
+    public HessianConnectionException(Throwable rootCause) {
         super(rootCause);
     }
 }

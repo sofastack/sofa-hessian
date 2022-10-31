@@ -58,8 +58,7 @@ public class AbstractBurlapResolver implements BurlapRemoteResolver {
      * Looks up a proxy object.
      */
     public Object lookup(String type, String url)
-        throws IOException
-    {
+        throws IOException {
         return new BurlapRemote(type, url);
     }
 }

@@ -50,6 +50,7 @@ package com.caucho.hessian.io;
 
 /**
  * Deserializing a JDK 1.4 StackTraceElement
+ *
  * @author pangu
  */
 public class StackTraceElementDeserializer extends JavaDeserializer {

@@ -30,14 +30,18 @@ import java.util.Scanner;
  */
 public class InternalNameBlackListFilter extends NameBlackListFilter {
 
-    private static final String EXTERNAL_BLACK_LIST = "external/serialize.blacklist";
+    private static final String                         EXTERNAL_BLACK_LIST = "external/serialize.blacklist";
 
-    private static final String USER_BLACK_LIST     = System
-                                                        .getProperty("serialize.blacklist.file");
+    private static final String                         USER_BLACK_LIST     = System
+                                                                                .getProperty("serialize.blacklist.file");
 
-    private static final String DEFAULT_BLACK_LIST  = "security/serialize.blacklist";
+    private static final String                         DEFAULT_BLACK_LIST  = "security/serialize.blacklist";
 
-    static final List<String>   INTERNAL_BLACK_LIST = readBlackList();
+    static final List<String>                           INTERNAL_BLACK_LIST = readBlackList();
+    /**
+     * 单例
+     */
+    private volatile static InternalNameBlackListFilter instance;
 
     /**
      * 构造函数
@@ -124,11 +128,6 @@ public class InternalNameBlackListFilter extends NameBlackListFilter {
         }
         return true;
     }
-
-    /**
-     * 单例
-     */
-    private volatile static InternalNameBlackListFilter instance;
 
     public static InternalNameBlackListFilter Singleton() {
         if (instance == null) { //step1

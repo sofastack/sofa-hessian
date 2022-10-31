@@ -52,20 +52,19 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.logging.*;
+import java.util.logging.Level;
 
 /**
  * Serializing an object for known object types.
  */
 public class BeanSerializer extends AbstractSerializer {
     private static final Object[] NULL_ARGS = new Object[0];
-    private Method[]              _methods;
-    private String[]              _names;
+    private final Method[]        _methods;
+    private final String[]        _names;
 
-    private Method                _writeReplace;
+    private final Method          _writeReplace;
 
-    public BeanSerializer(Class cl)
-    {
+    public BeanSerializer(Class cl) {
         _writeReplace = getWriteReplace(cl);
 
         ArrayList primitiveMethods = new ArrayList();
@@ -138,8 +137,7 @@ public class BeanSerializer extends AbstractSerializer {
     /**
      * Returns the writeReplace method
      */
-    protected Method getWriteReplace(Class cl)
-    {
+    protected Method getWriteReplace(Class cl) {
         for (; cl != null; cl = cl.getSuperclass()) {
             Method[] methods = cl.getDeclaredMethods();
 
@@ -156,8 +154,7 @@ public class BeanSerializer extends AbstractSerializer {
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (out.addRef(obj))
             return;
 
@@ -165,7 +162,7 @@ public class BeanSerializer extends AbstractSerializer {
 
         try {
             if (_writeReplace != null) {
-                Object repl = _writeReplace.invoke(obj, new Object[0]);
+                Object repl = _writeReplace.invoke(obj);
 
                 out.removeRef(obj);
 
@@ -199,8 +196,7 @@ public class BeanSerializer extends AbstractSerializer {
             }
 
             out.writeMapEnd();
-        }
-        else {
+        } else {
             if (ref == -1) {
                 out.writeInt(_names.length);
 
@@ -228,8 +224,7 @@ public class BeanSerializer extends AbstractSerializer {
     /**
      * Finds any matching setter.
      */
-    private Method findSetter(Method[] methods, String getterName, Class arg)
-    {
+    private Method findSetter(Method[] methods, String getterName, Class arg) {
         String setterName = "set" + getterName.substring(3);
 
         for (int i = 0; i < methods.length; i++) {

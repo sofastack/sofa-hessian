@@ -59,15 +59,13 @@ public class HessianServiceException extends Exception {
     /**
      * Zero-arg constructor.
      */
-    public HessianServiceException()
-    {
+    public HessianServiceException() {
     }
 
     /**
      * Create the exception.
      */
-    public HessianServiceException(String message, String code, Object detail)
-    {
+    public HessianServiceException(String message, String code, Object detail) {
         super(message);
         this.code = code;
         this.detail = detail;
@@ -76,16 +74,14 @@ public class HessianServiceException extends Exception {
     /**
      * Returns the code.
      */
-    public String getCode()
-    {
+    public String getCode() {
         return code;
     }
 
     /**
      * Returns the detail.
      */
-    public Object getDetail()
-    {
+    public Object getDetail() {
         return detail;
     }
 }

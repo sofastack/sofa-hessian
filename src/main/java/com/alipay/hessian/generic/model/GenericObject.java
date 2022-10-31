@@ -17,7 +17,11 @@
 package com.alipay.hessian.generic.model;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * 此类用于表示泛化类型.
@@ -30,13 +34,12 @@ import java.util.*;
  */
 public final class GenericObject implements Serializable, Comparable<GenericObject> {
 
-    private static final long   serialVersionUID = 3457717009326601317L;
-
-    // present the type of Object
-    private String              type;
+    private static final long         serialVersionUID = 3457717009326601317L;
     // store all fields of Object. note that the value can be reference of any type,
     // including Integer, String, java.*, com.alipay.*, even GenericObject
-    private Map<String, Object> fields           = new TreeMap<String, Object>();
+    private final Map<String, Object> fields           = new TreeMap<String, Object>();
+    // present the type of Object
+    private String                    type;
 
     /**
      * 默认构造函数, 供hessian反序列化

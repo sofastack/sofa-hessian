@@ -67,11 +67,10 @@ import java.net.URLConnection;
  * use BurlapProxyFactory to create proxy clients.
  */
 public class BurlapProxy implements InvocationHandler {
-    private BurlapProxyFactory _factory;
-    private URL                _url;
+    private final BurlapProxyFactory _factory;
+    private final URL                _url;
 
-    BurlapProxy(BurlapProxyFactory factory, URL url)
-    {
+    BurlapProxy(BurlapProxyFactory factory, URL url) {
         _factory = factory;
         _url = url;
     }
@@ -79,21 +78,19 @@ public class BurlapProxy implements InvocationHandler {
     /**
      * Returns the proxy's URL.
      */
-    public URL getURL()
-    {
+    public URL getURL() {
         return _url;
     }
 
     /**
      * Handles the object invocation.
      *
-     * @param proxy the proxy object to invoke
+     * @param proxy  the proxy object to invoke
      * @param method the method to call
-     * @param args the arguments to the proxy object
+     * @param args   the arguments to the proxy object
      */
     public Object invoke(Object proxy, Method method, Object[] args)
-        throws Throwable
-    {
+        throws Throwable {
         String methodName = method.getName();
         Class[] params = method.getParameterTypes();
 
@@ -102,13 +99,12 @@ public class BurlapProxy implements InvocationHandler {
             params.length == 1 && params[0].equals(Object.class)) {
             Object value = args[0];
             if (value == null || !Proxy.isProxyClass(value.getClass()))
-                return new Boolean(false);
+                return Boolean.FALSE;
 
             BurlapProxy handler = (BurlapProxy) Proxy.getInvocationHandler(value);
 
-            return new Boolean(_url.equals(handler.getURL()));
-        }
-        else if (methodName.equals("hashCode") && params.length == 0)
+            return Boolean.valueOf(_url.equals(handler.getURL()));
+        } else if (methodName.equals("hashCode") && params.length == 0)
             return new Integer(_url.hashCode());
         else if (methodName.equals("getBurlapType"))
             return proxy.getClass().getInterfaces()[0].getName();
@@ -136,8 +132,7 @@ public class BurlapProxy implements InvocationHandler {
             BurlapOutput out = _factory.getBurlapOutput(os);
 
             if (!_factory.isOverloadEnabled()) {
-            }
-            else if (args != null)
+            } else if (args != null)
                 methodName = methodName + "__" + args.length;
             else
                 methodName = methodName + "__0";
@@ -179,14 +174,14 @@ public class BurlapProxy implements InvocationHandler {
                                 sb.append((char) ch);
                         }
                     } catch (FileNotFoundException e) {
-                        throw new BurlapRuntimeException(code + ": " + String.valueOf(e));
+                        throw new BurlapRuntimeException(code + ": " + e);
                     } catch (IOException e) {
                     }
 
                     if (is != null)
                         is.close();
 
-                    throw new BurlapProtocolException(code + ": " + sb.toString());
+                    throw new BurlapProtocolException(code + ": " + sb);
                 }
             }
 

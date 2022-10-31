@@ -47,7 +47,6 @@ import java.util.logging.Logger;
 import static com.alipay.hessian.generic.io.GenericDeserializer.ARRAY_PREFIX;
 
 /**
- * 
  * @author <a href="mailto:caojie.cj@antfin.com">Jie Cao</a>
  * @since 5.3.0
  */
@@ -56,13 +55,11 @@ public class GenericUtils {
     private static final Logger                                log      = Logger
                                                                             .getLogger(GenericUtils.class
                                                                                 .getName());
-
-    private static Unsafe                                      unsafe;
-
     /**
      * 自定义类型处理器
      */
     private static final CopyOnWriteArrayList<CustomConverter> HANDLERS = new CopyOnWriteArrayList<CustomConverter>();
+    private static Unsafe                                      unsafe;
 
     static {
         try {
@@ -175,8 +172,8 @@ public class GenericUtils {
         // 检测是否是Enum类型, 如果是, 根据name域得到对象实例
         Class clazz = loadClassFromTCCL(genericObject.getType());
         if (Enum.class.isAssignableFrom(clazz)) {
-            Method valueOfMethod = clazz.getMethod("valueOf", new Class[] { Class.class,
-                    String.class });
+            Method valueOfMethod = clazz.getMethod("valueOf", Class.class,
+                String.class);
             return valueOfMethod.invoke(null, clazz, genericObject.getField("name"));
         }
 
@@ -478,10 +475,7 @@ public class GenericUtils {
         map.put(object, genericObject);
 
         // 检测是否是枚举类型, 并且设置isEnum值
-        boolean isEnum = false;
-        if (Enum.class.isAssignableFrom(clazz)) {
-            isEnum = true;
-        }
+        boolean isEnum = Enum.class.isAssignableFrom(clazz);
 
         // 处理普通对象, 填充GenericObject
         List<Field> fieldsList = getClassFields(clazz);
@@ -667,7 +661,7 @@ public class GenericUtils {
                 if (cost < 0 || cost > (1 << 48))
                     cost = 1 << 48;
 
-                cost += param.length << 48;
+                cost += (long) param.length << 48;
 
                 if (cost < bestCost) {
                     constructor = constructors[i];
@@ -836,7 +830,7 @@ public class GenericUtils {
                 sb.append(ARRAY_PREFIX);
             }
 
-            sb.append(componentType.substring(lastIndex + 2, componentType.length() - 1));
+            sb.append(componentType, lastIndex + 2, componentType.length() - 1);
             return sb.toString();
         }
 

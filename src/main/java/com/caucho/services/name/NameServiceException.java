@@ -60,23 +60,20 @@ public class NameServiceException extends IOException {
     /**
      * Zero-arg constructor.
      */
-    public NameServiceException()
-    {
+    public NameServiceException() {
     }
 
     /**
      * Create the exception.
      */
-    public NameServiceException(String name)
-    {
+    public NameServiceException(String name) {
         super(name);
     }
 
     /**
      * Create the exception.
      */
-    public NameServiceException(String name, Throwable rootCause)
-    {
+    public NameServiceException(String name, Throwable rootCause) {
         super(name);
 
         this.rootCause = rootCause;
@@ -85,8 +82,7 @@ public class NameServiceException extends IOException {
     /**
      * Create the exception.
      */
-    public NameServiceException(Throwable rootCause)
-    {
+    public NameServiceException(Throwable rootCause) {
         super(String.valueOf(rootCause));
 
         this.rootCause = rootCause;
@@ -95,8 +91,7 @@ public class NameServiceException extends IOException {
     /**
      * Returns the underlying cause.
      */
-    public Throwable getRootCause()
-    {
+    public Throwable getRootCause() {
         return rootCause;
     }
 }

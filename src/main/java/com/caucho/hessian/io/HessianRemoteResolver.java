@@ -57,6 +57,6 @@ public interface HessianRemoteResolver {
     /**
      * Looks up a proxy object.
      */
-    public Object lookup(String type, String url)
+    Object lookup(String type, String url)
         throws IOException;
 }

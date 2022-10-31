@@ -89,16 +89,14 @@ public class HessianSerializerOutput extends HessianOutput {
      *
      * @param os the underlying output stream.
      */
-    public HessianSerializerOutput(OutputStream os)
-    {
+    public HessianSerializerOutput(OutputStream os) {
         super(os);
     }
 
     /**
      * Creates an uninitialized Hessian output stream.
      */
-    public HessianSerializerOutput()
-    {
+    public HessianSerializerOutput() {
     }
 
     /**
@@ -107,13 +105,12 @@ public class HessianSerializerOutput extends HessianOutput {
      * @param obj the object to write.
      */
     public void writeObjectImpl(Object obj)
-        throws IOException
-    {
+        throws IOException {
         Class cl = obj.getClass();
 
         try {
-            Method method = cl.getMethod("writeReplace", new Class[0]);
-            Object repl = method.invoke(obj, new Object[0]);
+            Method method = cl.getMethod("writeReplace");
+            Object repl = method.invoke(obj);
 
             writeObject(repl);
             return;

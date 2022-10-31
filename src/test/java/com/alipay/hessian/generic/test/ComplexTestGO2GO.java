@@ -26,9 +26,15 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by qiwei.lqw on 2016/7/1.
@@ -36,7 +42,122 @@ import static org.junit.Assert.*;
  */
 public class ComplexTestGO2GO {
 
-    private static ComplexDataGenerator dg = new ComplexDataGenerator();
+    private static final ComplexDataGenerator dg = new ComplexDataGenerator();
+
+    public static void cmpGPersonEqualPerson(GenericObject gp, Person p) {
+        assertTrue(cmpGPersonEqualPerson(gp, p, new HashSet<GenericObject>(), new HashSet<Object>()));
+    }
+
+    public static boolean cmpGPersonEqualPerson(GenericObject gp, Person p,
+                                                Set<GenericObject> set1, Set<Object> set2) {
+        if (gp == null && p == null)
+            return true;
+        if (gp == null || p == null)
+            return false;
+
+        if (!gp.getType().equals(Person.class.getName()))
+            return false;
+        if (set1.contains(gp) && set2.contains(p))
+            return true;
+        if (set1.contains(gp) || set2.contains(p))
+            return false;
+
+        set1.add(gp);
+        set2.add(p);
+        assertEquals(gp.getField("name"), p.getName());
+        assertEquals(gp.getField("age"), p.getAge());
+        assertEquals(gp.getField("gender"), p.getGender());
+        assertEquals(gp.getField("scores"), p.getScores());
+
+        assertTrue(cmpGPetEqualPet((GenericObject) gp.getField("pet"), p.getPet(), set1, set2));
+        assertTrue(cmpGPersonEqualPerson((GenericObject) gp.getField("friend"), p.getFriend(),
+            set1, set2));
+        assertCollectionValueEqual(gp, p, set1, set2);
+
+        return true;
+    }
+
+    private static void assertCollectionValueEqual(GenericObject gp, Person p,
+                                                   Set<GenericObject> set1, Set<Object> set2) {
+
+        Map<String, Object> mapValue = p.getMapValue();
+        Map mapValueGeneric = (Map) gp.getField("mapValue");
+        int times = 0;
+
+        if (mapValue != null && mapValueGeneric != null) {
+
+            assertEquals(mapValue.size(), mapValueGeneric.size());
+
+            for (Map.Entry<String, Object> entry : mapValue.entrySet()) {
+                if (entry.getValue() instanceof Person) {
+                    cmpGPersonEqualPerson((GenericObject) mapValueGeneric.get(entry.getKey()),
+                        (Person) entry.getValue(), set1, set2);
+                    times++;
+                }
+                if (entry.getValue() instanceof Pet) {
+                    cmpGPetEqualPet((GenericObject) mapValueGeneric.get(entry.getKey()),
+                        (Pet) entry.getValue(), set1, set2);
+                    times++;
+                }
+            }
+
+            assertEquals(2, times);
+            times = 0;
+        } else if ((mapValue == null && mapValueGeneric != null)
+            || (mapValue != null && mapValueGeneric == null)) {
+            fail("not equals!");
+        }
+
+        List<Object> listValue = p.getListValue();
+        List listValueGeneric = (List) gp.getField("listValue");
+        if (listValue != null && listValueGeneric != null) {
+
+            assertEquals(listValue.size(), listValueGeneric.size());
+
+            for (int i = 0; i < listValue.size(); i++) {
+                if (listValue.get(i) instanceof Person) {
+                    cmpGPersonEqualPerson((GenericObject) listValueGeneric.get(i),
+                        (Person) listValue.get(i), set1, set2);
+                    times++;
+                }
+                if (listValue.get(i) instanceof Pet) {
+                    cmpGPetEqualPet((GenericObject) listValueGeneric.get(i),
+                        (Pet) listValue.get(i), set1, set2);
+                    times++;
+                }
+            }
+
+            assertEquals(2, times);
+        } else if ((listValue != null && listValueGeneric == null)
+            || (listValue == null && listValueGeneric != null)) {
+            fail("not equals!");
+        }
+
+    }
+
+    public static boolean cmpGPetEqualPet(GenericObject gp, Pet p, Set<GenericObject> set1,
+                                          Set<Object> set2) {
+        if (gp == null && p == null)
+            return true;
+        if (gp == null || p == null)
+            return false;
+
+        if (!gp.getType().equals(Pet.class.getName()))
+            return false;
+        if (set1.contains(gp) && set2.contains(p))
+            return true;
+        if (set1.contains(gp) || set2.contains(p))
+            return false;
+
+        set1.add(gp);
+        set2.add(p);
+
+        assertEquals(gp.getField("name"), p.getName());
+        assertEquals(gp.getField("type"), p.getType());
+        assertTrue(cmpGPersonEqualPerson((GenericObject) gp.getField("owner"), p.getOwner(), set1,
+            set2));
+        return true;
+    }
 
     @Test
     public void singlePerson() throws IOException {
@@ -237,120 +358,5 @@ public class ComplexTestGO2GO {
 
         //System.out.println(darr1[1]);
 
-    }
-
-    public static void cmpGPersonEqualPerson(GenericObject gp, Person p) {
-        assertTrue(cmpGPersonEqualPerson(gp, p, new HashSet<GenericObject>(), new HashSet<Object>()));
-    }
-
-    public static boolean cmpGPersonEqualPerson(GenericObject gp, Person p,
-                                                Set<GenericObject> set1, Set<Object> set2) {
-        if (gp == null && p == null)
-            return true;
-        if (gp == null || p == null)
-            return false;
-
-        if (!gp.getType().equals(Person.class.getName()))
-            return false;
-        if (set1.contains(gp) && set2.contains(p))
-            return true;
-        if (set1.contains(gp) || set2.contains(p))
-            return false;
-
-        set1.add(gp);
-        set2.add(p);
-        assertEquals(gp.getField("name"), p.getName());
-        assertEquals(gp.getField("age"), p.getAge());
-        assertEquals(gp.getField("gender"), p.getGender());
-        assertEquals(gp.getField("scores"), p.getScores());
-
-        assertTrue(cmpGPetEqualPet((GenericObject) gp.getField("pet"), p.getPet(), set1, set2));
-        assertTrue(cmpGPersonEqualPerson((GenericObject) gp.getField("friend"), p.getFriend(),
-            set1, set2));
-        assertCollectionValueEqual(gp, p, set1, set2);
-
-        return true;
-    }
-
-    private static void assertCollectionValueEqual(GenericObject gp, Person p,
-                                                   Set<GenericObject> set1, Set<Object> set2) {
-
-        Map<String, Object> mapValue = p.getMapValue();
-        Map mapValueGeneric = (Map) gp.getField("mapValue");
-        int times = 0;
-
-        if (mapValue != null && mapValueGeneric != null) {
-
-            assertTrue(mapValue.size() == mapValueGeneric.size());
-
-            for (Map.Entry<String, Object> entry : mapValue.entrySet()) {
-                if (entry.getValue() instanceof Person) {
-                    cmpGPersonEqualPerson((GenericObject) mapValueGeneric.get(entry.getKey()),
-                        (Person) entry.getValue(), set1, set2);
-                    times++;
-                }
-                if (entry.getValue() instanceof Pet) {
-                    cmpGPetEqualPet((GenericObject) mapValueGeneric.get(entry.getKey()),
-                        (Pet) entry.getValue(), set1, set2);
-                    times++;
-                }
-            }
-
-            assertTrue(times == 2);
-            times = 0;
-        } else if ((mapValue == null && mapValueGeneric != null)
-            || (mapValue != null && mapValueGeneric == null)) {
-            fail("not equals!");
-        }
-
-        List<Object> listValue = p.getListValue();
-        List listValueGeneric = (List) gp.getField("listValue");
-        if (listValue != null && listValueGeneric != null) {
-
-            assertTrue(listValue.size() == listValueGeneric.size());
-
-            for (int i = 0; i < listValue.size(); i++) {
-                if (listValue.get(i) instanceof Person) {
-                    cmpGPersonEqualPerson((GenericObject) listValueGeneric.get(i),
-                        (Person) listValue.get(i), set1, set2);
-                    times++;
-                }
-                if (listValue.get(i) instanceof Pet) {
-                    cmpGPetEqualPet((GenericObject) listValueGeneric.get(i),
-                        (Pet) listValue.get(i), set1, set2);
-                    times++;
-                }
-            }
-
-            assertTrue(times == 2);
-        } else if ((listValue != null && listValueGeneric == null)
-            || (listValue == null && listValueGeneric != null)) {
-            fail("not equals!");
-        }
-
-    }
-
-    public static boolean cmpGPetEqualPet(GenericObject gp, Pet p, Set<GenericObject> set1,
-                                          Set<Object> set2) {
-        if (gp == null && p == null)
-            return true;
-        if (gp == null || p == null)
-            return false;
-
-        if (!gp.getType().equals(Pet.class.getName()))
-            return false;
-        if (set1.contains(gp) && set2.contains(p))
-            return true;
-        if (set1.contains(gp) || set2.contains(p))
-            return false;
-
-        set1.add(gp);
-        set2.add(p);
-
-        assertEquals(gp.getField("name"), p.getName());
-        assertEquals(gp.getField("type"), p.getType());
-        assertTrue(cmpGPersonEqualPerson((GenericObject) gp.getField("owner"), p.getOwner(), set1,
-            set2));
-        return true;
     }
 }

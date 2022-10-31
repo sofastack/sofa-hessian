@@ -54,7 +54,7 @@ public class InternalNameBlackListFilterTest {
     public void readBlackList() {
 
         InternalNameBlackListFilter filter = new InternalNameBlackListFilter(3);
-        List<String> result = filter.readBlackList("test.blacklist");
+        List<String> result = InternalNameBlackListFilter.readBlackList("test.blacklist");
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("aa", result.get(0));
         Assert.assertEquals("bb", result.get(1));

@@ -73,11 +73,11 @@ public interface Service {
      *
      * @param config the configuration for the service.
      */
-    public void init(ServletConfig config)
+    void init(ServletConfig config)
         throws ServletException;
 
     /**
      * Cleanup the service instance.
      */
-    public void destroy();
+    void destroy();
 }

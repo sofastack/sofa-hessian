@@ -58,31 +58,27 @@ public class BurlapProtocolException extends HessianProtocolException {
     /**
      * Zero-arg constructor.
      */
-    public BurlapProtocolException()
-    {
+    public BurlapProtocolException() {
     }
 
     /**
      * Create the exception.
      */
-    public BurlapProtocolException(String message)
-    {
+    public BurlapProtocolException(String message) {
         super(message);
     }
 
     /**
      * Create the exception.
      */
-    public BurlapProtocolException(String message, Throwable rootCause)
-    {
+    public BurlapProtocolException(String message, Throwable rootCause) {
         super(message, rootCause);
     }
 
     /**
      * Create the exception.
      */
-    public BurlapProtocolException(Throwable rootCause)
-    {
+    public BurlapProtocolException(Throwable rootCause) {
         super(rootCause);
     }
 }

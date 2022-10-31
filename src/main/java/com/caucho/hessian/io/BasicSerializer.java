@@ -81,16 +81,14 @@ public class BasicSerializer extends AbstractSerializer {
     public static final int STRING_ARRAY     = CHARACTER_ARRAY + 1;
     public static final int OBJECT_ARRAY     = STRING_ARRAY + 1;
 
-    private int             code;
+    private final int       code;
 
-    public BasicSerializer(int code)
-    {
+    public BasicSerializer(int code) {
         this.code = code;
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         switch (code) {
             case BOOLEAN:
                 out.writeBoolean(((Boolean) obj).booleanValue());
@@ -269,7 +267,7 @@ public class BasicSerializer extends AbstractSerializer {
                 break;
 
             default:
-                throw new RuntimeException(code + " " + String.valueOf(obj.getClass()));
+                throw new RuntimeException(code + " " + obj.getClass());
         }
     }
 }

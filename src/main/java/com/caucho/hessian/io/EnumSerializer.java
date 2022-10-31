@@ -55,20 +55,18 @@ import java.lang.reflect.Method;
  * Serializing an object for known object types.
  */
 public class EnumSerializer extends AbstractSerializer {
-    private Method _name;
+    private final Method _name;
 
-    public EnumSerializer(Class cl)
-    {
+    public EnumSerializer(Class cl) {
         try {
-            _name = cl.getMethod("name", new Class[0]);
+            _name = cl.getMethod("name");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (out.addRef(obj))
             return;
 
@@ -87,8 +85,7 @@ public class EnumSerializer extends AbstractSerializer {
             out.writeString("name");
             out.writeString(name);
             out.writeMapEnd();
-        }
-        else {
+        } else {
             if (ref == -1) {
                 out.writeClassFieldLength(1);
                 out.writeString("name");

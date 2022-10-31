@@ -56,18 +56,14 @@ import java.io.OutputStream;
  * Hessian Mux, a peer-to-peer protocol.
  */
 public class MuxServer {
-    private Object            READ_LOCK    = new Object();
-    private Object            WRITE_LOCK   = new Object();
-
+    private final Object      READ_LOCK  = new Object();
+    private final Object      WRITE_LOCK = new Object();
+    // channels that have data ready.
+    private final boolean[]   inputReady = new boolean[4];
     private InputStream       is;
     private OutputStream      os;
     private boolean           isClient;
-
     private transient boolean isClosed;
-
-    // channels that have data ready.
-    private boolean           inputReady[] = new boolean[4];
-
     // true if there's a thread already reading
     private boolean           isReadLocked;
     // true if there's a thread already writing
@@ -76,31 +72,28 @@ public class MuxServer {
     /**
      * Null argument constructor.
      */
-    public MuxServer()
-    {
+    public MuxServer() {
     }
 
     /**
      * Create a new multiplexor with input and output streams.
      *
-     * @param is the underlying input stream
-     * @param os the underlying output stream
+     * @param is       the underlying input stream
+     * @param os       the underlying output stream
      * @param isClient true if this is the connection client.
      */
-    public MuxServer(InputStream is, OutputStream os, boolean isClient)
-    {
+    public MuxServer(InputStream is, OutputStream os, boolean isClient) {
         init(is, os, isClient);
     }
 
     /**
      * Initialize the multiplexor with input and output streams.
      *
-     * @param is the underlying input stream
-     * @param os the underlying output stream
+     * @param is       the underlying input stream
+     * @param os       the underlying output stream
      * @param isClient true if this is the connection client.
      */
-    public void init(InputStream is, OutputStream os, boolean isClient)
-    {
+    public void init(InputStream is, OutputStream os, boolean isClient) {
         this.is = is;
         this.os = os;
         this.isClient = isClient;
@@ -110,8 +103,7 @@ public class MuxServer {
      * Gets the raw input stream.  Clients will normally not call
      * this.
      */
-    public InputStream getInputStream()
-    {
+    public InputStream getInputStream() {
         return is;
     }
 
@@ -119,8 +111,7 @@ public class MuxServer {
      * Gets the raw output stream.  Clients will normally not call
      * this.
      */
-    public OutputStream getOutputStream()
-    {
+    public OutputStream getOutputStream() {
         return os;
     }
 
@@ -128,8 +119,7 @@ public class MuxServer {
      * Starts a client call.
      */
     public boolean startCall(MuxInputStream in, MuxOutputStream out)
-        throws IOException
-    {
+        throws IOException {
         int channel = isClient ? 2 : 3;
 
         return startCall(channel, in, out);
@@ -139,8 +129,7 @@ public class MuxServer {
      * Starts a client call.
      */
     public boolean startCall(int channel, MuxInputStream in, MuxOutputStream out)
-        throws IOException
-    {
+        throws IOException {
         // XXX: Eventually need to check to see if the channel is used.
         // It's not clear whether this should cause a wait or an exception.
 
@@ -154,8 +143,7 @@ public class MuxServer {
      * Reads a server request.
      */
     public boolean readRequest(MuxInputStream in, MuxOutputStream out)
-        throws IOException
-    {
+        throws IOException {
         int channel = isClient ? 3 : 2;
 
         in.init(this, channel);
@@ -165,8 +153,7 @@ public class MuxServer {
             in.setInputStream(is);
             in.readToData(false);
             return true;
-        }
-        else
+        } else
             return false;
     }
 
@@ -174,20 +161,17 @@ public class MuxServer {
      * Grabs the channel for writing.
      *
      * @param channel the channel
-     *
      * @return true if the channel has permission to write.
      */
     OutputStream writeChannel(int channel)
-        throws IOException
-    {
+        throws IOException {
         while (os != null) {
             boolean canWrite = false;
             synchronized (WRITE_LOCK) {
                 if (!isWriteLocked) {
                     isWriteLocked = true;
                     canWrite = true;
-                }
-                else {
+                } else {
                     try {
                         WRITE_LOCK.wait(5000);
                     } catch (Exception e) {
@@ -208,23 +192,20 @@ public class MuxServer {
     }
 
     void yield(int channel)
-        throws IOException
-    {
+        throws IOException {
         os.write('Y');
         freeWriteLock();
     }
 
     void flush(int channel)
-        throws IOException
-    {
+        throws IOException {
         os.write('Y');
         os.flush();
         freeWriteLock();
     }
 
     void close(int channel)
-        throws IOException
-    {
+        throws IOException {
         if (os != null) {
             os.write('Q');
             os.flush();
@@ -235,8 +216,7 @@ public class MuxServer {
     /**
      * Frees the channel for writing.
      */
-    void freeWriteLock()
-    {
+    void freeWriteLock() {
         synchronized (WRITE_LOCK) {
             isWriteLocked = false;
             WRITE_LOCK.notifyAll();
@@ -247,12 +227,10 @@ public class MuxServer {
      * Reads data from a channel.
      *
      * @param channel the channel
-     *
      * @return true if the channel is valid.
      */
     InputStream readChannel(int channel)
-        throws IOException
-    {
+        throws IOException {
         while (!isClosed) {
             if (inputReady[channel]) {
                 inputReady[channel] = false;
@@ -264,8 +242,7 @@ public class MuxServer {
                 if (!isReadLocked) {
                     isReadLocked = true;
                     canRead = true;
-                }
-                else {
+                } else {
                     try {
                         READ_LOCK.wait(5000);
                     } catch (Exception e) {
@@ -285,14 +262,12 @@ public class MuxServer {
         return null;
     }
 
-    boolean getReadLock()
-    {
+    boolean getReadLock() {
         synchronized (READ_LOCK) {
             if (!isReadLocked) {
                 isReadLocked = true;
                 return true;
-            }
-            else {
+            } else {
                 try {
                     READ_LOCK.wait(5000);
                 } catch (Exception e) {
@@ -306,8 +281,7 @@ public class MuxServer {
     /**
      * Frees the channel for reading.
      */
-    void freeReadLock()
-    {
+    void freeReadLock() {
         synchronized (READ_LOCK) {
             isReadLocked = false;
             READ_LOCK.notifyAll();
@@ -318,8 +292,7 @@ public class MuxServer {
      * Reads data until a channel packet 'C' or error 'E' is received.
      */
     private void readData()
-        throws IOException
-    {
+        throws IOException {
         while (!isClosed) {
             int code = is.read();
 
@@ -357,15 +330,13 @@ public class MuxServer {
             }
         }
 
-        return;
     }
 
     /**
      * Close the mux
      */
     public void close()
-        throws IOException
-    {
+        throws IOException {
         isClosed = true;
 
         OutputStream os = this.os;

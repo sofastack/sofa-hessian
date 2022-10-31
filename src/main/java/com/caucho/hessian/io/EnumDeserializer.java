@@ -55,28 +55,25 @@ import java.lang.reflect.Method;
  * Deserializing an enum valued object
  */
 public class EnumDeserializer extends AbstractDeserializer {
-    private Class  _enumType;
-    private Method _valueOf;
+    private final Class  _enumType;
+    private final Method _valueOf;
 
-    public EnumDeserializer(Class cl)
-    {
+    public EnumDeserializer(Class cl) {
         try {
             _enumType = cl;
             _valueOf = cl.getMethod("valueOf",
-                new Class[] { Class.class, String.class });
+                Class.class, String.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Class getType()
-    {
+    public Class getType() {
         return _enumType;
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         String name = null;
 
         while (!in.isEnd()) {
@@ -98,8 +95,7 @@ public class EnumDeserializer extends AbstractDeserializer {
     }
 
     public Object readObject(AbstractHessianInput in, String[] fieldNames)
-        throws IOException
-    {
+        throws IOException {
         String name = null;
 
         for (int i = 0; i < fieldNames.length; i++) {
@@ -117,8 +113,7 @@ public class EnumDeserializer extends AbstractDeserializer {
     }
 
     private Object create(String name)
-        throws IOException
-    {
+        throws IOException {
         if (name == null)
             throw new IOException(_enumType.getName() + " expects name.");
 

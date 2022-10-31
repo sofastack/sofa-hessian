@@ -49,18 +49,20 @@
 package com.caucho.hessian.io;
 
 import java.io.IOException;
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Deserializing a JDK 1.2 Map.
  */
 public class MapDeserializer extends AbstractMapDeserializer {
-    private Class       _type;
+    private final Class _type;
     private Constructor _ctor;
 
-    public MapDeserializer(Class type)
-    {
+    public MapDeserializer(Class type) {
         if (type == null)
             type = HashMap.class;
 
@@ -74,15 +76,14 @@ public class MapDeserializer extends AbstractMapDeserializer {
 
         if (_ctor == null) {
             try {
-                _ctor = HashMap.class.getConstructor(new Class[0]);
+                _ctor = HashMap.class.getConstructor();
             } catch (Exception e) {
                 throw new IllegalStateException(e);
             }
         }
     }
 
-    public Class getType()
-    {
+    public Class getType() {
         if (_type != null)
             return _type;
         else
@@ -90,8 +91,7 @@ public class MapDeserializer extends AbstractMapDeserializer {
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         Map map;
 
         if (_type == null)
@@ -122,8 +122,7 @@ public class MapDeserializer extends AbstractMapDeserializer {
     @Override
     public Object readObject(AbstractHessianInput in,
                              String[] fieldNames)
-        throws IOException
-    {
+        throws IOException {
         Map map = createMap();
 
         int ref = in.addRef(map);
@@ -138,8 +137,7 @@ public class MapDeserializer extends AbstractMapDeserializer {
     }
 
     private Map createMap()
-        throws IOException
-    {
+        throws IOException {
 
         if (_type == null)
             return new HashMap();

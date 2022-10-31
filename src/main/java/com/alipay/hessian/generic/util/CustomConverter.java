@@ -30,7 +30,7 @@ public interface CustomConverter {
      *
      * @return 关注的类名
      */
-    public Class interestClass();
+    Class interestClass();
 
     /**
      * 泛化对象转普通对象
@@ -39,7 +39,7 @@ public interface CustomConverter {
      * @param genericObject 泛化对象
      * @return 普通对象
      */
-    public Object convertToObject(Class clazz, GenericObject genericObject);
+    Object convertToObject(Class clazz, GenericObject genericObject);
 
     /**
      * 普通对象转泛化对象
@@ -48,5 +48,5 @@ public interface CustomConverter {
      * @param object 普通对象
      * @return 泛化对象
      */
-    public GenericObject convertToGenericObject(Class clazz, Object object);
+    GenericObject convertToGenericObject(Class clazz, Object object);
 }

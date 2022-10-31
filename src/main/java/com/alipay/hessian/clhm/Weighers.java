@@ -25,7 +25,7 @@ import java.util.Set;
  *
  * @author ben.manes@gmail.com (Ben Manes)
  * @see <a href="http://code.google.com/p/concurrentlinkedhashmap/">
- *      http://code.google.com/p/concurrentlinkedhashmap/</a>
+ * http://code.google.com/p/concurrentlinkedhashmap/</a>
  */
 public final class Weighers {
 
@@ -80,7 +80,7 @@ public final class Weighers {
      */
     @SuppressWarnings({ "cast", "unchecked" })
     public static <E> Weigher<? super Iterable<E>> iterable() {
-        return (Weigher<Iterable<E>>) (Weigher<?>) IterableWeigher.INSTANCE;
+        return IterableWeigher.INSTANCE;
     }
 
     /**
@@ -98,7 +98,7 @@ public final class Weighers {
      */
     @SuppressWarnings({ "cast", "unchecked" })
     public static <E> Weigher<? super Collection<E>> collection() {
-        return (Weigher<Collection<E>>) (Weigher<?>) CollectionWeigher.INSTANCE;
+        return CollectionWeigher.INSTANCE;
     }
 
     /**
@@ -116,7 +116,7 @@ public final class Weighers {
      */
     @SuppressWarnings({ "cast", "unchecked" })
     public static <E> Weigher<? super List<E>> list() {
-        return (Weigher<List<E>>) (Weigher<?>) ListWeigher.INSTANCE;
+        return ListWeigher.INSTANCE;
     }
 
     /**
@@ -134,7 +134,7 @@ public final class Weighers {
      */
     @SuppressWarnings({ "cast", "unchecked" })
     public static <E> Weigher<? super Set<E>> set() {
-        return (Weigher<Set<E>>) (Weigher<?>) SetWeigher.INSTANCE;
+        return SetWeigher.INSTANCE;
     }
 
     /**
@@ -152,7 +152,7 @@ public final class Weighers {
      */
     @SuppressWarnings({ "cast", "unchecked" })
     public static <A, B> Weigher<? super Map<A, B>> map() {
-        return (Weigher<Map<A, B>>) (Weigher<?>) MapWeigher.INSTANCE;
+        return MapWeigher.INSTANCE;
     }
 
     private enum SingletonWeigher implements Weigher<Object> {

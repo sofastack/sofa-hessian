@@ -23,15 +23,15 @@ import java.util.Set;
 import static com.alipay.hessian.generic.io.GenericDeserializer.ARRAY_PREFIX;
 
 /**
- *
  * @author <a href="mailto:caojie.cj@antfin.com">Jie Cao</a>
  * @since 5.3.0
  */
 public class ClassFilter {
 
+    public final static String       CLASS_NAME = Class.class.getName();
     private final static Set<String> PKG_FILTER;
     private final static Set<String> NAME_FILTER;
-    public final static String       CLASS_NAME = Class.class.getName();
+
     static {
         PKG_FILTER = new HashSet<String>();
 
@@ -155,6 +155,7 @@ public class ClassFilter {
 
     /**
      * 检测数组类型是否在过滤列表
+     *
      * @param clazz 类
      * @return 是否在过滤列表
      */
@@ -171,6 +172,7 @@ public class ClassFilter {
 
     /**
      * 检测数组类型是否在过滤列表
+     *
      * @param type 类名称
      * @return 是否在过滤列表
      */

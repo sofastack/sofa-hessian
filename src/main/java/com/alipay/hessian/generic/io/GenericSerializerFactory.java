@@ -16,9 +16,18 @@
  */
 package com.alipay.hessian.generic.io;
 
-import com.alipay.hessian.generic.model.*;
+import com.alipay.hessian.generic.model.GenericArray;
+import com.alipay.hessian.generic.model.GenericClass;
+import com.alipay.hessian.generic.model.GenericCollection;
+import com.alipay.hessian.generic.model.GenericMap;
+import com.alipay.hessian.generic.model.GenericObject;
 import com.alipay.hessian.generic.util.ClassFilter;
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.Deserializer;
+import com.caucho.hessian.io.HessianProtocolException;
+import com.caucho.hessian.io.JavaSerializer;
+import com.caucho.hessian.io.Serializer;
+import com.caucho.hessian.io.SerializerFactory;
+
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -34,7 +43,7 @@ public class GenericSerializerFactory extends SerializerFactory {
 
     private static final char                                ARRAY_PREFIX    = '[';
 
-    private List<AbstractGenericSerializerFactory>           factories       = new CopyOnWriteArrayList<AbstractGenericSerializerFactory>();
+    private final List<AbstractGenericSerializerFactory>     factories       = new CopyOnWriteArrayList<AbstractGenericSerializerFactory>();
 
     /**
      * Adds a factory.

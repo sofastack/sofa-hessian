@@ -76,28 +76,21 @@ import java.util.HashMap;
 public class Hessian2Output
                            extends AbstractHessianOutput
                                                         implements Hessian2Constants {
-    // the output stream/
-    protected OutputStream   _os;
-
+    private final static int     SIZE           = 1024;
+    private final byte[]         _buffer        = new byte[SIZE];
     // map of references
-    private IdentityIntMap   _refs          = new IdentityIntMap();
-
-    private HashMap          _serializerMap = new HashMap();
-
-    private boolean          _isCloseStreamOnClose;
-
+    private final IdentityIntMap _refs          = new IdentityIntMap();
+    private final HashMap        _serializerMap = new HashMap();
+    // the output stream/
+    protected OutputStream       _os;
+    private boolean              _isCloseStreamOnClose;
     // map of classes
-    private HashMap          _classRefs;
-
+    private HashMap              _classRefs;
     // map of types
-    private HashMap          _typeRefs;
+    private HashMap              _typeRefs;
+    private int                  _offset;
 
-    private final static int SIZE           = 1024;
-
-    private final byte[]     _buffer        = new byte[SIZE];
-    private int              _offset;
-
-    private boolean          _isStreaming;
+    private boolean              _isStreaming;
 
     /**
      * Creates a new Hessian output stream, initialized with an
@@ -109,12 +102,12 @@ public class Hessian2Output
         _os = os;
     }
 
-    public void setCloseStreamOnClose(boolean isClose) {
-        _isCloseStreamOnClose = isClose;
-    }
-
     public boolean isCloseStreamOnClose() {
         return _isCloseStreamOnClose;
+    }
+
+    public void setCloseStreamOnClose(boolean isClose) {
+        _isCloseStreamOnClose = isClose;
     }
 
     /**
@@ -760,7 +753,7 @@ public class Hessian2Output
             buffer[offset++] = (byte) (value >> 8);
             buffer[offset++] = (byte) (value);
         } else if (-0x80000000L <= value && value <= 0x7fffffffL) {
-            buffer[offset + 0] = (byte) LONG_INT;
+            buffer[offset] = (byte) LONG_INT;
             buffer[offset + 1] = (byte) (value >> 24);
             buffer[offset + 2] = (byte) (value >> 16);
             buffer[offset + 3] = (byte) (value >> 8);
@@ -768,7 +761,7 @@ public class Hessian2Output
 
             offset += 5;
         } else {
-            buffer[offset + 0] = (byte) 'L';
+            buffer[offset] = (byte) 'L';
             buffer[offset + 1] = (byte) (value >> 56);
             buffer[offset + 2] = (byte) (value >> 48);
             buffer[offset + 3] = (byte) (value >> 40);
@@ -827,7 +820,7 @@ public class Hessian2Output
 
                 return;
             } else if (-0x8000 <= intValue && intValue < 0x8000) {
-                buffer[offset + 0] = (byte) DOUBLE_SHORT;
+                buffer[offset] = (byte) DOUBLE_SHORT;
                 buffer[offset + 1] = (byte) (intValue >> 8);
                 buffer[offset + 2] = (byte) intValue;
 
@@ -842,7 +835,7 @@ public class Hessian2Output
         if (f == value) {
             int bits = Float.floatToIntBits(f);
 
-            buffer[offset + 0] = (byte) (DOUBLE_FLOAT);
+            buffer[offset] = (byte) (DOUBLE_FLOAT);
             buffer[offset + 1] = (byte) (bits >> 24);
             buffer[offset + 2] = (byte) (bits >> 16);
             buffer[offset + 3] = (byte) (bits >> 8);
@@ -855,7 +848,7 @@ public class Hessian2Output
 
         long bits = Double.doubleToLongBits(value);
 
-        buffer[offset + 0] = (byte) 'D';
+        buffer[offset] = (byte) 'D';
         buffer[offset + 1] = (byte) (bits >> 56);
         buffer[offset + 2] = (byte) (bits >> 48);
         buffer[offset + 3] = (byte) (bits >> 40);
@@ -971,7 +964,7 @@ public class Hessian2Output
                 if (0xd800 <= tail && tail <= 0xdbff)
                     sublen--;
 
-                buffer[offset + 0] = (byte) 's';
+                buffer[offset] = (byte) 's';
                 buffer[offset + 1] = (byte) (sublen >> 8);
                 buffer[offset + 2] = (byte) (sublen);
 
@@ -1273,7 +1266,7 @@ public class Hessian2Output
      */
     public boolean replaceRef(Object oldRef, Object newRef)
         throws IOException {
-        Integer value = (Integer) _refs.remove(oldRef);
+        Integer value = _refs.remove(oldRef);
 
         if (value != null) {
             _refs.put(newRef, value);

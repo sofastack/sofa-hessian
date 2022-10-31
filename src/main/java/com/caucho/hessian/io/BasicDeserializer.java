@@ -82,15 +82,13 @@ public class BasicDeserializer extends AbstractDeserializer {
     public static final int STRING_ARRAY     = BasicSerializer.STRING_ARRAY;
     public static final int OBJECT_ARRAY     = BasicSerializer.OBJECT_ARRAY;
 
-    private int             _code;
+    private final int       _code;
 
-    public BasicDeserializer(int code)
-    {
+    public BasicDeserializer(int code) {
         _code = code;
     }
 
-    public Class getType()
-    {
+    public Class getType() {
         switch (_code) {
             case NULL:
                 return void.class;
@@ -147,8 +145,7 @@ public class BasicDeserializer extends AbstractDeserializer {
     }
 
     public Object readObject(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         switch (_code) {
             case NULL:
                 // hessian/3490
@@ -157,7 +154,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                 return null;
 
             case BOOLEAN:
-                return new Boolean(in.readBoolean());
+                return Boolean.valueOf(in.readBoolean());
 
             case BYTE:
                 return new Byte((byte) in.readInt());
@@ -269,8 +266,7 @@ public class BasicDeserializer extends AbstractDeserializer {
     }
 
     public Object readList(AbstractHessianInput in, int length)
-        throws IOException
-    {
+        throws IOException {
         switch (_code) {
             case BOOLEAN_ARRAY: {
                 if (length >= 0) {
@@ -284,12 +280,11 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.readEnd();
 
                     return data;
-                }
-                else {
+                } else {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
-                        list.add(new Boolean(in.readBoolean()));
+                        list.add(Boolean.valueOf(in.readBoolean()));
 
                     in.readEnd();
 
@@ -316,8 +311,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.readEnd();
 
                     return data;
-                }
-                else {
+                } else {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
@@ -347,8 +341,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.readEnd();
 
                     return data;
-                }
-                else {
+                } else {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
@@ -378,8 +371,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.readEnd();
 
                     return data;
-                }
-                else {
+                } else {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
@@ -408,8 +400,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.readEnd();
 
                     return data;
-                }
-                else {
+                } else {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
@@ -438,8 +429,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.readEnd();
 
                     return data;
-                }
-                else {
+                } else {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
@@ -469,8 +459,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.readEnd();
 
                     return data;
-                }
-                else {
+                } else {
                     ArrayList list = new ArrayList();
 
                     while (!in.isEnd())
@@ -500,8 +489,7 @@ public class BasicDeserializer extends AbstractDeserializer {
                     in.readEnd();
 
                     return data;
-                }
-                else {
+                } else {
                     ArrayList list = new ArrayList();
 
                     in.addRef(list); // XXX: potential issues here
@@ -513,7 +501,7 @@ public class BasicDeserializer extends AbstractDeserializer {
 
                     Object[] data = new Object[list.size()];
                     for (int i = 0; i < data.length; i++)
-                        data[i] = (Object) list.get(i);
+                        data[i] = list.get(i);
 
                     return data;
                 }
@@ -525,8 +513,7 @@ public class BasicDeserializer extends AbstractDeserializer {
     }
 
     public Object readLengthList(AbstractHessianInput in, int length)
-        throws IOException
-    {
+        throws IOException {
         switch (_code) {
             case BOOLEAN_ARRAY: {
                 boolean[] data = new boolean[length];

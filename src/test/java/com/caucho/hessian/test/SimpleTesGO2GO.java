@@ -26,19 +26,95 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by qiwei.lqw on 2016/7/5.
  */
 public class SimpleTesGO2GO {
 
-    private static SimpleDataGenerator dg = new SimpleDataGenerator();
+    private static final SimpleDataGenerator dg = new SimpleDataGenerator();
+
+    public static boolean compareByteArray(Object a, Object b) {
+        byte[] ba = (byte[]) a;
+        byte[] bb = (byte[]) b;
+
+        if (ba.length != bb.length)
+            return false;
+        for (int i = 0; i < ba.length; ++i)
+            if (ba[i] != bb[i])
+                return false;
+
+        return true;
+    }
+
+    //obj2 won't contain GenericObject
+    //useless
+    @Deprecated
+    public static boolean compareTwoObjects(Object obj1, Object obj2, Set<Object> set1,
+                                            Set<Object> set2) {
+        if (set1.contains(obj1) && set2.contains(obj2))
+            return true;
+        if (set1.contains(obj1) || set2.contains(obj2))
+            return false;
+
+        if (obj1 instanceof GenericObject)
+            return compareGOAndO((GenericObject) obj1, obj2, set1, set2);
+        else
+            return compareOAndO(obj1, obj2, set1, set2);
+    }
+
+    public static boolean compareGOAndO(GenericObject gobj, Object obj, Set<Object> set1,
+                                        Set<Object> set2) {
+        Class<?> clazz = obj.getClass();
+        if (!gobj.getType().equals(clazz.getName()))
+            return false;
+        Set<String> gobjFieldNames = gobj.getFieldNames();
+
+        Set<String> objFieldNames = new HashSet<String>();
+        Set<Field> objFields = new HashSet<Field>();
+        for (; clazz != null; clazz = clazz.getSuperclass()) {
+            Field[] fields = clazz.getDeclaredFields();
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+
+                if (Modifier.isTransient(field.getModifiers())
+                    || Modifier.isStatic(field.getModifiers()))
+                    continue;
+
+                field.setAccessible(true);
+
+                objFieldNames.add(field.getName());
+                objFields.add(field);
+            }
+        }
+
+        if (!gobjFieldNames.equals(objFieldNames))
+            return false;
+
+        for (Field field : objFields) {
+            try {
+                if (!compareTwoObjects(gobj.getField(field.getName()), field.get(obj), set1, set2))
+                    return false;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    @Deprecated
+    public static boolean compareOAndO(Object obj1, Object obj2, Set<Object> set1, Set<Object> set2) {
+        return obj1.equals(obj2);
+    }
 
     @org.junit.Test
     public void testNull() throws IOException {
@@ -378,14 +454,10 @@ public class SimpleTesGO2GO {
         assertEquals(dg.generateUntypedFixedList_7(), hin.readObject());
         assertEquals(dg.generateUntypedFixedList_8(), hin.readObject());
 
-        assertTrue(Arrays.equals((Object[]) dg.generateTypedFixedList_0(),
-            (Object[]) hin.readObject()));
-        assertTrue(Arrays.equals((Object[]) dg.generateTypedFixedList_1(),
-            (Object[]) hin.readObject()));
-        assertTrue(Arrays.equals((Object[]) dg.generateTypedFixedList_7(),
-            (Object[]) hin.readObject()));
-        assertTrue(Arrays.equals((Object[]) dg.generateTypedFixedList_8(),
-            (Object[]) hin.readObject()));
+        assertArrayEquals((Object[]) dg.generateTypedFixedList_0(), (Object[]) hin.readObject());
+        assertArrayEquals((Object[]) dg.generateTypedFixedList_1(), (Object[]) hin.readObject());
+        assertArrayEquals((Object[]) dg.generateTypedFixedList_7(), (Object[]) hin.readObject());
+        assertArrayEquals((Object[]) dg.generateTypedFixedList_8(), (Object[]) hin.readObject());
 
         hin.close();
     }
@@ -506,78 +578,5 @@ public class SimpleTesGO2GO {
 
         hin.close();
 
-    }
-
-    public static boolean compareByteArray(Object a, Object b) {
-        byte[] ba = (byte[]) a;
-        byte[] bb = (byte[]) b;
-
-        if (ba.length != bb.length)
-            return false;
-        for (int i = 0; i < ba.length; ++i)
-            if (ba[i] != bb[i])
-                return false;
-
-        return true;
-    }
-
-    //obj2 won't contain GenericObject
-    //useless
-    @Deprecated
-    public static boolean compareTwoObjects(Object obj1, Object obj2, Set<Object> set1,
-                                            Set<Object> set2) {
-        if (set1.contains(obj1) && set2.contains(obj2))
-            return true;
-        if (set1.contains(obj1) || set2.contains(obj2))
-            return false;
-
-        if (obj1 instanceof GenericObject)
-            return compareGOAndO((GenericObject) obj1, obj2, set1, set2);
-        else
-            return compareOAndO(obj1, obj2, set1, set2);
-    }
-
-    public static boolean compareGOAndO(GenericObject gobj, Object obj, Set<Object> set1,
-                                        Set<Object> set2) {
-        Class<?> clazz = obj.getClass();
-        if (!gobj.getType().equals(clazz.getName()))
-            return false;
-        Set<String> gobjFieldNames = gobj.getFieldNames();
-
-        Set<String> objFieldNames = new HashSet<String>();
-        Set<Field> objFields = new HashSet<Field>();
-        for (; clazz != null; clazz = clazz.getSuperclass()) {
-            Field[] fields = clazz.getDeclaredFields();
-            for (int i = 0; i < fields.length; i++) {
-                Field field = fields[i];
-
-                if (Modifier.isTransient(field.getModifiers())
-                    || Modifier.isStatic(field.getModifiers()))
-                    continue;
-
-                field.setAccessible(true);
-
-                objFieldNames.add(field.getName());
-                objFields.add(field);
-            }
-        }
-
-        if (!gobjFieldNames.equals(objFieldNames))
-            return false;
-
-        for (Field field : objFields) {
-            try {
-                if (compareTwoObjects(gobj.getField(field.getName()), field.get(obj), set1, set2) == false)
-                    return false;
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return true;
-    }
-
-    @Deprecated
-    public static boolean compareOAndO(Object obj1, Object obj2, Set<Object> set1, Set<Object> set2) {
-        return obj1.equals(obj2);
     }
 }

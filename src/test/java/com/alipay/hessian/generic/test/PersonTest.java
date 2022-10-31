@@ -33,6 +33,7 @@ import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -42,6 +43,7 @@ import static junit.framework.Assert.assertTrue;
 public class PersonTest {
 
     static Field WRITE_DEFINITION_EVERYTIME_FIELD;
+
     static {
         try {
             WRITE_DEFINITION_EVERYTIME_FIELD = GenericObjectSerializer.class
@@ -121,11 +123,11 @@ public class PersonTest {
         Person p1 = (Person) hin.readObject();
         assertEquals("zhangsan", p1.getName());
         assertEquals(12, p1.getAge());
-        assertEquals(null, p1.getGender());
+        assertNull(p1.getGender());
         assertEquals(0, p1.getScores().size());
-        assertEquals(null, p1.getFriend());
+        assertNull(p1.getFriend());
         assertNotNull(p1.getPet());
-        assertEquals(null, p1.getMapValue());
+        assertNull(p1.getMapValue());
         assertEquals(0, p1.getListValue().size());
 
         Person p2 = (Person) hin.readObject();
@@ -134,9 +136,9 @@ public class PersonTest {
         assertEquals("Femal", p2.getGender());
         assertEquals(0, p2.getScores().size());
         assertNotNull(p2.getFriend());
-        assertEquals(null, p2.getPet());
-        assertEquals(null, p2.getMapValue());
-        assertEquals(null, p2.getListValue());
+        assertNull(p2.getPet());
+        assertNull(p2.getMapValue());
+        assertNull(p2.getListValue());
     }
 
     public void testDiffDefinition() throws Exception {
@@ -178,9 +180,9 @@ public class PersonTest {
         Person p1 = (Person) hin.readObject();
         assertEquals("zhangsan", p1.getName());
         //        assertEquals(12, p1.getAge());
-        assertEquals(null, p1.getGender());
+        assertNull(p1.getGender());
         assertEquals(0, p1.getScores().size());
-        assertEquals(null, p1.getFriend());
+        assertNull(p1.getFriend());
         assertNotNull(p1.getPet());
         //        assertEquals(null, p1.getMapValue());
         assertEquals(0, p1.getListValue().size());
@@ -192,7 +194,7 @@ public class PersonTest {
         assertEquals(0, p2.getScores().size());
         assertNotNull(p2.getFriend());
         //        assertEquals(null, p2.getPet());
-        assertEquals(null, p2.getMapValue());
-        assertEquals(null, p2.getListValue());
+        assertNull(p2.getMapValue());
+        assertNull(p2.getListValue());
     }
 }

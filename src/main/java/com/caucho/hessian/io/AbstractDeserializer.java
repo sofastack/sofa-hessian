@@ -51,17 +51,15 @@ package com.caucho.hessian.io;
 import java.io.IOException;
 
 /**
- * Deserializing an object. 
+ * Deserializing an object.
  */
 abstract public class AbstractDeserializer implements Deserializer {
-    public Class getType()
-    {
+    public Class getType() {
         return Object.class;
     }
 
     public Object readObject(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         Object obj = in.readObject();
 
         String className = getClass().getName();
@@ -73,20 +71,17 @@ abstract public class AbstractDeserializer implements Deserializer {
     }
 
     public Object readList(AbstractHessianInput in, int length)
-        throws IOException
-    {
+        throws IOException {
         throw new UnsupportedOperationException(String.valueOf(this));
     }
 
     public Object readLengthList(AbstractHessianInput in, int length)
-        throws IOException
-    {
+        throws IOException {
         throw new UnsupportedOperationException(String.valueOf(this));
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         Object obj = in.readObject();
 
         String className = getClass().getName();
@@ -98,18 +93,15 @@ abstract public class AbstractDeserializer implements Deserializer {
     }
 
     public Object readObject(AbstractHessianInput in, String[] fieldNames)
-        throws IOException
-    {
+        throws IOException {
         throw new UnsupportedOperationException(String.valueOf(this));
     }
 
-    protected HessianProtocolException error(String msg)
-    {
+    protected HessianProtocolException error(String msg) {
         return new HessianProtocolException(msg);
     }
 
-    protected String codeName(int ch)
-    {
+    protected String codeName(int ch) {
         if (ch < 0)
             return "end of file";
         else

@@ -62,12 +62,12 @@ package com.caucho.services.name;
  * /dir-2/1 - where foo contains the string "foo-1"
  * /dir-2/2 - where foo contains the string "foo-2"
  * </pre>
- *
+ * <p>
  * <p/>The root server might have a URL like:
  * <pre>
  * http://www.caucho.com/hessian/hessian/name?ejbid=/
  * </pre>
- *
+ * <p>
  * <p/>So <code>root.lookup("/dir-1/1")</code> will return the string
  * "foo-1", and <code>root.lookup("/dir-1")</code> will return the
  * NameServer with the URL:
@@ -80,12 +80,10 @@ public interface NameServer {
      * Lookup an object from the name server.
      *
      * @param name the relative path name
-     *
      * @return the matching object or null if no object maches
-     *
-     * @exception NameServiceException if there's an error
+     * @throws NameServiceException if there's an error
      */
-    public Object lookup(String name)
+    Object lookup(String name)
         throws NameServiceException;
 
     /**
@@ -95,6 +93,6 @@ public interface NameServer {
      * <p>For example, if the name server context is "/dir-1", the returned
      * values will be ["1", "2"].
      */
-    public String[] list()
+    String[] list()
         throws NameServiceException;
 }

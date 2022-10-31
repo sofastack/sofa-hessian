@@ -29,13 +29,13 @@ import java.io.IOException;
  */
 public final class GenericArraySerializer extends AbstractSerializer {
 
-    private static GenericArraySerializer instance = new GenericArraySerializer();
+    private static final GenericArraySerializer instance = new GenericArraySerializer();
+
+    private GenericArraySerializer() {
+    }
 
     public static GenericArraySerializer getInstance() {
         return instance;
-    }
-
-    private GenericArraySerializer() {
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {

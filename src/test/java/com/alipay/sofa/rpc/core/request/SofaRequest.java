@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * Based on RequestBase, add some extensional properties, such as requestProps
- * 
+ * <p>
  * INFO: this object will create in every RPC request
  *
  * @author hongwei.yhw
@@ -31,15 +31,18 @@ import java.util.Map;
 public class SofaRequest extends RequestBase {
 
     private static final long         serialVersionUID = 7329530374415722876L;
-
-    /** save the request method to avoid reflection */
-    private transient Method          method;
-
-    /** target app name */
-    private String                    targetAppName;
-
-    /** extensional properties */
+    /**
+     * extensional properties
+     */
     private final Map<String, Object> requestProps     = new HashMap<String, Object>();
+    /**
+     * save the request method to avoid reflection
+     */
+    private transient Method          method;
+    /**
+     * target app name
+     */
+    private String                    targetAppName;
 
     public Object getRequestProp(String key) {
         return requestProps.get(key);

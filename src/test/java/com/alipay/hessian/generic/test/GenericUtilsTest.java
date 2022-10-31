@@ -28,18 +28,22 @@ import com.alipay.hessian.generic.util.GenericUtils;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.alipay.hessian.generic.test.ComplexTestGO2GO.cmpGPersonEqualPerson;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author xuanbei
  * @since 2016/11/09
  */
 public class GenericUtilsTest {
-    private static ComplexDataGenerator dg = new ComplexDataGenerator();
+    private static final ComplexDataGenerator dg = new ComplexDataGenerator();
 
     @Test
     public void singlePerson() throws IOException {
@@ -162,7 +166,7 @@ public class GenericUtilsTest {
         objects[2] = new SimplePerson("zhao", "coder");
 
         GenericArray ga = GenericUtils.convertToGenericObject(objects);
-        assertTrue(5 == ga.getLength());
+        assertEquals(5, ga.getLength());
         assertEquals(Object.class.getName(), ga.getComponentType());
         assertEquals("12", ga.getObjects()[0]);
         assertEquals(12, ga.getObjects()[1]);
@@ -170,8 +174,8 @@ public class GenericUtilsTest {
         go.putField("name", "zhao");
         go.putField("job", "coder");
         assertEquals(go, ga.getObjects()[2]);
-        assertEquals(null, ga.getObjects()[3]);
-        assertEquals(null, ga.getObjects()[4]);
+        assertNull(ga.getObjects()[3]);
+        assertNull(ga.getObjects()[4]);
 
         objects = new Object[5];
         objects[0] = "12";
@@ -186,8 +190,8 @@ public class GenericUtilsTest {
         assertEquals("12", objs[0]);
         assertEquals(12, objs[1]);
         assertEquals(new SimplePerson("zhao", "coder"), objs[2]);
-        assertEquals(null, objs[3]);
-        assertEquals(null, objs[4]);
+        assertNull(objs[3]);
+        assertNull(objs[4]);
     }
 
     private CollectionBean makeCollectionBean() {
@@ -227,13 +231,13 @@ public class GenericUtilsTest {
         assertEquals(obj.getClass().getName(), CollectionBean.class.getName());
 
         CollectionBean collectionBean = (CollectionBean) obj;
-        assertTrue(collectionBean.getIntegers().get(1).equals(2));
+        assertEquals(2, (int) collectionBean.getIntegers().get(1));
         assertEquals(new SimplePerson("wang", "coder"), collectionBean.getSimplePersons().get(0));
         assertEquals("12345", collectionBean.getStringTestList().get(0));
         assertEquals(new SimplePerson("li", "teacher"), collectionBean.getSimplePersonTestList()
             .get(0));
         assertEquals(collectionBean.getIntArray().length, 3);
-        assertTrue(collectionBean.getIntArray()[1] == 2);
+        assertEquals(2, collectionBean.getIntArray()[1]);
         assertEquals(new SimplePerson("cao", "coder"), collectionBean.getSimplePersonArray()[0]);
         assertEquals(new SimplePerson("zhao", "coder"), collectionBean.getSimplePersonTestMap()
             .get("123"));

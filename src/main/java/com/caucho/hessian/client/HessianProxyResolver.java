@@ -56,13 +56,12 @@ import java.io.IOException;
  * Looks up remote objects in the proxy.
  */
 public class HessianProxyResolver implements HessianRemoteResolver {
-    private HessianProxyFactory _factory;
+    private final HessianProxyFactory _factory;
 
     /**
      * Creates an uninitialized Hessian remote resolver.
      */
-    public HessianProxyResolver(HessianProxyFactory factory)
-    {
+    public HessianProxyResolver(HessianProxyFactory factory) {
         _factory = factory;
     }
 
@@ -70,8 +69,7 @@ public class HessianProxyResolver implements HessianRemoteResolver {
      * Looks up a proxy object.
      */
     public Object lookup(String type, String url)
-        throws IOException
-    {
+        throws IOException {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
         try {

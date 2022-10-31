@@ -60,23 +60,20 @@ public class MessageServiceException extends IOException {
     /**
      * Zero-arg constructor.
      */
-    public MessageServiceException()
-    {
+    public MessageServiceException() {
     }
 
     /**
      * Create the exception.
      */
-    public MessageServiceException(String message)
-    {
+    public MessageServiceException(String message) {
         super(message);
     }
 
     /**
      * Create the exception.
      */
-    public MessageServiceException(String message, Throwable rootCause)
-    {
+    public MessageServiceException(String message, Throwable rootCause) {
         super(message);
 
         _rootCause = rootCause;
@@ -85,8 +82,7 @@ public class MessageServiceException extends IOException {
     /**
      * Create the exception.
      */
-    public MessageServiceException(Throwable rootCause)
-    {
+    public MessageServiceException(Throwable rootCause) {
         super(String.valueOf(rootCause));
 
         _rootCause = rootCause;
@@ -95,16 +91,14 @@ public class MessageServiceException extends IOException {
     /**
      * Returns the underlying cause.
      */
-    public Throwable getRootCause()
-    {
+    public Throwable getRootCause() {
         return getCause();
     }
 
     /**
      * Returns the underlying cause.
      */
-    public Throwable getCause()
-    {
+    public Throwable getCause() {
         return _rootCause;
     }
 }

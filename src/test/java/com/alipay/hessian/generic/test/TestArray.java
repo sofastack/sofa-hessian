@@ -33,12 +33,13 @@ import java.io.IOException;
 
 import static com.alipay.hessian.generic.test.ComplexTestGO2GO.cmpGPersonEqualPerson;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by qiwei.lqw on 2016/7/19.
  */
 public class TestArray {
-    private static ComplexDataGenerator dg = new ComplexDataGenerator();
+    private static final ComplexDataGenerator dg = new ComplexDataGenerator();
 
     @Test
     public void testGenericObjectArray() throws IOException {
@@ -85,9 +86,9 @@ public class TestArray {
         Person[] pArr = (Person[]) hin.readObject();
 
         assertEquals(ga.getLength(), pArr.length);
-        cmpGPersonEqualPerson((GenericObject) ga.get(0), (Person) pArr[0]);
-        cmpGPersonEqualPerson((GenericObject) ga.get(1), (Person) pArr[1]);
-        cmpGPersonEqualPerson((GenericObject) ga.get(2), (Person) pArr[2]);
+        cmpGPersonEqualPerson((GenericObject) ga.get(0), pArr[0]);
+        cmpGPersonEqualPerson((GenericObject) ga.get(1), pArr[1]);
+        cmpGPersonEqualPerson((GenericObject) ga.get(2), pArr[2]);
 
     }
 
@@ -177,14 +178,14 @@ public class TestArray {
         assertEquals(3, ((String[]) genericObject.getField("str1")).length);
         assertEquals("11", ((String[]) genericObject.getField("str1"))[0]);
         assertEquals("22", ((String[]) genericObject.getField("str1"))[1]);
-        assertEquals(null, ((String[]) genericObject.getField("str1"))[2]);
+        assertNull(((String[]) genericObject.getField("str1"))[2]);
 
         assertEquals(String[][].class.getName(), genericObject.getField("str2").getClass()
             .getName());
         assertEquals(2, ((String[][]) genericObject.getField("str2")).length);
         assertEquals("33", ((String[][]) genericObject.getField("str2"))[0][0]);
         assertEquals("44", ((String[][]) genericObject.getField("str2"))[0][1]);
-        assertEquals(null, ((String[][]) genericObject.getField("str2"))[0][2]);
+        assertNull(((String[][]) genericObject.getField("str2"))[0][2]);
         assertEquals("11", ((String[][]) genericObject.getField("str2"))[1][0]);
 
         assertEquals(String[][][].class.getName(), genericObject.getField("str3").getClass()
@@ -192,7 +193,7 @@ public class TestArray {
         assertEquals(2, ((String[][][]) genericObject.getField("str3")).length);
         assertEquals("33", ((String[][][]) genericObject.getField("str3"))[1][0][0]);
         assertEquals("44", ((String[][][]) genericObject.getField("str3"))[1][0][1]);
-        assertEquals(null, ((String[][][]) genericObject.getField("str3"))[1][0][2]);
+        assertNull(((String[][][]) genericObject.getField("str3"))[1][0][2]);
         assertEquals("11", ((String[][][]) genericObject.getField("str3"))[1][1][0]);
 
         assertEquals(GenericArray.class.getName(), genericObject.getField("simplePerson1")
@@ -210,7 +211,7 @@ public class TestArray {
             ((GenericArray) genericObject.getField("simplePerson2")).getObjects().length);
         assertEquals(GenericArray.class,
             ((GenericArray) genericObject.getField("simplePerson2")).getObjects()[1].getClass());
-        assertEquals(null, ((GenericArray) ((GenericArray) genericObject.getField("simplePerson2"))
+        assertNull(((GenericArray) ((GenericArray) genericObject.getField("simplePerson2"))
             .getObjects()[1]).getObjects()[0]);
         go = new GenericObject(SimplePerson.class.getName());
         go.putField("name", "li");
@@ -232,7 +233,7 @@ public class TestArray {
             .getName());
         assertEquals(1, ((GenericArray) genericObject.getField("obj1")).getObjects()[0]);
         assertEquals("11", ((GenericArray) genericObject.getField("obj1")).getObjects()[1]);
-        assertEquals(null, ((GenericArray) genericObject.getField("obj1")).getObjects()[2]);
+        assertNull(((GenericArray) genericObject.getField("obj1")).getObjects()[2]);
 
         assertEquals(GenericArray.class.getName(), genericObject.getField("obj2").getClass()
             .getName());
@@ -260,18 +261,16 @@ public class TestArray {
         assertEquals(1,
             ((GenericArray) ((GenericArray) ((GenericArray) genericObject.getField("obj3"))
                 .getObjects()[0]).getObjects()[0]).getObjects()[1]);
-        assertEquals(null,
-            ((GenericArray) ((GenericArray) ((GenericArray) genericObject.getField("obj3"))
-                .getObjects()[0]).getObjects()[0]).getObjects()[2]);
+        assertNull(((GenericArray) ((GenericArray) ((GenericArray) genericObject.getField("obj3"))
+            .getObjects()[0]).getObjects()[0]).getObjects()[2]);
         assertEquals("22",
             ((GenericArray) ((GenericArray) ((GenericArray) genericObject.getField("obj3"))
                 .getObjects()[0]).getObjects()[1]).getObjects()[0]);
         assertEquals(2,
             ((GenericArray) ((GenericArray) ((GenericArray) genericObject.getField("obj3"))
                 .getObjects()[0]).getObjects()[1]).getObjects()[1]);
-        assertEquals(null,
-            ((GenericArray) ((GenericArray) ((GenericArray) genericObject.getField("obj3"))
-                .getObjects()[1]).getObjects()[0]).getObjects()[0]);
+        assertNull(((GenericArray) ((GenericArray) ((GenericArray) genericObject.getField("obj3"))
+            .getObjects()[1]).getObjects()[0]).getObjects()[0]);
     }
 
     private void assertArrayBean(ArrayBean arrayBean) {
@@ -290,39 +289,39 @@ public class TestArray {
         assertEquals("11", arrayBean.getStr2()[1][0]);
         assertEquals("33", arrayBean.getStr2()[0][0]);
         assertEquals("44", arrayBean.getStr2()[0][1]);
-        assertEquals(null, arrayBean.getStr2()[0][2]);
+        assertNull(arrayBean.getStr2()[0][2]);
 
         assertEquals(2, arrayBean.getStr3().length);
         assertEquals("33", arrayBean.getStr3()[1][0][0]);
         assertEquals("44", arrayBean.getStr3()[1][0][1]);
-        assertEquals(null, arrayBean.getStr3()[1][0][2]);
+        assertNull(arrayBean.getStr3()[1][0][2]);
         assertEquals("11", arrayBean.getStr3()[1][1][0]);
 
         assertEquals(new SimplePerson("wang", "coder"), arrayBean.getSimplePerson1()[0]);
         assertEquals(new SimplePerson("li", "coder"), arrayBean.getSimplePerson2()[0][0]);
-        assertEquals(null, arrayBean.getSimplePerson2()[1][0]);
-        assertEquals(null, arrayBean.getSimplePerson3()[0][1][0]);
+        assertNull(arrayBean.getSimplePerson2()[1][0]);
+        assertNull(arrayBean.getSimplePerson3()[0][1][0]);
         assertEquals(new SimplePerson("li", "coder"), arrayBean.getSimplePerson3()[0][0][0]);
         assertEquals(new SimplePerson("zhao", "coder"), arrayBean.getSimplePerson3()[1][0][0]);
 
         assertEquals(1, arrayBean.getObj1()[0]);
         assertEquals("11", arrayBean.getObj1()[1]);
-        assertEquals(null, arrayBean.getObj1()[2]);
+        assertNull(arrayBean.getObj1()[2]);
         assertEquals("11", arrayBean.getObj2()[0][0]);
         assertEquals(1, arrayBean.getObj2()[0][1]);
-        assertEquals(null, arrayBean.getObj2()[0][2]);
+        assertNull(arrayBean.getObj2()[0][2]);
         assertEquals("22", arrayBean.getObj2()[1][0]);
         assertEquals(2, arrayBean.getObj2()[1][1]);
         assertEquals(new SimplePerson("qian", "coder"), arrayBean.getObj2()[1][2]);
 
         assertEquals("11", arrayBean.getObj3()[0][0][0]);
         assertEquals(1, arrayBean.getObj3()[0][0][1]);
-        assertEquals(null, arrayBean.getObj3()[0][0][2]);
+        assertNull(arrayBean.getObj3()[0][0][2]);
 
         assertEquals("22", arrayBean.getObj3()[0][1][0]);
         assertEquals(2, arrayBean.getObj3()[0][1][1]);
         assertEquals(new SimplePerson("qian", "coder"), arrayBean.getObj3()[0][1][2]);
-        assertEquals(null, arrayBean.getObj3()[1][0][0]);
+        assertNull(arrayBean.getObj3()[1][0][0]);
         assertEquals(1, arrayBean.getObj3()[1][0][1]);
     }
 

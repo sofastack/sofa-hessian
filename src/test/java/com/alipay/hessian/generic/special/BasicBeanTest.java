@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author xuanbei
@@ -39,7 +40,7 @@ public class BasicBeanTest {
     @Test
     public void testAll() throws Exception {
         BasicBean bb = new BasicBean((short) 12, new Short((short) 32), 21, new Integer(43),
-            (byte) 12, new Byte((byte) 13), 1274646l, 873763l, (float) 1456.9877,
+            (byte) 12, new Byte((byte) 13), 1274646L, 873763L, (float) 1456.9877,
             (float) 1456.9877, 82837.93883, 82837.88, true, false);
         Object go = GenericUtils.convertToGenericObject(bb);
         assertGenericBasicBean(go);
@@ -78,7 +79,7 @@ public class BasicBeanTest {
         GenericObject genericObject = (GenericObject) go;
         assertEquals(BasicBean.class.getName(), genericObject.getType());
         BasicBean bb = new BasicBean((short) 12, new Short((short) 32), 21, new Integer(43),
-            (byte) 12, new Byte((byte) 13), 1274646l, 873763l, (float) 1456.9877,
+            (byte) 12, new Byte((byte) 13), 1274646L, 873763L, (float) 1456.9877,
             (float) 1456.9877, 82837.93883, 82837.88, true, false);
         assertEquals(bb.getB(), genericObject.getField("b"));
         assertEquals(bb.getBb(), genericObject.getField("bb"));
@@ -92,7 +93,7 @@ public class BasicBeanTest {
         assertEquals(bb.getLl(), genericObject.getField("ll"));
         assertEquals(bb.getI(), genericObject.getField("i"));
         assertEquals(bb.getIi(), genericObject.getField("ii"));
-        assertEquals(bb.isBo(), true);
+        assertTrue(bb.isBo());
         assertEquals(bb.getBbo(), false);
     }
 }

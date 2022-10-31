@@ -21,6 +21,34 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
+ * An element that is linked on the {@link Deque}.
+ */
+interface Linked<T extends Linked<T>> {
+
+    /**
+     * Retrieves the previous element or <tt>null</tt> if either the element is
+     * unlinked or the first element on the deque.
+     */
+    T getPrevious();
+
+    /**
+     * Sets the previous element or <tt>null</tt> if there is no link.
+     */
+    void setPrevious(T prev);
+
+    /**
+     * Retrieves the next element or <tt>null</tt> if either the element is
+     * unlinked or the last element on the deque.
+     */
+    T getNext();
+
+    /**
+     * Sets the next element or <tt>null</tt> if there is no link.
+     */
+    void setNext(T next);
+}
+
+/**
  * Linked list implementation of the the JDK6 Deque interface where the link
  * pointers are tightly integrated with the element. Linked deques have no
  * capacity restrictions; they grow as necessary to support usage. They are not
@@ -37,10 +65,10 @@ import java.util.NoSuchElementException;
  * the iterator risks arbitrary, non-deterministic behavior at an undetermined
  * time in the future.
  *
- * @author ben.manes@gmail.com (Ben Manes)
  * @param <E> the type of elements held in this collection
+ * @author ben.manes@gmail.com (Ben Manes)
  * @see <a href="http://code.google.com/p/concurrentlinkedhashmap/">
- *      http://code.google.com/p/concurrentlinkedhashmap/</a>
+ * http://code.google.com/p/concurrentlinkedhashmap/</a>
  */
 @NotThreadSafe
 final class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
@@ -55,14 +83,14 @@ final class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
     /**
      * Pointer to first node.
      * Invariant: (first == null && last == null) ||
-     *            (first.prev == null)
+     * (first.prev == null)
      */
     E   first;
 
     /**
      * Pointer to last node.
      * Invariant: (first == null && last == null) ||
-     *            (last.next == null)
+     * (last.next == null)
      */
     E   last;
 
@@ -104,7 +132,9 @@ final class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
         }
     }
 
-    /** Unlinks the non-null first element. */
+    /**
+     * Unlinks the non-null first element.
+     */
     E unlinkFirst() {
         final E f = first;
         final E next = f.getNext();
@@ -119,7 +149,9 @@ final class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
         return f;
     }
 
-    /** Unlinks the non-null last element. */
+    /**
+     * Unlinks the non-null last element.
+     */
     E unlinkLast() {
         final E l = last;
         final E prev = l.getPrevious();
@@ -133,7 +165,9 @@ final class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
         return l;
     }
 
-    /** Unlinks the non-null element. */
+    /**
+     * Unlinks the non-null element.
+     */
     void unlink(E e) {
         final E prev = e.getPrevious();
         final E next = e.getNext();
@@ -407,28 +441,4 @@ final class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
          */
         abstract E computeNext();
     }
-}
-
-/**
- * An element that is linked on the {@link Deque}.
- */
-interface Linked<T extends Linked<T>> {
-
-    /**
-     * Retrieves the previous element or <tt>null</tt> if either the element is
-     * unlinked or the first element on the deque.
-     */
-    T getPrevious();
-
-    /** Sets the previous element or <tt>null</tt> if there is no link. */
-    void setPrevious(T prev);
-
-    /**
-     * Retrieves the next element or <tt>null</tt> if either the element is
-     * unlinked or the last element on the deque.
-     */
-    T getNext();
-
-    /** Sets the next element or <tt>null</tt> if there is no link. */
-    void setNext(T next);
 }

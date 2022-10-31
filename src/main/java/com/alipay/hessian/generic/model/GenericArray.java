@@ -51,6 +51,7 @@ public final class GenericArray implements Serializable {
     /**
      * 对于Object[]数组, 传入的componentType为[java.lang.Object, 但是Class.forName 需要的字符串是 [Ljava.lang.Object;
      * 如果不以'['开头, 直接返回, 否则拼接Class.forName需要的字符串格式
+     *
      * @return
      */
     private String getActualComponentType(String componentType) {
@@ -86,15 +87,15 @@ public final class GenericArray implements Serializable {
         return objects.length;
     }
 
-    public void setObjects(Object[] objects) {
-        this.objects = objects;
-    }
-
     public Object get(int idx) {
         return objects[idx];
     }
 
     public Object[] getObjects() {
         return objects;
+    }
+
+    public void setObjects(Object[] objects) {
+        this.objects = objects;
     }
 }

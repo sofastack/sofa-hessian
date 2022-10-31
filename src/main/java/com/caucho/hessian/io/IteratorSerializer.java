@@ -57,8 +57,7 @@ import java.util.Iterator;
 public class IteratorSerializer extends AbstractSerializer {
     private static IteratorSerializer _serializer;
 
-    public static IteratorSerializer create()
-    {
+    public static IteratorSerializer create() {
         if (_serializer == null)
             _serializer = new IteratorSerializer();
 
@@ -66,8 +65,7 @@ public class IteratorSerializer extends AbstractSerializer {
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         Iterator iter = (Iterator) obj;
 
         boolean hasEnd = out.writeListBegin(-1, null);

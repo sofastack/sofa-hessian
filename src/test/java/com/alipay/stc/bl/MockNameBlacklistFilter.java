@@ -18,7 +18,7 @@ package com.alipay.stc.bl;
 
 import com.alipay.hessian.NameBlackListFilter;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class MockNameBlacklistFilter extends NameBlackListFilter {
 
-    private static final List<String> INTERNAL_BLACK_LIST = Arrays.asList(
+    private static final List<String> INTERNAL_BLACK_LIST = Collections.singletonList(
                                                               "com.alipay.stc.bl");
 
     public MockNameBlacklistFilter() {

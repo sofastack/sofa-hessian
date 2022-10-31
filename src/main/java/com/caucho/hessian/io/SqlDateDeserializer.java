@@ -55,24 +55,21 @@ import java.lang.reflect.Constructor;
  * Deserializing a string valued object
  */
 public class SqlDateDeserializer extends AbstractDeserializer {
-    private Class       _cl;
-    private Constructor _constructor;
+    private final Class       _cl;
+    private final Constructor _constructor;
 
     public SqlDateDeserializer(Class cl)
-                                        throws NoSuchMethodException
-    {
+                                        throws NoSuchMethodException {
         _cl = cl;
-        _constructor = cl.getConstructor(new Class[] { long.class });
+        _constructor = cl.getConstructor(long.class);
     }
 
-    public Class getType()
-    {
+    public Class getType() {
         return _cl;
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         int ref = in.addRef(null);
         long initValue = Long.MIN_VALUE;
 
@@ -95,8 +92,7 @@ public class SqlDateDeserializer extends AbstractDeserializer {
     }
 
     public Object readObject(AbstractHessianInput in, String[] fieldNames)
-        throws IOException
-    {
+        throws IOException {
         int ref = in.addRef(null);
         long initValue = Long.MIN_VALUE;
 
@@ -117,13 +113,12 @@ public class SqlDateDeserializer extends AbstractDeserializer {
     }
 
     private Object create(long initValue)
-        throws IOException
-    {
+        throws IOException {
         if (initValue == Long.MIN_VALUE)
             throw new IOException(_cl.getName() + " expects name.");
 
         try {
-            return _constructor.newInstance(new Object[] { new Long(initValue) });
+            return _constructor.newInstance(new Long(initValue));
         } catch (Exception e) {
             throw new IOExceptionWrapper(e);
         }

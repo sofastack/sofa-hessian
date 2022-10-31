@@ -64,16 +64,15 @@ import java.util.logging.Logger;
 public class HessianSkeleton extends AbstractSkeleton {
     private static final Logger log = Logger.getLogger(HessianSkeleton.class.getName());
 
-    private Object              _service;
+    private final Object        _service;
 
     /**
      * Create a new hessian skeleton.
      *
-     * @param service the underlying service object.
+     * @param service  the underlying service object.
      * @param apiClass the API interface
      */
-    public HessianSkeleton(Object service, Class apiClass)
-    {
+    public HessianSkeleton(Object service, Class apiClass) {
         super(apiClass);
 
         if (service == null)
@@ -88,12 +87,11 @@ public class HessianSkeleton extends AbstractSkeleton {
     /**
      * Invoke the object with the request from the input stream.
      *
-     * @param in the Hessian input stream
+     * @param in  the Hessian input stream
      * @param out the Hessian output stream
      */
     public void invoke(AbstractHessianInput in, AbstractHessianOutput out)
-        throws Throwable
-    {
+        throws Throwable {
         ServiceContext context = ServiceContext.getContext();
 
         // backward compatibility for some frameworks that don't read
@@ -111,8 +109,7 @@ public class HessianSkeleton extends AbstractSkeleton {
         Method method = getMethod(methodName);
 
         if (method != null) {
-        }
-        else if ("_hessian_getAttribute".equals(methodName)) {
+        } else if ("_hessian_getAttribute".equals(methodName)) {
             String attrName = in.readString();
             in.completeCall();
 
@@ -131,8 +128,7 @@ public class HessianSkeleton extends AbstractSkeleton {
 
             out.completeReply();
             return;
-        }
-        else if (method == null) {
+        } else if (method == null) {
             out.startReply();
             out.writeFault("NoSuchMethodException",
                 "The service has no method named: " + in.getMethod(),

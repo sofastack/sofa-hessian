@@ -49,27 +49,30 @@
 package com.caucho.hessian.io;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Deserializing a JDK 1.2 Collection.
  */
 public class CollectionDeserializer extends AbstractListDeserializer {
-    private Class _type;
+    private final Class _type;
 
-    public CollectionDeserializer(Class type)
-    {
+    public CollectionDeserializer(Class type) {
         _type = type;
     }
 
-    public Class getType()
-    {
+    public Class getType() {
         return _type;
     }
 
     public Object readList(AbstractHessianInput in, int length)
-        throws IOException
-    {
+        throws IOException {
         Collection list = createList();
 
         in.addRef(list);
@@ -83,8 +86,7 @@ public class CollectionDeserializer extends AbstractListDeserializer {
     }
 
     public Object readLengthList(AbstractHessianInput in, int length)
-        throws IOException
-    {
+        throws IOException {
         Collection list = createList();
 
         in.addRef(list);
@@ -96,8 +98,7 @@ public class CollectionDeserializer extends AbstractListDeserializer {
     }
 
     private Collection createList()
-        throws IOException
-    {
+        throws IOException {
         Collection list = null;
 
         if (_type == null)
@@ -110,8 +111,7 @@ public class CollectionDeserializer extends AbstractListDeserializer {
         }
 
         if (list != null) {
-        }
-        else if (SortedSet.class.isAssignableFrom(_type))
+        } else if (SortedSet.class.isAssignableFrom(_type))
             list = new TreeSet();
         else if (Set.class.isAssignableFrom(_type))
             list = new HashSet();

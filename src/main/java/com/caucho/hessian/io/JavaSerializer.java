@@ -59,16 +59,14 @@ import java.util.logging.Logger;
 /**
  * Serializing an object for known object types.
  */
-public class JavaSerializer extends AbstractSerializer
-{
-    private static final Logger log = Logger.getLogger(JavaSerializer.class.getName());
+public class JavaSerializer extends AbstractSerializer {
+    private static final Logger     log = Logger.getLogger(JavaSerializer.class.getName());
 
-    private Field[]             _fields;
-    private FieldSerializer[]   _fieldSerializers;
-    private Method              _writeReplace;
+    private final Field[]           _fields;
+    private final FieldSerializer[] _fieldSerializers;
+    private final Method            _writeReplace;
 
-    public JavaSerializer(Class cl)
-    {
+    public JavaSerializer(Class cl) {
         _writeReplace = getWriteReplace(cl);
         if (_writeReplace != null)
             _writeReplace.setAccessible(true);
@@ -111,11 +109,29 @@ public class JavaSerializer extends AbstractSerializer
         }
     }
 
+    private static FieldSerializer getFieldSerializer(Class type) {
+        if (int.class.equals(type) ||
+            byte.class.equals(type) ||
+            short.class.equals(type) ||
+            int.class.equals(type)) {
+            return IntFieldSerializer.SER;
+        } else if (long.class.equals(type)) {
+            return LongFieldSerializer.SER;
+        } else if (double.class.equals(type) ||
+            float.class.equals(type)) {
+            return DoubleFieldSerializer.SER;
+        } else if (boolean.class.equals(type)) {
+            return BooleanFieldSerializer.SER;
+        } else if (String.class.equals(type)) {
+            return StringFieldSerializer.SER;
+        } else
+            return FieldSerializer.SER;
+    }
+
     /**
      * Returns the writeReplace method
      */
-    protected Method getWriteReplace(Class cl)
-    {
+    protected Method getWriteReplace(Class cl) {
         for (; cl != null; cl = cl.getSuperclass()) {
             Method[] methods = cl.getDeclaredMethods();
 
@@ -132,8 +148,7 @@ public class JavaSerializer extends AbstractSerializer
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (out.addRef(obj)) {
             return;
         }
@@ -142,7 +157,7 @@ public class JavaSerializer extends AbstractSerializer
 
         try {
             if (_writeReplace != null) {
-                Object repl = _writeReplace.invoke(obj, new Object[0]);
+                Object repl = _writeReplace.invoke(obj);
 
                 out.removeRef(obj);
 
@@ -160,8 +175,7 @@ public class JavaSerializer extends AbstractSerializer
 
         if (ref < -1) {
             writeObject10(obj, out);
-        }
-        else {
+        } else {
             if (ref == -1) {
                 writeDefinition20(out);
                 out.writeObjectBegin(cl.getName());
@@ -172,8 +186,7 @@ public class JavaSerializer extends AbstractSerializer
     }
 
     private void writeObject10(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         for (int i = 0; i < _fields.length; i++) {
             Field field = _fields[i];
 
@@ -186,8 +199,7 @@ public class JavaSerializer extends AbstractSerializer
     }
 
     private void writeDefinition20(AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         out.writeClassFieldLength(_fields.length);
 
         for (int i = 0; i < _fields.length; i++) {
@@ -198,8 +210,7 @@ public class JavaSerializer extends AbstractSerializer
     }
 
     public void writeInstance(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         for (int i = 0; i < _fields.length; i++) {
             Field field = _fields[i];
 
@@ -207,37 +218,11 @@ public class JavaSerializer extends AbstractSerializer
         }
     }
 
-    private static FieldSerializer getFieldSerializer(Class type)
-    {
-        if (int.class.equals(type) ||
-            byte.class.equals(type) ||
-            short.class.equals(type) ||
-            int.class.equals(type)) {
-            return IntFieldSerializer.SER;
-        }
-        else if (long.class.equals(type)) {
-            return LongFieldSerializer.SER;
-        }
-        else if (double.class.equals(type) ||
-            float.class.equals(type)) {
-            return DoubleFieldSerializer.SER;
-        }
-        else if (boolean.class.equals(type)) {
-            return BooleanFieldSerializer.SER;
-        }
-        else if (String.class.equals(type)) {
-            return StringFieldSerializer.SER;
-        }
-        else
-            return FieldSerializer.SER;
-    }
-
     static class FieldSerializer {
         static final FieldSerializer SER = new FieldSerializer();
 
         void serialize(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException
-        {
+            throws IOException {
             Object value = null;
 
             try {
@@ -254,8 +239,7 @@ public class JavaSerializer extends AbstractSerializer
         static final FieldSerializer SER = new BooleanFieldSerializer();
 
         void serialize(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException
-        {
+            throws IOException {
             boolean value = false;
 
             try {
@@ -272,8 +256,7 @@ public class JavaSerializer extends AbstractSerializer
         static final FieldSerializer SER = new IntFieldSerializer();
 
         void serialize(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException
-        {
+            throws IOException {
             int value = 0;
 
             try {
@@ -290,8 +273,7 @@ public class JavaSerializer extends AbstractSerializer
         static final FieldSerializer SER = new LongFieldSerializer();
 
         void serialize(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException
-        {
+            throws IOException {
             long value = 0;
 
             try {
@@ -308,8 +290,7 @@ public class JavaSerializer extends AbstractSerializer
         static final FieldSerializer SER = new DoubleFieldSerializer();
 
         void serialize(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException
-        {
+            throws IOException {
             double value = 0;
 
             try {
@@ -326,8 +307,7 @@ public class JavaSerializer extends AbstractSerializer
         static final FieldSerializer SER = new StringFieldSerializer();
 
         void serialize(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException
-        {
+            throws IOException {
             String value = null;
 
             try {

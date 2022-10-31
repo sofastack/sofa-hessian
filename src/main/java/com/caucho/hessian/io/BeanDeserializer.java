@@ -58,14 +58,13 @@ import java.util.HashMap;
  * Serializing an object for known object types.
  */
 public class BeanDeserializer extends AbstractMapDeserializer {
-    private Class       _type;
-    private HashMap     _methodMap;
-    private Method      _readResolve;
-    private Constructor _constructor;
-    private Object[]    _constructorArgs;
+    private final Class   _type;
+    private final HashMap _methodMap;
+    private final Method  _readResolve;
+    private Constructor   _constructor;
+    private Object[]      _constructorArgs;
 
-    public BeanDeserializer(Class cl)
-    {
+    public BeanDeserializer(Class cl) {
         _type = cl;
         _methodMap = getMethodMap(cl);
 
@@ -91,14 +90,38 @@ public class BeanDeserializer extends AbstractMapDeserializer {
         }
     }
 
-    public Class getType()
-    {
+    /**
+     * Creates a map of the classes fields.
+     */
+    protected static Object getParamArg(Class cl) {
+        if (!cl.isPrimitive())
+            return null;
+        else if (boolean.class.equals(cl))
+            return Boolean.FALSE;
+        else if (byte.class.equals(cl))
+            return new Byte((byte) 0);
+        else if (short.class.equals(cl))
+            return new Short((short) 0);
+        else if (char.class.equals(cl))
+            return new Character((char) 0);
+        else if (int.class.equals(cl))
+            return new Integer(0);
+        else if (long.class.equals(cl))
+            return new Long(0);
+        else if (float.class.equals(cl))
+            return new Double(0);
+        else if (double.class.equals(cl))
+            return new Double(0);
+        else
+            throw new UnsupportedOperationException();
+    }
+
+    public Class getType() {
         return _type;
     }
 
     public Object readMap(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         try {
             Object obj = instantiate();
 
@@ -111,8 +134,7 @@ public class BeanDeserializer extends AbstractMapDeserializer {
     }
 
     public Object readMap(AbstractHessianInput in, Object obj)
-        throws IOException
-    {
+        throws IOException {
         try {
             int ref = in.addRef(obj);
 
@@ -124,9 +146,8 @@ public class BeanDeserializer extends AbstractMapDeserializer {
                 if (method != null) {
                     Object value = in.readObject(method.getParameterTypes()[0]);
 
-                    method.invoke(obj, new Object[] { value });
-                }
-                else {
+                    method.invoke(obj, value);
+                } else {
                     Object value = in.readObject();
                 }
             }
@@ -146,12 +167,11 @@ public class BeanDeserializer extends AbstractMapDeserializer {
         }
     }
 
-    private Object resolve(Object obj)
-    {
+    private Object resolve(Object obj) {
         // if there's a readResolve method, call it
         try {
             if (_readResolve != null)
-                return _readResolve.invoke(obj, new Object[0]);
+                return _readResolve.invoke(obj);
         } catch (Exception e) {
         }
 
@@ -159,16 +179,14 @@ public class BeanDeserializer extends AbstractMapDeserializer {
     }
 
     protected Object instantiate()
-        throws Exception
-    {
+        throws Exception {
         return _constructor.newInstance(_constructorArgs);
     }
 
     /**
      * Returns the readResolve method
      */
-    protected Method getReadResolve(Class cl)
-    {
+    protected Method getReadResolve(Class cl) {
         for (; cl != null; cl = cl.getSuperclass()) {
             Method[] methods = cl.getDeclaredMethods();
 
@@ -187,8 +205,7 @@ public class BeanDeserializer extends AbstractMapDeserializer {
     /**
      * Creates a map of the classes fields.
      */
-    protected HashMap getMethodMap(Class cl)
-    {
+    protected HashMap getMethodMap(Class cl) {
         HashMap methodMap = new HashMap();
 
         for (; cl != null; cl = cl.getSuperclass()) {
@@ -243,8 +260,7 @@ public class BeanDeserializer extends AbstractMapDeserializer {
     /**
      * Finds any matching setter.
      */
-    private Method findGetter(Method[] methods, String setterName, Class arg)
-    {
+    private Method findGetter(Method[] methods, String setterName, Class arg) {
         String getterName = "get" + setterName.substring(3);
 
         for (int i = 0; i < methods.length; i++) {
@@ -263,32 +279,5 @@ public class BeanDeserializer extends AbstractMapDeserializer {
         }
 
         return null;
-    }
-
-    /**
-     * Creates a map of the classes fields.
-     */
-    protected static Object getParamArg(Class cl)
-    {
-        if (!cl.isPrimitive())
-            return null;
-        else if (boolean.class.equals(cl))
-            return Boolean.FALSE;
-        else if (byte.class.equals(cl))
-            return new Byte((byte) 0);
-        else if (short.class.equals(cl))
-            return new Short((short) 0);
-        else if (char.class.equals(cl))
-            return new Character((char) 0);
-        else if (int.class.equals(cl))
-            return new Integer(0);
-        else if (long.class.equals(cl))
-            return new Long(0);
-        else if (float.class.equals(cl))
-            return new Double(0);
-        else if (double.class.equals(cl))
-            return new Double(0);
-        else
-            throw new UnsupportedOperationException();
     }
 }

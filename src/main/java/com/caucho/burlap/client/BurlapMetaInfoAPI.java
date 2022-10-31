@@ -62,5 +62,5 @@ public interface BurlapMetaInfoAPI {
      * <li>java.primary.key.class - the EJB primary key class
      * </ul>
      */
-    public Object _burlap_getAttribute(String name);
+    Object _burlap_getAttribute(String name);
 }

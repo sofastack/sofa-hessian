@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import java.util.TreeSet;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author xuanbei
@@ -41,7 +41,7 @@ public class GenericObjectCompareToTest {
         person.setName("zhangsan");
         treeSet.add((GenericObject) GenericUtils.convertToGenericObject(person));
 
-        assertTrue(treeSet.size() == 2);
+        assertEquals(2, treeSet.size());
 
         person = new SimplePerson();
         person.setName("lisi");
@@ -51,18 +51,18 @@ public class GenericObjectCompareToTest {
         person.setName("zhangsan");
         treeSet.add((GenericObject) GenericUtils.convertToGenericObject(person));
 
-        assertTrue(treeSet.size() == 3);
+        assertEquals(3, treeSet.size());
 
         person = new SimplePerson();
         person.setName("lisi");
         person.setJob("coder");
         treeSet.add((GenericObject) GenericUtils.convertToGenericObject(person));
-        assertTrue(treeSet.size() == 4);
+        assertEquals(4, treeSet.size());
 
         person = new SimplePerson();
         person.setName("lisi");
         person.setJob("coder");
         treeSet.add((GenericObject) GenericUtils.convertToGenericObject(person));
-        assertTrue(treeSet.size() == 4);
+        assertEquals(4, treeSet.size());
     }
 }

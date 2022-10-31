@@ -57,23 +57,20 @@ public class HessianRuntimeException extends RuntimeException {
     /**
      * Zero-arg constructor.
      */
-    public HessianRuntimeException()
-    {
+    public HessianRuntimeException() {
     }
 
     /**
      * Create the exception.
      */
-    public HessianRuntimeException(String message)
-    {
+    public HessianRuntimeException(String message) {
         super(message);
     }
 
     /**
      * Create the exception.
      */
-    public HessianRuntimeException(String message, Throwable rootCause)
-    {
+    public HessianRuntimeException(String message, Throwable rootCause) {
         super(message);
 
         this.rootCause = rootCause;
@@ -82,8 +79,7 @@ public class HessianRuntimeException extends RuntimeException {
     /**
      * Create the exception.
      */
-    public HessianRuntimeException(Throwable rootCause)
-    {
+    public HessianRuntimeException(Throwable rootCause) {
         super(String.valueOf(rootCause));
 
         this.rootCause = rootCause;
@@ -92,16 +88,14 @@ public class HessianRuntimeException extends RuntimeException {
     /**
      * Returns the underlying cause.
      */
-    public Throwable getRootCause()
-    {
+    public Throwable getRootCause() {
         return this.rootCause;
     }
 
     /**
      * Returns the underlying cause.
      */
-    public Throwable getCause()
-    {
+    public Throwable getCause() {
         return getRootCause();
     }
 }

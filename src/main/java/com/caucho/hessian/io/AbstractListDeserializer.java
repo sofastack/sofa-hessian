@@ -55,8 +55,7 @@ import java.io.IOException;
  */
 public class AbstractListDeserializer extends AbstractDeserializer {
     public Object readObject(AbstractHessianInput in)
-        throws IOException
-    {
+        throws IOException {
         Object obj = in.readObject();
 
         if (obj != null)

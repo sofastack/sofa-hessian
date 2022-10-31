@@ -10,27 +10,27 @@ public interface Test {
     /**
      * Does nothing.
      */
-    public void nullCall();
+    void nullCall();
 
     /**
      * Hello, World.
      */
-    public String hello();
+    String hello();
 
     /**
      * Subtraction
      */
-    public int subtract(int a, int b);
+    int subtract(int a, int b);
 
     /**
      * Echos the object to the server.
      * <pre>
      */
-    public Object echo(Object value);
+    Object echo(Object value);
 
     /**
      * Throws an application fault.
      */
-    public void fault()
+    void fault()
         throws IOException;
 }

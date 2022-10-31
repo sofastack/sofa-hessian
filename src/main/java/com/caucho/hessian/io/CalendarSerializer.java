@@ -55,16 +55,14 @@ import java.util.Calendar;
  * Serializing a calendar.
  */
 public class CalendarSerializer extends AbstractSerializer {
-    private static CalendarSerializer SERIALIZER = new CalendarSerializer();
+    private static final CalendarSerializer SERIALIZER = new CalendarSerializer();
 
-    public static CalendarSerializer create()
-    {
+    public static CalendarSerializer create() {
         return SERIALIZER;
     }
 
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (obj == null)
             out.writeNull();
         else {

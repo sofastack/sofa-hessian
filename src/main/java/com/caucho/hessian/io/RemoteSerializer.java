@@ -57,14 +57,12 @@ import java.io.IOException;
  */
 public class RemoteSerializer extends AbstractSerializer {
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (obj instanceof HessianRemoteObject) {
             HessianRemoteObject remote = (HessianRemoteObject) obj;
 
             out.writeRemote(remote.getHessianType(), remote.getHessianURL());
-        }
-        else if (obj instanceof BurlapRemoteObject) {
+        } else if (obj instanceof BurlapRemoteObject) {
             BurlapRemoteObject remote = (BurlapRemoteObject) obj;
 
             out.writeRemote(remote.getBurlapType(), remote.getBurlapURL());

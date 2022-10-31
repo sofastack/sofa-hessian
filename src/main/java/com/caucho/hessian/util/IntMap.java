@@ -57,7 +57,7 @@ package com.caucho.hessian.util;
  */
 public class IntMap {
     /**
-     * Encoding of a null entry.  Since NULL is equal to Integer.MIN_VALUE, 
+     * Encoding of a null entry.  Since NULL is equal to Integer.MIN_VALUE,
      * it's impossible to distinguish between the two.
      */
     public final static int     NULL    = 0xdeadbeef;  // Integer.MIN_VALUE + 1;
@@ -73,8 +73,7 @@ public class IntMap {
     /**
      * Create a new IntMap.  Default size is 16.
      */
-    public IntMap()
-    {
+    public IntMap() {
         _keys = new Object[256];
         _values = new int[256];
 
@@ -85,8 +84,7 @@ public class IntMap {
     /**
      * Clear the hashmap.
      */
-    public void clear()
-    {
+    public void clear() {
         Object[] keys = _keys;
         int[] values = _values;
 
@@ -101,16 +99,14 @@ public class IntMap {
     /**
      * Returns the current number of entries in the map.
      */
-    public int size()
-    {
+    public int size() {
         return _size;
     }
 
     /**
      * Puts a new value in the property table with the appropriate flags
      */
-    public int get(Object key)
-    {
+    public int get(Object key) {
         int mask = _mask;
         int hash = key.hashCode() % mask & mask;
 
@@ -131,15 +127,14 @@ public class IntMap {
     /**
      * Expands the property table
      */
-    private void resize(int newSize)
-    {
+    private void resize(int newSize) {
         Object[] newKeys = new Object[newSize];
         int[] newValues = new int[newSize];
 
         int mask = _mask = newKeys.length - 1;
 
         Object[] keys = _keys;
-        int values[] = _values;
+        int[] values = _values;
 
         for (int i = keys.length - 1; i >= 0; i--) {
             Object key = keys[i];
@@ -167,8 +162,7 @@ public class IntMap {
     /**
      * Puts a new value in the property table with the appropriate flags
      */
-    public int put(Object key, int value)
-    {
+    public int put(Object key, int value) {
         int mask = _mask;
         int hash = key.hashCode() % mask & mask;
 
@@ -187,13 +181,11 @@ public class IntMap {
                     resize(4 * keys.length);
 
                 return NULL;
-            }
-            else if (key != testKey && !key.equals(testKey)) {
+            } else if (key != testKey && !key.equals(testKey)) {
                 hash = (hash + 1) % mask;
 
                 continue;
-            }
-            else {
+            } else {
                 int old = _values[hash];
 
                 _values[hash] = value;
@@ -206,8 +198,7 @@ public class IntMap {
     /**
      * Deletes the entry.  Returns true if successful.
      */
-    public int remove(Object key)
-    {
+    public int remove(Object key) {
         int mask = _mask;
         int hash = key.hashCode() % mask & mask;
 
@@ -228,8 +219,7 @@ public class IntMap {
         }
     }
 
-    public String toString()
-    {
+    public String toString() {
         StringBuffer sbuf = new StringBuffer();
 
         sbuf.append("IntMap[");

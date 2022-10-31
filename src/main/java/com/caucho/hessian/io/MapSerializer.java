@@ -58,8 +58,7 @@ import java.util.Map;
  */
 public class MapSerializer extends AbstractSerializer {
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (out.addRef(obj))
             return;
 

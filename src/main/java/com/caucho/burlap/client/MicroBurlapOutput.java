@@ -100,6 +100,23 @@ public class MicroBurlapOutput {
     public MicroBurlapOutput() {
     }
 
+    /**
+     * Converts the digit to its base64 encoding.
+     */
+    public static char base64encode(int d) {
+        d &= 0x3f;
+        if (d < 26)
+            return (char) (d + 'A');
+        else if (d < 52)
+            return (char) (d + 'a' - 26);
+        else if (d < 62)
+            return (char) (d + '0' - 52);
+        else if (d == 62)
+            return '+';
+        else
+            return '/';
+    }
+
     public void init(OutputStream os) {
         this.os = os;
     }
@@ -583,23 +600,6 @@ public class MicroBurlapOutput {
             os.write('=');
             os.write('=');
         }
-    }
-
-    /**
-     * Converts the digit to its base64 encoding.
-     */
-    public static char base64encode(int d) {
-        d &= 0x3f;
-        if (d < 26)
-            return (char) (d + 'A');
-        else if (d < 52)
-            return (char) (d + 'a' - 26);
-        else if (d < 62)
-            return (char) (d + '0' - 52);
-        else if (d == 62)
-            return '+';
-        else
-            return '/';
     }
 
     /**

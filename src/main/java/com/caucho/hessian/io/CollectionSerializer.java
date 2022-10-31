@@ -60,24 +60,21 @@ public class CollectionSerializer extends AbstractSerializer {
     private boolean _sendJavaType = true;
 
     /**
-     * Set true if the java type of the collection should be sent.
-     */
-    public void setSendJavaType(boolean sendJavaType)
-    {
-        _sendJavaType = sendJavaType;
-    }
-
-    /**
      * Return true if the java type of the collection should be sent.
      */
-    public boolean getSendJavaType()
-    {
+    public boolean getSendJavaType() {
         return _sendJavaType;
     }
 
+    /**
+     * Set true if the java type of the collection should be sent.
+     */
+    public void setSendJavaType(boolean sendJavaType) {
+        _sendJavaType = sendJavaType;
+    }
+
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (out.addRef(obj))
             return;
 

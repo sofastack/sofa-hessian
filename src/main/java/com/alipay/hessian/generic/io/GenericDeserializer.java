@@ -21,10 +21,17 @@ import com.alipay.hessian.generic.model.GenericCollection;
 import com.alipay.hessian.generic.model.GenericMap;
 import com.alipay.hessian.generic.model.GenericObject;
 import com.alipay.hessian.generic.util.ClassFilter;
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.AbstractDeserializer;
+import com.caucho.hessian.io.AbstractHessianInput;
+import com.caucho.hessian.io.CollectionDeserializer;
+import com.caucho.hessian.io.Deserializer;
+import com.caucho.hessian.io.MapDeserializer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 此类用于反序列化GenericObject/GenericMap/GenericCollection
@@ -37,15 +44,27 @@ import java.util.*;
  */
 public class GenericDeserializer extends AbstractDeserializer {
 
-    private final String              type;
+    public static final char          ARRAY_PREFIX                    = '[';
     private static final Deserializer DEFAULT_MAP_DESERIALIZER        = new MapDeserializer(
                                                                           HashMap.class);
     private static final Deserializer DEFAULT_COLLECTION_DESERIALIZER = new CollectionDeserializer(
                                                                           ArrayList.class);
-    public static final char          ARRAY_PREFIX                    = '[';
+    private final String              type;
 
     public GenericDeserializer(String type) {
         this.type = type;
+    }
+
+    private static GenericObject readGenericObject(AbstractHessianInput in, GenericObject obj,
+                                                   String[] fieldNames) throws IOException {
+        in.addRef(obj);
+
+        for (int i = 0; i < fieldNames.length; i++) {
+            String fieldName = fieldNames[i];
+            Object value = in.readObject();
+            obj.putField(fieldName, value);
+        }
+        return obj;
     }
 
     /**
@@ -81,18 +100,6 @@ public class GenericDeserializer extends AbstractDeserializer {
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
         GenericObject obj = new GenericObject(type);
         return readGenericObject(in, obj, fieldNames);
-    }
-
-    private static GenericObject readGenericObject(AbstractHessianInput in, GenericObject obj,
-                                                   String[] fieldNames) throws IOException {
-        in.addRef(obj);
-
-        for (int i = 0; i < fieldNames.length; i++) {
-            String fieldName = fieldNames[i];
-            Object value = in.readObject();
-            obj.putField(fieldName, value);
-        }
-        return obj;
     }
 
     private Object convertGeneric(int length, List list) {

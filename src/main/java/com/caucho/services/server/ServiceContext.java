@@ -57,29 +57,26 @@ import java.util.HashMap;
  */
 public class ServiceContext {
     private static final ThreadLocal _localContext = new ThreadLocal();
-
+    private final HashMap            _headers      = new HashMap();
     private ServletRequest           _request;
     private String                   _serviceName;
     private String                   _objectId;
     private int                      _count;
-    private HashMap                  _headers      = new HashMap();
 
-    private ServiceContext()
-    {
+    private ServiceContext() {
     }
 
     /**
      * Sets the request object prior to calling the service's method.
      *
-     * @param request the calling servlet request
+     * @param request     the calling servlet request
      * @param serviceName the service identifier
-     * @param objectId the object identifier
+     * @param objectId    the object identifier
      */
     public static void begin(ServletRequest request,
                              String serviceName,
                              String objectId)
-        throws ServletException
-    {
+        throws ServletException {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context == null) {
@@ -96,32 +93,14 @@ public class ServiceContext {
     /**
      * Returns the service request.
      */
-    public static ServiceContext getContext()
-    {
+    public static ServiceContext getContext() {
         return (ServiceContext) _localContext.get();
-    }
-
-    /**
-     * Adds a header.
-     */
-    public void addHeader(String header, Object value)
-    {
-        _headers.put(header, value);
-    }
-
-    /**
-     * Gets a header.
-     */
-    public Object getHeader(String header)
-    {
-        return _headers.get(header);
     }
 
     /**
      * Gets a header from the context.
      */
-    public static Object getContextHeader(String header)
-    {
+    public static Object getContextHeader(String header) {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context != null)
@@ -133,8 +112,7 @@ public class ServiceContext {
     /**
      * Returns the service request.
      */
-    public static ServletRequest getContextRequest()
-    {
+    public static ServletRequest getContextRequest() {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context != null)
@@ -146,8 +124,7 @@ public class ServiceContext {
     /**
      * Returns the service id, corresponding to the pathInfo of the URL.
      */
-    public static String getContextServiceName()
-    {
+    public static String getContextServiceName() {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context != null)
@@ -159,8 +136,7 @@ public class ServiceContext {
     /**
      * Returns the object id, corresponding to the ?id= of the URL.
      */
-    public static String getContextObjectId()
-    {
+    public static String getContextObjectId() {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context != null)
@@ -172,8 +148,7 @@ public class ServiceContext {
     /**
      * Cleanup at the end of a request.
      */
-    public static void end()
-    {
+    public static void end() {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context != null && --context._count == 0) {
@@ -188,8 +163,7 @@ public class ServiceContext {
      *
      * @deprecated
      */
-    public static ServletRequest getRequest()
-    {
+    public static ServletRequest getRequest() {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context != null)
@@ -203,8 +177,7 @@ public class ServiceContext {
      *
      * @deprecated
      */
-    public static String getServiceName()
-    {
+    public static String getServiceName() {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context != null)
@@ -218,13 +191,26 @@ public class ServiceContext {
      *
      * @deprecated
      */
-    public static String getObjectId()
-    {
+    public static String getObjectId() {
         ServiceContext context = (ServiceContext) _localContext.get();
 
         if (context != null)
             return context._objectId;
         else
             return null;
+    }
+
+    /**
+     * Adds a header.
+     */
+    public void addHeader(String header, Object value) {
+        _headers.put(header, value);
+    }
+
+    /**
+     * Gets a header.
+     */
+    public Object getHeader(String header) {
+        return _headers.get(header);
     }
 }

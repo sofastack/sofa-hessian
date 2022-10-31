@@ -217,7 +217,7 @@ public class BasicBean implements Serializable {
     public int hashCode() {
         int result;
         long temp;
-        result = (int) s;
+        result = s;
         result = 31 * result + (ss != null ? ss.hashCode() : 0);
         result = 31 * result + i;
         result = 31 * result + (ii != null ? ii.hashCode() : 0);

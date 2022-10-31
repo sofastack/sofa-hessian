@@ -30,17 +30,47 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class NameBlackListFilter implements ClassNameFilter {
 
-    private static Logger       LOGGER                     = judgeLogger();
-
     //do not change this
-    public static final String  HESSIAN_SERIALIZE_LOG_NAME = "HessianSerializeLog";
-    public static final String  CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.hessian";
+    public static final String                      HESSIAN_SERIALIZE_LOG_NAME = "HessianSerializeLog";
+    public static final String                      CONFIG_LOG_SPACE_NAME      = "com.alipay.sofa.hessian";
+    private static final String                     CLIENT_LOG_LEVEL           = "com.alipay.sofa.hessian.log.level";
+    private static final String                     CLIENT_LOG_LEVEL_DEFAULT   = "INFO";
+    private static final String                     CLIENT_LOG_ENCODE          = "com.alipay.sofa.hessian.log.encode";
+    private static final String                     COMMON_ENCODE              = "file.encoding";
+    private static final String                     CLIENT_LOG_ENCODE_DEFAULT  = "UTF-8";
+    private static final Logger                     LOGGER                     = judgeLogger();
+    /**
+     * 全局黑名单 包名前缀, 优先级高于上者
+     */
+    protected static List<String>                   addBlackPrefixList;
+    /**
+     * 类名是否在黑名单中结果缓存。{className:true/false}
+     */
+    protected static ConcurrentMap<String, Boolean> resultOfInBlackList;
+    /**
+     * 黑名单 包名前缀
+     */
+    protected List<String>                          blackPrefixList;
 
-    private static final String CLIENT_LOG_LEVEL           = "com.alipay.sofa.hessian.log.level";
-    private static final String CLIENT_LOG_LEVEL_DEFAULT   = "INFO";
-    private static final String CLIENT_LOG_ENCODE          = "com.alipay.sofa.hessian.log.encode";
-    private static final String COMMON_ENCODE              = "file.encoding";
-    private static final String CLIENT_LOG_ENCODE_DEFAULT  = "UTF-8";
+    /**
+     * 指定黑名单前缀
+     *
+     * @param blackPrefixList 黑名单前缀
+     */
+    public NameBlackListFilter(List<String> blackPrefixList) {
+        this(blackPrefixList, 8192);
+    }
+
+    /**
+     * 指定黑名单前缀和缓存大小
+     *
+     * @param blackPrefixList 黑名单前缀
+     * @param maxCacheSize    最大缓存大小
+     */
+    public NameBlackListFilter(List<String> blackPrefixList, int maxCacheSize) {
+        this.blackPrefixList = blackPrefixList;
+        buildCache(blackPrefixList, maxCacheSize);
+    }
 
     private static Logger judgeLogger() {
 
@@ -70,41 +100,6 @@ public class NameBlackListFilter implements ClassNameFilter {
     }
 
     /**
-     * 黑名单 包名前缀
-     */
-    protected List<String>                          blackPrefixList;
-
-    /**
-     * 全局黑名单 包名前缀, 优先级高于上者
-     */
-    protected static List<String>                   addBlackPrefixList;
-
-    /**
-     * 类名是否在黑名单中结果缓存。{className:true/false}
-     */
-    protected static ConcurrentMap<String, Boolean> resultOfInBlackList;
-
-    /**
-     * 指定黑名单前缀
-     *
-     * @param blackPrefixList 黑名单前缀
-     */
-    public NameBlackListFilter(List<String> blackPrefixList) {
-        this(blackPrefixList, 8192);
-    }
-
-    /**
-     * 指定黑名单前缀和缓存大小
-     *
-     * @param blackPrefixList 黑名单前缀
-     * @param maxCacheSize    最大缓存大小
-     */
-    public NameBlackListFilter(List<String> blackPrefixList, int maxCacheSize) {
-        this.blackPrefixList = blackPrefixList;
-        buildCache(blackPrefixList, maxCacheSize);
-    }
-
-    /**
      * 初始化缓存
      *
      * @param maxCacheSize 最大缓存
@@ -118,6 +113,13 @@ public class NameBlackListFilter implements ClassNameFilter {
             resultOfInBlackList = builder.build();
         } else {
             resultOfInBlackList = null;
+        }
+    }
+
+    public static void setAddBlackPrefixList(List<String> addBlackPrefixList) {
+        NameBlackListFilter.addBlackPrefixList = addBlackPrefixList;
+        if (resultOfInBlackList != null) {
+            resultOfInBlackList.clear();
         }
     }
 
@@ -185,12 +187,5 @@ public class NameBlackListFilter implements ClassNameFilter {
         }
 
         return Boolean.FALSE;
-    }
-
-    public static void setAddBlackPrefixList(List<String> addBlackPrefixList) {
-        NameBlackListFilter.addBlackPrefixList = addBlackPrefixList;
-        if (resultOfInBlackList != null) {
-            resultOfInBlackList.clear();
-        }
     }
 }

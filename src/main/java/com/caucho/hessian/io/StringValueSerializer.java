@@ -55,8 +55,7 @@ import java.io.IOException;
  */
 public class StringValueSerializer extends AbstractSerializer {
     public void writeObject(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
+        throws IOException {
         if (obj == null)
             out.writeNull();
         else {
@@ -71,8 +70,7 @@ public class StringValueSerializer extends AbstractSerializer {
                 out.writeString("value");
                 out.writeString(obj.toString());
                 out.writeMapEnd();
-            }
-            else {
+            } else {
                 if (ref == -1) {
                     out.writeInt(1);
                     out.writeString("value");
