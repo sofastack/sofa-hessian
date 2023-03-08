@@ -679,7 +679,7 @@ public class SerializerFactory extends AbstractSerializerFactory
     /**
      * check if the environment is java 17 or beyond
      *
-     * @return if on java 8
+     * @return if on java 17
      */
     private static boolean isJava17() {
         String javaVersion = System.getProperty("java.specification.version");
