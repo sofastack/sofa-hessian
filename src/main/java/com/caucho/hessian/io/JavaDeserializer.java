@@ -57,8 +57,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
-
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 /**
  * Serializing an object for known object types.
@@ -314,6 +313,9 @@ public class JavaDeserializer extends AbstractMapDeserializer {
         HashMap fieldMap = new HashMap();
 
         for (; cl != null; cl = cl.getSuperclass()) {
+            if (SerializerFactory.isHigherThanJdk17 && cl == StackTraceElement.class) {
+                continue;
+            }
             Field[] fields = cl.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
                 Field field = fields[i];
