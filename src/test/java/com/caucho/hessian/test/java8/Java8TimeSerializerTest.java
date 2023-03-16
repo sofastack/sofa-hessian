@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.time.ZoneId;
 import java.util.Calendar;
 
 /**
@@ -174,6 +175,27 @@ public class Java8TimeSerializerTest {
             Class c = Class.forName("java.time.ZoneId");
             Method m = c.getDeclaredMethod("of", String.class);
             testJava8Time(m.invoke(null, "America/New_York"));
+        }
+    }
+
+    @Test
+    public void testZoneIdWithWrapper() throws Exception {
+        if (isJava8) {
+            testJava8Time(new ZoneIdWrapper());
+        }
+    }
+
+    @Test
+    public void testLocaleWithWrapper() throws Exception {
+        if (isJava8) {
+            testJava8Time(new LocaleWrapper());
+        }
+    }
+
+    @Test
+    public void testInstantWithWrapper() throws Exception {
+        if (isJava8) {
+            testJava8Time(new InstantWrapper());
         }
     }
 

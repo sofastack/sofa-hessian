@@ -55,7 +55,7 @@ import java.util.GregorianCalendar;
 /**
  * Handle for a calendar object.
  */
-public class CalendarHandle implements java.io.Serializable {
+public class CalendarHandle implements HessianHandle, java.io.Serializable {
     private Class type;
     private Date  date;
 
