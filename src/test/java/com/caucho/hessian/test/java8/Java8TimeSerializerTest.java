@@ -26,8 +26,9 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.time.ZoneId;
 import java.util.Calendar;
 
 /**
@@ -179,27 +180,6 @@ public class Java8TimeSerializerTest {
     }
 
     @Test
-    public void testZoneIdWithWrapper() throws Exception {
-        if (isJava8) {
-            testJava8Time(new ZoneIdWrapper());
-        }
-    }
-
-    @Test
-    public void testLocaleWithWrapper() throws Exception {
-        if (isJava8) {
-            testJava8Time(new LocaleWrapper());
-        }
-    }
-
-    @Test
-    public void testInstantWithWrapper() throws Exception {
-        if (isJava8) {
-            testJava8Time(new InstantWrapper());
-        }
-    }
-
-    @Test
     public void testCalendar() throws IOException {
         Calendar calendar = Calendar.getInstance();
         testJava8Time(calendar);
@@ -219,5 +199,66 @@ public class Java8TimeSerializerTest {
         Object actual = input.readObject();
 
         TestCase.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testZoneIdWithWrapper() throws Exception {
+        if (isJava8) {
+            Class c = Class.forName("java.time.ZoneId");
+            Method m = c.getDeclaredMethod("of", String.class);
+            Object zoneIdInstance = m.invoke(null, "America/New_York");
+
+            testWithAsmClass("java.time.ZoneId", "test/ZoneIdWrapper", zoneIdInstance);
+        }
+    }
+
+    @Test
+    public void testLocaleWithWrapper() throws Exception {
+        if (isJava8) {
+            Constructor constructor = Class.forName("java.util.Locale").getConstructor(String.class, String.class,
+                    String.class);
+
+            testWithAsmClass("java.util.Locale", "test/LocaleWrapper", constructor.newInstance("ja", "JP", "JP"));
+        }
+    }
+
+    @Test
+    public void testInstantWithWrapper() throws Exception {
+        if (isJava8) {
+            Class c = Class.forName("java.time.Instant");
+            Method m = c.getDeclaredMethod("now");
+            Object instantInstance = m.invoke(null);
+
+            testWithAsmClass("java.time.Instant", "test/InstantWrapper", instantInstance);
+        }
+    }
+
+    /**
+     * this test aims at test certain class work as fields
+     * say
+     * public class Wrapper {
+     *     private java.util.Locale locale;
+     * }
+     *
+     *
+     * @param fieldClassName
+     * @param wrapperResourceName
+     * @param fieldObject
+     * @throws Exception
+     */
+    private void testWithAsmClass(String fieldClassName, String wrapperResourceName, Object fieldObject)
+            throws Exception {
+        AsmClassDefineHelper.defineClass(wrapperResourceName, AbstractWrapper.class.getName().replace(".", "/"), "L" + fieldClassName.replace(".", "/") + ";");
+
+        Class clazz = Class.forName(wrapperResourceName.replace("/", "."), true, AsmClassDefineHelper.ASM_CLASS_LOADER);
+        Object wrapper = clazz.newInstance();
+        Field field = clazz.getDeclaredField("_field");
+        field.setAccessible(true);
+        field.set(wrapper, fieldObject);
+
+        ClassLoader old = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(AsmClassDefineHelper.ASM_CLASS_LOADER);
+        testJava8Time(wrapper);
+        Thread.currentThread().setContextClassLoader(old);
     }
 }
