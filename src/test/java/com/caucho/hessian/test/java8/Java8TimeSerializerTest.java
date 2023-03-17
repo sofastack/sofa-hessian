@@ -216,7 +216,7 @@ public class Java8TimeSerializerTest {
     public void testLocaleWithWrapper() throws Exception {
         if (isJava8) {
             Constructor constructor = Class.forName("java.util.Locale").getConstructor(String.class, String.class,
-                    String.class);
+                String.class);
 
             testWithAsmClass("java.util.Locale", "test/LocaleWrapper", constructor.newInstance("ja", "JP", "JP"));
         }
@@ -247,8 +247,9 @@ public class Java8TimeSerializerTest {
      * @throws Exception
      */
     private void testWithAsmClass(String fieldClassName, String wrapperResourceName, Object fieldObject)
-            throws Exception {
-        AsmClassDefineHelper.defineClass(wrapperResourceName, AbstractWrapper.class.getName().replace(".", "/"), "L" + fieldClassName.replace(".", "/") + ";");
+        throws Exception {
+        AsmClassDefineHelper.defineClass(wrapperResourceName, AbstractWrapper.class.getName().replace(".", "/"), "L" +
+            fieldClassName.replace(".", "/") + ";");
 
         Class clazz = Class.forName(wrapperResourceName.replace("/", "."), true, AsmClassDefineHelper.ASM_CLASS_LOADER);
         Object wrapper = clazz.newInstance();
