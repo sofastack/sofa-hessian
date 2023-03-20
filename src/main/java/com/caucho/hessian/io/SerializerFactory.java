@@ -106,9 +106,9 @@ public class SerializerFactory extends AbstractSerializerFactory
 
     protected ClassNameResolver                   classNameResolver          = ClassNameResolverBuilder.buildDefault();
 
-    public final static boolean                   isHigherThanJdk8           = isJava8();
+    public final static boolean                   isHigherThanJdk8           = isEqualOrHigherJdk8();
 
-    public final static boolean                   isHigherThanJdk17          = isJava17();
+    public final static boolean                   isHigherThanJdk17          = isEqualOrHigherJdk17();
 
     private Map<ClassLoader, Map<String, Object>> _typeNotFoundMap           = new ConcurrentHashMap<ClassLoader, Map<String, Object>>(
                                                                                  8);
@@ -671,7 +671,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      *
      * @return if on java 8
      */
-    private static boolean isJava8() {
+    private static boolean isEqualOrHigherJdk8() {
         String javaVersion = System.getProperty("java.specification.version");
         return Double.valueOf(javaVersion) >= 1.8;
     }
@@ -681,7 +681,7 @@ public class SerializerFactory extends AbstractSerializerFactory
      *
      * @return if on java 17
      */
-    private static boolean isJava17() {
+    private static boolean isEqualOrHigherJdk17() {
         String javaVersion = System.getProperty("java.specification.version");
         return Double.valueOf(javaVersion) >= 17;
     }
