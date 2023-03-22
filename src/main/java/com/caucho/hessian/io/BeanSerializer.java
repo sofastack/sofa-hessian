@@ -48,6 +48,8 @@
 
 package com.caucho.hessian.io;
 
+import com.caucho.hessian.util.SerializerHelper;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -62,11 +64,12 @@ public class BeanSerializer extends AbstractSerializer {
     private Method[]              _methods;
     private String[]              _names;
 
-    private Method                _writeReplace;
+    private SerializerHelper      _serializerHelper;
 
     public BeanSerializer(Class cl)
     {
-        _writeReplace = getWriteReplace(cl);
+        _serializerHelper = new SerializerHelper(cl);
+        _serializerHelper.fetchWriteReplace();
 
         ArrayList primitiveMethods = new ArrayList();
         ArrayList compoundMethods = new ArrayList();
@@ -135,26 +138,6 @@ public class BeanSerializer extends AbstractSerializer {
         }
     }
 
-    /**
-     * Returns the writeReplace method
-     */
-    protected Method getWriteReplace(Class cl)
-    {
-        for (; cl != null; cl = cl.getSuperclass()) {
-            Method[] methods = cl.getDeclaredMethods();
-
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-
-                if (method.getName().equals("writeReplace") &&
-                    method.getParameterTypes().length == 0)
-                    return method;
-            }
-        }
-
-        return null;
-    }
-
     public void writeObject(Object obj, AbstractHessianOutput out)
         throws IOException
     {
@@ -164,8 +147,8 @@ public class BeanSerializer extends AbstractSerializer {
         Class cl = obj.getClass();
 
         try {
-            if (_writeReplace != null) {
-                Object repl = _writeReplace.invoke(obj, new Object[0]);
+            if (_serializerHelper.hasWriteReplace()) {
+                Object repl = _serializerHelper.writeReplace(obj, new Object[0]);
 
                 out.removeRef(obj);
 
@@ -176,6 +159,7 @@ public class BeanSerializer extends AbstractSerializer {
                 return;
             }
         } catch (Exception e) {
+        } catch (Throwable throwable) {
         }
 
         int ref = out.writeObjectBegin(cl.getName());

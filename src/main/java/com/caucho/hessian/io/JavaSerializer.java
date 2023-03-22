@@ -48,6 +48,8 @@
 
 package com.caucho.hessian.io;
 
+import com.caucho.hessian.util.SerializerHelper;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -65,13 +67,13 @@ public class JavaSerializer extends AbstractSerializer
 
     private Field[]             _fields;
     private FieldSerializer[]   _fieldSerializers;
-    private Method              _writeReplace;
+    private SerializerHelper    _serializerHelper;
 
     public JavaSerializer(Class cl)
     {
-        _writeReplace = getWriteReplace(cl);
-        if (_writeReplace != null)
-            _writeReplace.setAccessible(true);
+        _serializerHelper = new SerializerHelper(cl);
+        _serializerHelper.fetchWriteReplace();
+
 
         ArrayList primitiveFields = new ArrayList();
         ArrayList compoundFields = new ArrayList();
@@ -111,26 +113,6 @@ public class JavaSerializer extends AbstractSerializer
         }
     }
 
-    /**
-     * Returns the writeReplace method
-     */
-    protected Method getWriteReplace(Class cl)
-    {
-        for (; cl != null; cl = cl.getSuperclass()) {
-            Method[] methods = cl.getDeclaredMethods();
-
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-
-                if (method.getName().equals("writeReplace") &&
-                    method.getParameterTypes().length == 0)
-                    return method;
-            }
-        }
-
-        return null;
-    }
-
     public void writeObject(Object obj, AbstractHessianOutput out)
         throws IOException
     {
@@ -141,8 +123,8 @@ public class JavaSerializer extends AbstractSerializer
         Class cl = obj.getClass();
 
         try {
-            if (_writeReplace != null) {
-                Object repl = _writeReplace.invoke(obj, new Object[0]);
+            if (_serializerHelper.hasWriteReplace()) {
+                Object repl = _serializerHelper.writeReplace(obj, new Object[0]);
 
                 out.removeRef(obj);
 
@@ -154,6 +136,8 @@ public class JavaSerializer extends AbstractSerializer
             }
         } catch (Exception e) {
             log.log(Level.FINE, e.toString(), e);
+        } catch (Throwable t) {
+            log.log(Level.FINE, t.toString(), t);
         }
 
         int ref = out.writeObjectBegin(cl.getName());

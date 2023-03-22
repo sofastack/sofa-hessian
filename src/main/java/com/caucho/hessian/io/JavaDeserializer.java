@@ -48,6 +48,7 @@
 
 package com.caucho.hessian.io;
 
+import com.caucho.hessian.util.SerializerHelper;
 import sun.misc.Unsafe;
 
 import java.io.IOException;
@@ -68,9 +69,9 @@ public class JavaDeserializer extends AbstractMapDeserializer {
 
     private Class               _type;
     private HashMap             _fieldMap;
-    private Method              _readResolve;
     private Constructor         _constructor;
     private Object[]            _constructorArgs;
+    private SerializerHelper    _serializerHelper;
 
     private static Unsafe       _unsafe;
     static {
@@ -96,11 +97,8 @@ public class JavaDeserializer extends AbstractMapDeserializer {
         _type = cl;
         _fieldMap = getFieldMap(cl);
 
-        _readResolve = getReadResolve(cl);
-
-        if (_readResolve != null) {
-            _readResolve.setAccessible(true);
-        }
+        _serializerHelper = new SerializerHelper(cl);
+        _serializerHelper.fetchReadResolve();
 
         Constructor[] constructors = cl.getDeclaredConstructors();
         long bestCost = Long.MAX_VALUE;
@@ -184,26 +182,6 @@ public class JavaDeserializer extends AbstractMapDeserializer {
         }
     }
 
-    /**
-     * Returns the readResolve method
-     */
-    protected Method getReadResolve(Class cl)
-    {
-        for (; cl != null; cl = cl.getSuperclass()) {
-            Method[] methods = cl.getDeclaredMethods();
-
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-
-                if (method.getName().equals("readResolve") &&
-                    method.getParameterTypes().length == 0)
-                    return method;
-            }
-        }
-
-        return null;
-    }
-
     public Object readMap(AbstractHessianInput in, Object obj)
         throws IOException
     {
@@ -273,11 +251,15 @@ public class JavaDeserializer extends AbstractMapDeserializer {
     {
         // if there's a readResolve method, call it
         try {
-            if (_readResolve != null)
-                return _readResolve.invoke(obj, new Object[0]);
+            if (_serializerHelper.hasReadResolve())
+                return _serializerHelper.readResolve(obj, new Object[0]);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() != null)
                 throw e;
+        } catch (Exception e) {
+            throw e;
+        } catch (Throwable t) {
+            log.log(Level.SEVERE, "read resolve call failed", t);
         }
 
         return obj;

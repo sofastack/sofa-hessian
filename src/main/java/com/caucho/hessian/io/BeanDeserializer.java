@@ -48,6 +48,8 @@
 
 package com.caucho.hessian.io;
 
+import com.caucho.hessian.util.SerializerHelper;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -60,16 +62,16 @@ import java.util.HashMap;
 public class BeanDeserializer extends AbstractMapDeserializer {
     private Class       _type;
     private HashMap     _methodMap;
-    private Method      _readResolve;
     private Constructor _constructor;
     private Object[]    _constructorArgs;
+    private SerializerHelper _serializerHelper;
 
     public BeanDeserializer(Class cl)
     {
         _type = cl;
         _methodMap = getMethodMap(cl);
-
-        _readResolve = getReadResolve(cl);
+        _serializerHelper = new SerializerHelper(cl);
+        _serializerHelper.fetchReadResolve();
 
         Constructor[] constructors = cl.getConstructors();
         int bestLength = Integer.MAX_VALUE;
@@ -150,9 +152,10 @@ public class BeanDeserializer extends AbstractMapDeserializer {
     {
         // if there's a readResolve method, call it
         try {
-            if (_readResolve != null)
-                return _readResolve.invoke(obj, new Object[0]);
+            if (_serializerHelper.hasReadResolve())
+                return _serializerHelper.readResolve(obj, new Object[0]);
         } catch (Exception e) {
+        } catch (Throwable t) {
         }
 
         return obj;
@@ -162,26 +165,6 @@ public class BeanDeserializer extends AbstractMapDeserializer {
         throws Exception
     {
         return _constructor.newInstance(_constructorArgs);
-    }
-
-    /**
-     * Returns the readResolve method
-     */
-    protected Method getReadResolve(Class cl)
-    {
-        for (; cl != null; cl = cl.getSuperclass()) {
-            Method[] methods = cl.getDeclaredMethods();
-
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-
-                if (method.getName().equals("readResolve") &&
-                    method.getParameterTypes().length == 0)
-                    return method;
-            }
-        }
-
-        return null;
     }
 
     /**
