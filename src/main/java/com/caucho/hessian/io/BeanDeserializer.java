@@ -60,10 +60,10 @@ import java.util.HashMap;
  * Serializing an object for known object types.
  */
 public class BeanDeserializer extends AbstractMapDeserializer {
-    private Class       _type;
-    private HashMap     _methodMap;
-    private Constructor _constructor;
-    private Object[]    _constructorArgs;
+    private Class            _type;
+    private HashMap          _methodMap;
+    private Constructor      _constructor;
+    private Object[]         _constructorArgs;
     private SerializerHelper _serializerHelper;
 
     public BeanDeserializer(Class cl)

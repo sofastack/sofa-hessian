@@ -74,7 +74,6 @@ public class JavaSerializer extends AbstractSerializer
         _serializerHelper = new SerializerHelper(cl);
         _serializerHelper.fetchWriteReplace();
 
-
         ArrayList primitiveFields = new ArrayList();
         ArrayList compoundFields = new ArrayList();
 

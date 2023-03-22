@@ -20,9 +20,9 @@ public class SerializerHelper {
 
     private final Class<?> _type;
 
-    private Object _writeReplace;
+    private Object         _writeReplace;
 
-    private Object _readResolve;
+    private Object         _readResolve;
 
     public void fetchWriteReplace() {
         this._writeReplace = ReflectionUtil.getWriteReplace(_type);
@@ -57,6 +57,5 @@ public class SerializerHelper {
         }
         return null;
     }
-
 
 }

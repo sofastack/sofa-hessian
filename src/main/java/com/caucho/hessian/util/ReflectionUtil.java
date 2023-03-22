@@ -21,7 +21,7 @@ public class ReflectionUtil {
         String version = System.getProperty("java.version");
         if (version != null && version.startsWith("17")) {
             privileged = new Java17();
-        } else  {
+        } else {
             privileged = new Default();
         }
     }
@@ -33,7 +33,6 @@ public class ReflectionUtil {
     public static Object getReadResolve(Class<?> clazz) {
         return privileged.getReadResolve(clazz);
     }
-
 
     private static abstract class Helper {
         abstract Object getWriteReplace(Class<?> clazz);
@@ -59,7 +58,7 @@ public class ReflectionUtil {
     private static class Default extends Helper {
         @Override
         Method getWriteReplace(Class<?> clazz) {
-            Method m = recursivelyGetMethod(clazz,"writeReplace");
+            Method m = recursivelyGetMethod(clazz, "writeReplace");
             if (m != null) {
                 m.setAccessible(true);
             }
@@ -68,7 +67,7 @@ public class ReflectionUtil {
 
         @Override
         Method getReadResolve(Class<?> clazz) {
-            Method m = recursivelyGetMethod(clazz,"readResolve");
+            Method m = recursivelyGetMethod(clazz, "readResolve");
             if (m != null) {
                 m.setAccessible(true);
             }
