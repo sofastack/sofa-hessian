@@ -48,6 +48,7 @@
 
 package com.caucho.hessian.io;
 
+import com.caucho.hessian.util.ReflectionUtil;
 import sun.misc.Unsafe;
 
 import java.io.IOException;
@@ -99,7 +100,7 @@ public class JavaDeserializer extends AbstractMapDeserializer {
         _readResolve = getReadResolve(cl);
 
         if (_readResolve != null) {
-            _readResolve.setAccessible(true);
+            ReflectionUtil.setAccessible(_readResolve);
         }
 
         Constructor[] constructors = cl.getDeclaredConstructors();
@@ -138,7 +139,7 @@ public class JavaDeserializer extends AbstractMapDeserializer {
         }
 
         if (_constructor != null) {
-            _constructor.setAccessible(true);
+            ReflectionUtil.setAccessible(_constructor);
             Class[] params = _constructor.getParameterTypes();
             _constructorArgs = new Object[params.length];
             for (int i = 0; i < params.length; i++) {
@@ -325,11 +326,7 @@ public class JavaDeserializer extends AbstractMapDeserializer {
                     continue;
 
                 // XXX: could parameterize the handler to only deal with public
-                try {
-                    field.setAccessible(true);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
+                ReflectionUtil.setAccessible(field);
 
                 Class type = field.getType();
                 FieldDeserializer deser;
