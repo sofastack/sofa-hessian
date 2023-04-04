@@ -51,6 +51,8 @@ package com.caucho.hessian.io;
 import com.alipay.hessian.ClassNameResolver;
 import com.alipay.hessian.ClassNameResolverBuilder;
 import com.caucho.burlap.io.BurlapRemoteObject;
+import com.caucho.hessian.io.atomic.AtomicDeserializer;
+import com.caucho.hessian.io.atomic.AtomicSerializer;
 import com.caucho.hessian.io.java8.DurationHandle;
 import com.caucho.hessian.io.java8.InstantHandle;
 import com.caucho.hessian.io.java8.Java8TimeSerializer;
@@ -72,6 +74,13 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongArray;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -429,6 +438,7 @@ public class SerializerFactory extends AbstractSerializerFactory
 
         if (cl == null
             || cl == reader.getType()
+            || HessianHandle.class.isAssignableFrom(reader.getType())
             || cl.isAssignableFrom(reader.getType())) {
             return reader;
         }
@@ -658,6 +668,28 @@ public class SerializerFactory extends AbstractSerializerFactory
                 _staticSerializerMap.put(Class.forName("java.time.ZonedDateTime"),
                     Java8TimeSerializer.create(ZonedDateTimeHandle.class));
             }
+        } catch (Throwable t) {
+            log.warning(String.valueOf(t.getCause()));
+        }
+
+        try {
+            AtomicSerializer atomicSerializer = new AtomicSerializer();
+            _staticSerializerMap.put(AtomicInteger.class, atomicSerializer);
+            _staticSerializerMap.put(AtomicLong.class, atomicSerializer);
+            _staticSerializerMap.put(AtomicBoolean.class, atomicSerializer);
+            _staticSerializerMap.put(AtomicReference.class, atomicSerializer);
+            _staticSerializerMap.put(AtomicLongArray.class, atomicSerializer);
+            _staticSerializerMap.put(AtomicIntegerArray.class, atomicSerializer);
+            _staticSerializerMap.put(AtomicReferenceArray.class, atomicSerializer);
+
+            _staticDeserializerMap.put(AtomicInteger.class, new AtomicDeserializer(AtomicInteger.class));
+            _staticDeserializerMap.put(AtomicLong.class, new AtomicDeserializer(AtomicLong.class));
+            _staticDeserializerMap.put(AtomicBoolean.class, new AtomicDeserializer(AtomicBoolean.class));
+            _staticDeserializerMap.put(AtomicReference.class, new AtomicDeserializer(AtomicReference.class));
+            _staticDeserializerMap.put(AtomicLongArray.class, new AtomicDeserializer(AtomicLongArray.class));
+            _staticDeserializerMap.put(AtomicIntegerArray.class, new AtomicDeserializer(AtomicIntegerArray.class));
+            _staticDeserializerMap.put(AtomicReferenceArray.class, new AtomicDeserializer(AtomicReferenceArray.class));
+
         } catch (Throwable t) {
             log.warning(String.valueOf(t.getCause()));
         }
