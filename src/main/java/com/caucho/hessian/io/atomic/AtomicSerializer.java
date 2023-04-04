@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  *
@@ -30,39 +31,94 @@ public class AtomicSerializer extends AbstractSerializer {
 
         Object value;
         if (obj instanceof AtomicBoolean) {
-            value = ((AtomicBoolean) obj).get();
+            doWrite(obj, "value", out);
         }
         else if (obj instanceof AtomicInteger) {
-            value = ((AtomicInteger) obj).get();
+            doWrite(obj, "value", out);
         }
         else if (obj instanceof AtomicLong) {
-            value = ((AtomicLong) obj).get();
+            doWrite(obj, "value", out);
         }
         else if (obj instanceof AtomicReference) {
-            value = ((AtomicReference<?>) obj).get();
+            doWrite(obj, "value", out);
         }
         else if (obj instanceof AtomicIntegerArray) {
-            AtomicIntegerArray tmp = (AtomicIntegerArray) obj;
-            int len = tmp.length();
-            int[] ints = new int[len];
-            for (int i = 0; i < len; i++) {
-                ints[i] = tmp.get(i);
-            }
-            value = ints;
+            doWrite(obj, "array", out);
         }
         else if (obj instanceof AtomicLongArray) {
-            AtomicLongArray tmp = (AtomicLongArray) obj;
-            int len = tmp.length();
-            long[] ints = new long[len];
-            for (int i = 0; i < len; i++) {
-                ints[i] = tmp.get(i);
-            }
-            value = ints;
-        } else {
+            doWrite(obj, "array", out);
+        }
+        else if (obj instanceof AtomicReferenceArray) {
+            doWrite(obj, "array", out);
+        }
+        else {
             throw new UnsupportedOperationException(String.valueOf(this));
         }
+    }
 
-        out.writeObject(new AtomicHandle(obj.getClass(), value));
+    protected void doWrite(Object obj, String fieldName, AbstractHessianOutput out) throws IOException {
+        if (out.addRef(obj)) {
+            return;
+        }
+        Class cl = obj.getClass();
+        int ref = out.writeObjectBegin(cl.getName()); // atomicinteger.class
+        if (ref < -1) {
+            //                writeObject10(obj, out);
+            out.writeString(fieldName/*field name*/);
+            // field do serialize
+            writeFieldValue(obj, out);
+        }
+        else {
+            if (ref == -1) {
+                out.writeClassFieldLength(1);
+                out.writeString(fieldName/*field name*/);
+                out.writeObjectBegin(cl.getName());
+            }
+            // field foreach do serialize
+            writeFieldValue(obj, out);
+        }
+    }
+
+    private void writeFieldValue(Object obj, AbstractHessianOutput out) throws IOException {
+        if (obj instanceof AtomicInteger) {
+            out.writeInt(((AtomicInteger) obj).get());
+        }
+        else if (obj instanceof AtomicLong) {
+            out.writeLong(((AtomicLong) obj).get());
+        }
+        else if (obj instanceof AtomicBoolean) {
+            out.writeInt(((AtomicBoolean) obj).get() ? 1 : 0);
+        }
+        else if (obj instanceof AtomicReference) {
+            out.writeObject(((AtomicReference) obj).get());
+        }
+        else if (obj instanceof AtomicIntegerArray) {
+            AtomicIntegerArray array = (AtomicIntegerArray) obj;
+            int len = array.length();
+            int[] tmp = new int[len];
+            for (int i = 0; i < len; i++) {
+                tmp[i] = array.get(i);
+            }
+            out.writeObject(tmp);
+        }
+        else if (obj instanceof AtomicLongArray) {
+            AtomicLongArray array = (AtomicLongArray) obj;
+            int len = array.length();
+            long[] tmp = new long[len];
+            for (int i = 0; i < len; i++) {
+                tmp[i] = array.get(i);
+            }
+            out.writeObject(tmp);
+        }
+        else if (obj instanceof AtomicReferenceArray) {
+            AtomicReferenceArray array = (AtomicReferenceArray) obj;
+            int len = array.length();
+            Object[] tmp = new Object[len];
+            for (int i = 0; i < len; i++) {
+                tmp[i] = array.get(i);
+            }
+            out.writeObject(tmp);
+        }
     }
 
 }

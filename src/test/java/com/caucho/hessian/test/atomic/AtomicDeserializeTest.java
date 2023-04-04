@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.caucho.hessian.test.java8;
+package com.caucho.hessian.test.atomic;
 
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
@@ -32,13 +32,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  *
  * @author junyuan
- * @version AtomicTest.java, v 0.1 2023年03月29日 18:16 junyuan Exp $
+ * @version AtomicDeserializeTest.java, v 0.1 2023年03月29日 18:16 junyuan Exp $
  */
-public class AtomicTest {
+public class AtomicDeserializeTest {
     private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
 
@@ -58,6 +60,7 @@ public class AtomicTest {
         atomicWrapper.setaInteger(new AtomicInteger(17));
         atomicWrapper.setaBoolean(new AtomicBoolean(true));
         atomicWrapper.setaLong(new AtomicLong(2147483649L));
+        atomicWrapper.setaReference(new AtomicReference(new Integer(1)));
 
         atomicWrapper.setaIntegerArray(new AtomicIntegerArray(2));
         atomicWrapper.getaIntegerArray().set(0, 0);
@@ -67,6 +70,10 @@ public class AtomicTest {
         atomicWrapper.getaLongArray().set(0, 0L);
         atomicWrapper.getaLongArray().set(1, 1L);
 
+        atomicWrapper.setaReferenceArray(new AtomicReferenceArray(2));
+        atomicWrapper.getaReferenceArray().set(0, new Integer(1));
+        atomicWrapper.getaReferenceArray().set(1, new Integer(2));
+
         // work
         Object actual = doEncodeNDecode(atomicWrapper);
 
@@ -75,6 +82,7 @@ public class AtomicTest {
         Assert.assertEquals(atomicWrapper.getaInteger().get(), ((AtomicWrapper) actual).getaInteger().get());
         Assert.assertEquals(atomicWrapper.getaBoolean().get(), ((AtomicWrapper) actual).getaBoolean().get());
         Assert.assertEquals(atomicWrapper.getaLong().get(), ((AtomicWrapper) actual).getaLong().get());
+        Assert.assertEquals(atomicWrapper.getaReference().get(), ((AtomicWrapper) actual).getaReference().get());
 
         Assert
             .assertEquals(atomicWrapper.getaIntegerArray().get(0), ((AtomicWrapper) actual).getaIntegerArray().get(0));
@@ -83,6 +91,11 @@ public class AtomicTest {
 
         Assert.assertEquals(atomicWrapper.getaLongArray().get(0), ((AtomicWrapper) actual).getaLongArray().get(0));
         Assert.assertEquals(atomicWrapper.getaLongArray().get(1), ((AtomicWrapper) actual).getaLongArray().get(1));
+
+        Assert.assertEquals(atomicWrapper.getaReferenceArray().get(0), ((AtomicWrapper) actual).getaReferenceArray()
+            .get(0));
+        Assert.assertEquals(atomicWrapper.getaReferenceArray().get(1), ((AtomicWrapper) actual).getaReferenceArray()
+            .get(1));
     }
 
     @Test
@@ -93,6 +106,36 @@ public class AtomicTest {
 
         Assert.assertTrue(actual instanceof AtomicInteger);
         TestCase.assertEquals(i.get(), ((AtomicInteger) actual).get());
+    }
+
+    @Test
+    public void test_atomic_unwrappedLong() throws IOException {
+        os.reset();
+        AtomicLong i = new AtomicLong(1L);
+        Object actual = doEncodeNDecode(i);
+
+        Assert.assertTrue(actual instanceof AtomicLong);
+        TestCase.assertEquals(i.get(), ((AtomicLong) actual).get());
+    }
+
+    @Test
+    public void test_atomic_unwrappedBoolean() throws IOException {
+        os.reset();
+        AtomicBoolean i = new AtomicBoolean(true);
+        Object actual = doEncodeNDecode(i);
+
+        Assert.assertTrue(actual instanceof AtomicBoolean);
+        TestCase.assertEquals(i.get(), ((AtomicBoolean) actual).get());
+    }
+
+    @Test
+    public void test_atomic_unwrappedReference() throws IOException {
+        os.reset();
+        AtomicReference i = new AtomicReference(new Integer(1));
+        Object actual = doEncodeNDecode(i);
+
+        Assert.assertTrue(actual instanceof AtomicReference);
+        TestCase.assertEquals(i.get(), ((AtomicReference) actual).get());
     }
 
     @Test
@@ -107,6 +150,34 @@ public class AtomicTest {
         Assert.assertTrue(actual instanceof AtomicIntegerArray);
         Assert.assertEquals(i.get(0), ((AtomicIntegerArray) actual).get(0));
         Assert.assertEquals(i.get(1), ((AtomicIntegerArray) actual).get(1));
+    }
+
+    @Test
+    public void test_atomic_unwrappedLongArray() throws IOException {
+        os.reset();
+        AtomicLongArray i = new AtomicLongArray(2);
+        i.set(0, 0L);
+        i.set(1, 1L);
+
+        Object actual = doEncodeNDecode(i);
+
+        Assert.assertTrue(actual instanceof AtomicLongArray);
+        Assert.assertEquals(i.get(0), ((AtomicLongArray) actual).get(0));
+        Assert.assertEquals(i.get(1), ((AtomicLongArray) actual).get(1));
+    }
+
+    @Test
+    public void test_atomic_unwrappedReferenceArray() throws IOException {
+        os.reset();
+        AtomicReferenceArray i = new AtomicReferenceArray(2);
+        i.set(0, new Integer(0));
+        i.set(1, new Integer(1));
+
+        Object actual = doEncodeNDecode(i);
+
+        Assert.assertTrue(actual instanceof AtomicReferenceArray);
+        Assert.assertEquals(i.get(0), ((AtomicReferenceArray) actual).get(0));
+        Assert.assertEquals(i.get(1), ((AtomicReferenceArray) actual).get(1));
     }
 
     protected Object doEncodeNDecode(Object origin) throws IOException {
