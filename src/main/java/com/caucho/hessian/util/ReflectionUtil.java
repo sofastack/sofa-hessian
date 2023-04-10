@@ -22,7 +22,8 @@ public class ReflectionUtil {
         try {
             m.setAccessible(true);
         } catch (Throwable t) {
-            log.log(Level.WARNING, t.toString(), t);
+            log.log(Level.INFO,
+                "failed when setting accessible on method [" + m.toString() + "], error message: " + t.getMessage(), t);
             return false;
         }
         return true;
@@ -32,7 +33,8 @@ public class ReflectionUtil {
         try {
             c.setAccessible(true);
         } catch (Throwable t) {
-            log.log(Level.WARNING, t.toString(), t);
+            log.log(Level.INFO, "failed when setting accessible on constructor [" + c.toString() +
+                "], error message: " + t.getMessage(), t);
             return false;
         }
         return true;
@@ -42,7 +44,8 @@ public class ReflectionUtil {
         try {
             f.setAccessible(true);
         } catch (Throwable t) {
-            log.log(Level.WARNING, t.toString(), t);
+            log.log(Level.INFO,
+                "failed when setting accessible on field [" + f.toString() + "], error message: " + t.getMessage(), t);
             return false;
         }
         return true;
