@@ -619,7 +619,7 @@ public class SerializerFactory extends AbstractSerializerFactory
 
         try {
             Class stackTrace = Class.forName("java.lang.StackTraceElement");
-
+            _staticSerializerMap.put(stackTrace, new StackTraceElementSerializer());
             _staticDeserializerMap.put(stackTrace, new StackTraceElementDeserializer());
         } catch (Throwable e) {
         }
