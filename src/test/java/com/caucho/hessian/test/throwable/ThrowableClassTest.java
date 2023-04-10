@@ -56,6 +56,14 @@ public class ThrowableClassTest {
         w.setT(t);
 
         Object result = doEncodeNDecode(w);
+
+        Assert.assertTrue(result instanceof ExceptionWrapper);
+
+        StackTraceElement[] origin = w.getT().getStackTrace();
+        StackTraceElement[] target = ((ExceptionWrapper) result).getT().getStackTrace();
+
+        Assert.assertEquals(origin.length, target.length);
+        Assert.assertArrayEquals(origin, target);
     }
 
     protected Object doEncodeNDecode(Object origin) throws IOException {

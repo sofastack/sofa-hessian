@@ -48,17 +48,98 @@
 
 package com.caucho.hessian.io;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Deserializing a JDK 1.4 StackTraceElement
  * @author pangu
  */
-public class StackTraceElementDeserializer extends JavaDeserializer {
+public class StackTraceElementDeserializer extends AbstractDeserializer {
+    protected static final Logger          log     = Logger.getLogger(StackTraceElementSerializer.class.getName());
+
+    private Map<String, Field>             _fields = new HashMap<String, Field>();
+
+    private Constructor<StackTraceElement> _constructor;
+
+    @Override
+    public Class getType() {
+        return StackTraceElement.class;
+    }
+
     public StackTraceElementDeserializer() {
-        super(StackTraceElement.class);
+        Class<StackTraceElement> clazz = StackTraceElement.class;
+        Field[] originFields = clazz.getDeclaredFields();
+        for (int i = 0; i < originFields.length; i++) {
+            Field field = originFields[i];
+
+            if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+            if ("declaringClassObject".equals(field.getName()) || "format".equals(field.getName())) {
+                continue;
+            }
+            _fields.put(field.getName(), field);
+        }
+
+        try {
+            if (_fields.size() == 7) {
+                // available since java 9
+                _constructor = clazz.getDeclaredConstructor(String.class, String.class, String.class, String.class,
+                    String.class, String.class, int.class);
+            } else {
+                // default, only read class, method, file and line
+                _constructor = clazz.getDeclaredConstructor(String.class, String.class, String.class, int.class);
+            }
+        } catch (Exception e) {
+            log.log(Level.FINE, e.toString(), e);
+        }
+
     }
 
     @Override
-    protected Object instantiate() throws Exception {
-        return new StackTraceElement("", "", "", 0);
+    public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
+        try {
+            int ref = in.addRef(_constructor.newInstance("", "", "", 0));
+            Map<String, Object> fieldValueMap = new HashMap<String, Object>();
+
+            for (int i = 0; i < fieldNames.length; i++) {
+                String name = fieldNames[i];
+                Field field = _fields.get(name);
+
+                if (String.class.equals(field.getType())) {
+                    fieldValueMap.put(name, in.readString());
+                } else if (int.class.equals(field.getType())) {
+                    fieldValueMap.put(name, in.readInt());
+                }
+            }
+
+            StackTraceElement obj;
+            if (fieldNames.length == 7) {
+                obj = _constructor.newInstance(
+                    fieldValueMap.get("classLoaderName"), fieldValueMap.get("moduleName"),
+                    fieldValueMap.get("moduleVersion"), fieldValueMap.get("declaringClass"),
+                    fieldValueMap.get("methodName"), fieldValueMap.get("fileName"),
+                    fieldValueMap.get("lineNumber"));
+            } else {
+                obj = _constructor.newInstance(
+                    fieldValueMap.get("declaringClass"), fieldValueMap.get("methodName"),
+                    fieldValueMap.get("fileName"), fieldValueMap.get("lineNumber"));
+            }
+
+            in.setRef(ref, obj);
+
+            return obj;
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOExceptionWrapper(StackTraceElement.class.getName() + ":" + e, e);
+        }
     }
 }
