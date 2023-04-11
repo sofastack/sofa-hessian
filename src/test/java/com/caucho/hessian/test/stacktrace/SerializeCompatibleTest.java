@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.caucho.hessian.test.throwable;
+package com.caucho.hessian.test.stacktrace;
 
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
@@ -36,19 +36,14 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SerializeCompatibleTest {
 
-    private static SerializerFactory     originFactory;
     private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
 
     Throwable                            t = null;
-    {
-        t = new EnumConstantNotPresentException(MeaninglessEnum.class, "CIG");
-    }
 
     @BeforeClass
     public static void setUp() {
         factory = new SerializerFactory();
-        originFactory = new SerializeFactoryWithoutThrowable();
 
         os = new ByteArrayOutputStream();
     }
@@ -66,22 +61,35 @@ public class SerializeCompatibleTest {
         }
     }
 
+    {
+        try {
+            double x = 1 / 0;
+        } catch (Exception e) {
+            t = e;
+        }
+    }
+
     /**
      * result byte should be in same with former version so as to behaving compatible
      * @throws IOException
      */
     @Test
-    public void test_EnumConstantNotPresentExceptionSerialize() throws IOException {
-        byte[] caseOrigin = serializeEnumConstantNotPresentException(originFactory);
-        byte[] caseNew = serializeEnumConstantNotPresentException(factory);
-        Assert.assertTrue(bytesEquals(caseOrigin, caseNew));
-    }
+    public void test_serialize() throws IOException, NoSuchFieldException, IllegalAccessException {
+        byte[] wrappedCaseStackTrace = serializeExceptionWrapper();
+        byte[] unwrappedStackTrace = serializeStackTraceElement();
 
-    @Test
-    public void test_EnumConstantNotPresentExceptionWrapperSerialize() throws IOException {
-        byte[] wrapperCaseOrigin = serializeEnumConstantNotPresentExceptionWrapper(originFactory);
-        byte[] wrapperCaseNew = serializeEnumConstantNotPresentExceptionWrapper(factory);
-        Assert.assertTrue(bytesEquals(wrapperCaseOrigin, wrapperCaseNew));
+        // use origin java serialize then
+        Field field = SerializerFactory.class.getDeclaredField("_staticSerializerMap");
+        field.setAccessible(true);
+        ConcurrentMap map = (ConcurrentMap) field.get(SerializerFactory.class);
+        map.remove(StackTraceElement.class);
+
+        byte[] wrappedStackTraceCaseJava = serializeExceptionWrapper();
+        byte[] unwrappedStackTraceJava = serializeStackTraceElement();
+
+        Assert.assertTrue(bytesEquals(wrappedCaseStackTrace, wrappedStackTraceCaseJava));
+
+        Assert.assertTrue(bytesEquals(unwrappedStackTrace, unwrappedStackTraceJava));
     }
 
     protected boolean bytesEquals(byte[] src, byte[] target) {
@@ -105,28 +113,39 @@ public class SerializeCompatibleTest {
         return true;
     }
 
-    private byte[] serializeEnumConstantNotPresentExceptionWrapper(SerializerFactory sf) throws IOException {
-        ExceptionWrapper exceptionWrapper = new ExceptionWrapper();
+    private byte[] serializeExceptionWrapper() throws IOException {
+        // wrapped
+        com.caucho.hessian.test.throwable.ExceptionWrapper exceptionWrapper = new com.caucho.hessian.test.throwable.ExceptionWrapper();
 
         exceptionWrapper.setT(t);
 
         os.reset();
         Hessian2Output wrapCaseOutput = new Hessian2Output(os);
-        wrapCaseOutput.setSerializerFactory(sf);
+
+        wrapCaseOutput.setSerializerFactory(factory);
         wrapCaseOutput.writeObject(exceptionWrapper);
         wrapCaseOutput.flush();
         byte[] wrappedBytes = os.toByteArray();
         return wrappedBytes;
     }
 
-    private byte[] serializeEnumConstantNotPresentException(SerializerFactory sf) throws IOException {
+    private byte[] serializeStackTraceElement() throws IOException {
+        Throwable t = null;
+        try {
+            double x = 1 / 0;
+        } catch (Exception e) {
+            t = e;
+        }
+        StackTraceElement e = t.getStackTrace()[0];
+        ;
+
         os.reset();
-        Hessian2Output wrapCaseOutput = new Hessian2Output(os);
-        wrapCaseOutput.setSerializerFactory(sf);
-        wrapCaseOutput.writeObject(t);
-        wrapCaseOutput.flush();
-        byte[] wrappedBytes = os.toByteArray();
-        return wrappedBytes;
+        Hessian2Output output = new Hessian2Output(os);
+        output.setSerializerFactory(factory);
+        output.writeObject(e);
+        output.flush();
+        byte[] unwrappedBytes = os.toByteArray();
+        return unwrappedBytes;
     }
 
 }

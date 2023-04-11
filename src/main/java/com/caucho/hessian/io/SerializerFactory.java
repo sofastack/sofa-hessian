@@ -66,6 +66,8 @@ import com.caucho.hessian.io.java8.YearMonthHandle;
 import com.caucho.hessian.io.java8.ZoneIdSerializer;
 import com.caucho.hessian.io.java8.ZoneOffsetHandle;
 import com.caucho.hessian.io.java8.ZonedDateTimeHandle;
+import com.caucho.hessian.io.throwable.ThrowableHelper;
+import com.caucho.hessian.io.throwable.ThrowableSerializer;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -236,7 +238,7 @@ public class SerializerFactory extends AbstractSerializerFactory
             serializer = new ArraySerializer();
 
         else if (Throwable.class.isAssignableFrom(cl))
-            serializer = new ThrowableSerializer(cl);
+            serializer = ThrowableHelper.getSerializer(cl);
 
         else if (InputStream.class.isAssignableFrom(cl))
             serializer = new InputStreamSerializer();
@@ -342,6 +344,9 @@ public class SerializerFactory extends AbstractSerializerFactory
 
         else if (Enum.class.isAssignableFrom(cl))
             deserializer = new EnumDeserializer(cl);
+
+        else if (Throwable.class.isAssignableFrom(cl))
+            deserializer = ThrowableHelper.getDeserializer(cl);
 
         else
             deserializer = getDefaultDeserializer(cl);

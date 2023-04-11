@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 /**
  *
@@ -36,6 +37,16 @@ public class ThrowableClassTest {
 
     private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
+    private Method                       addSuppressed = null;
+    private Method                       getSuppressed = null;
+    {
+        try {
+            addSuppressed = Throwable.class.getMethod("addSuppressed", Throwable.class);
+            getSuppressed = Throwable.class.getMethod("getSuppressed");
+        } catch (Exception e) {
+
+        }
+    }
 
     @BeforeClass
     public static void setUp() {
@@ -44,26 +55,51 @@ public class ThrowableClassTest {
     }
 
     @Test
-    public void test_stacktrace() throws IOException {
+    public void test_Throwable() throws IOException {
         Throwable t = null;
         try {
             int x = 1 / 0;
         } catch (Exception e) {
-            t = e;
+            t = new Throwable(e);
         }
 
         ExceptionWrapper w = new ExceptionWrapper();
         w.setT(t);
+        if (addSuppressed != null) {
+            addSuppress(w);
+            addSuppress(w);
+        }
 
         Object result = doEncodeNDecode(w);
 
         Assert.assertTrue(result instanceof ExceptionWrapper);
+        Throwable origin = w.getT();
+        Throwable target = ((ExceptionWrapper) result).getT();
 
-        StackTraceElement[] origin = w.getT().getStackTrace();
-        StackTraceElement[] target = ((ExceptionWrapper) result).getT().getStackTrace();
+        // stack trace
+        Assert.assertEquals(origin.getStackTrace().length, target.getStackTrace().length);
+        Assert.assertArrayEquals(origin.getStackTrace(), target.getStackTrace());
 
-        Assert.assertEquals(origin.length, target.length);
-        Assert.assertArrayEquals(origin, target);
+        // detail message
+        Assert.assertEquals(origin.getMessage(), target.getMessage());
+
+        // cause, now only assert on cause.detailMessage
+        Assert.assertEquals(origin.getCause().getMessage(), target.getCause().getMessage());
+
+        // suppress
+        Throwable[] originSuppressed = getSuppress(origin);
+        Throwable[] targetSuppressed = getSuppress(target);
+        if (originSuppressed == null && targetSuppressed == null) {
+            return;
+        }
+
+        Assert.assertTrue("one suppress is null while another is not",
+            !(originSuppressed == null || targetSuppressed == null));
+
+        Assert.assertTrue(originSuppressed.length == targetSuppressed.length);
+        for (int i = 0; i < originSuppressed.length; i++) {
+            Assert.assertEquals(originSuppressed[i].getMessage(), targetSuppressed[i].getMessage());
+        }
     }
 
     protected Object doEncodeNDecode(Object origin) throws IOException {
@@ -79,6 +115,35 @@ public class ThrowableClassTest {
         input.setSerializerFactory(factory);
         Object actual = input.readObject();
         return actual;
+    }
+
+    private void mockCause(ExceptionWrapper w) {
+    }
+
+    private void addSuppress(ExceptionWrapper w) {
+        Throwable suppressT1 = null;
+        try {
+            String x = null;
+            x.equals("");
+        } catch (NullPointerException e) {
+            suppressT1 = e;
+        }
+
+        try {
+            addSuppressed.invoke(w.getT(), suppressT1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Throwable[] getSuppress(Throwable t) {
+        Throwable[] ts = null;
+        try {
+            ts = (Throwable[]) getSuppressed.invoke(t);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ts;
     }
 
 }

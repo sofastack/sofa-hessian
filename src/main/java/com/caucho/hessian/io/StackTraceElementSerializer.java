@@ -19,14 +19,18 @@ import java.util.logging.Logger;
  * @author junyuan
  * @version StackTraceElementSerializer.java, v 0.1 2023年04月10日 11:12 junyuan Exp $
  */
-public class StackTraceElementSerializer extends AbstractSerializer {
+public class StackTraceElementSerializer extends NonReflectionSerializer {
     protected static final Logger                        log          = Logger
                                                                           .getLogger(StackTraceElementSerializer.class
                                                                               .getName());
 
-    private Class<?>                                     _clazz       = StackTraceElement.class;
-    private Field[]                                      _fields;
-    {
+    private final Class<StackTraceElement>               _clazz       = StackTraceElement.class;
+
+    private final static String                          GET_PREFIX   = "get";
+
+    private Map<String/*fieldName*/, Method/*getter*/> _readMethods = new HashMap<String, Method>();
+
+    public StackTraceElementSerializer() {
         Field[] originFields = _clazz.getDeclaredFields();
         ArrayList<Field> tmp = new ArrayList();
         for (int i = 0; i < originFields.length; i++) {
@@ -42,12 +46,8 @@ public class StackTraceElementSerializer extends AbstractSerializer {
         }
         _fields = new Field[tmp.size()];
         tmp.toArray(_fields);
-    }
 
-    private final static String                          GET_PREFIX   = "get";
-
-    private Map<String/*fieldName*/, Method/*getter*/> _readMethods = new HashMap<String, Method>();
-    {
+        // get getter
         for (Field field : _fields) {
             String fieldName = field.getName();
 
@@ -68,72 +68,7 @@ public class StackTraceElementSerializer extends AbstractSerializer {
     }
 
     @Override
-    public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {
-        if (obj == null) {
-            out.writeNull();
-            return;
-        }
-
-        if (!(obj instanceof StackTraceElement)) {
-            throw new UnsupportedOperationException(String.valueOf(this));
-        }
-
-        if (out.addRef(obj)) {
-            return;
-        }
-        Class cl = obj.getClass();
-        int ref = out.writeObjectBegin(cl.getName());
-
-        if (ref < -1) {
-            writeObject10(obj, out);
-        }
-        else {
-            if (ref == -1) {
-                writeDefinition20(out);
-                out.writeObjectBegin(cl.getName());
-            }
-
-            writeInstance(obj, out);
-        }
-    }
-
-    private void writeObject10(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
-        for (int i = 0; i < _fields.length; i++) {
-            Field field = _fields[i];
-
-            out.writeString(field.getName());
-
-            serializeField(out, obj, field);
-        }
-
-        out.writeMapEnd();
-    }
-
-    private void writeDefinition20(AbstractHessianOutput out)
-        throws IOException
-    {
-        out.writeClassFieldLength(_fields.length);
-
-        for (int i = 0; i < _fields.length; i++) {
-            Field field = _fields[i];
-
-            out.writeString(field.getName());
-        }
-    }
-
-    public void writeInstance(Object obj, AbstractHessianOutput out)
-        throws IOException
-    {
-        for (int i = 0; i < _fields.length; i++) {
-            Field field = _fields[i];
-
-            serializeField(out, obj, field);
-        }
-    }
-
-    private void serializeField(AbstractHessianOutput out, Object obj, Field field)
+    protected void serializeField(AbstractHessianOutput out, Object obj, Field field)
         throws IOException {
         // only String and int field is required to be serialized
         if (String.class.equals(field.getType())) {
