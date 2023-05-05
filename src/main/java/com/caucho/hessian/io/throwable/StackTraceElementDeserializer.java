@@ -46,7 +46,10 @@
  * @author Scott Ferguson
  */
 
-package com.caucho.hessian.io;
+package com.caucho.hessian.io.throwable;
+
+import com.caucho.hessian.io.AbstractHessianInput;
+import com.caucho.hessian.io.IOExceptionWrapper;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -61,12 +64,12 @@ import java.util.logging.Logger;
  * Deserializing a JDK 1.4 StackTraceElement
  * @author pangu
  */
-public class StackTraceElementDeserializer extends AbstractDeserializer {
+public class StackTraceElementDeserializer extends AbstractFieldSpecificDeserializer {
     protected static final Logger          log     = Logger.getLogger(StackTraceElementSerializer.class.getName());
 
-    private Map<String, Field>             _fields = new HashMap<String, Field>();
+    private Constructor<StackTraceElement> _defaultConstructor = null;
 
-    private Constructor<StackTraceElement> _constructor;
+    private Constructor<StackTraceElement> _constructorJdk9 = null;
 
     @Override
     public Class getType() {
@@ -74,29 +77,16 @@ public class StackTraceElementDeserializer extends AbstractDeserializer {
     }
 
     public StackTraceElementDeserializer() {
-        Class<StackTraceElement> clazz = StackTraceElement.class;
-        Field[] originFields = clazz.getDeclaredFields();
-        for (int i = 0; i < originFields.length; i++) {
-            Field field = originFields[i];
-
-            if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-            if ("declaringClassObject".equals(field.getName()) || "format".equals(field.getName())) {
-                continue;
-            }
-            _fields.put(field.getName(), field);
-        }
+        super(StackTraceElement.class);
 
         try {
-            if (_fields.size() == 7) {
+            if (_fields.size() > 4) {
                 // available since java 9
-                _constructor = clazz.getDeclaredConstructor(String.class, String.class, String.class, String.class,
+                _constructorJdk9 = StackTraceElement.class.getDeclaredConstructor(String.class, String.class, String.class, String.class,
                     String.class, String.class, int.class);
-            } else {
-                // default, only read class, method, file and line
-                _constructor = clazz.getDeclaredConstructor(String.class, String.class, String.class, int.class);
             }
+            // default, only read class, method, file and line
+            _defaultConstructor = StackTraceElement.class.getDeclaredConstructor(String.class, String.class, String.class, int.class);
         } catch (Exception e) {
             log.log(Level.FINE, e.toString(), e);
         }
@@ -106,7 +96,14 @@ public class StackTraceElementDeserializer extends AbstractDeserializer {
     @Override
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
         try {
-            int ref = in.addRef(_constructor.newInstance("", "", "", 0));
+            Object tmp;
+            if (_constructorJdk9 != null) {
+                tmp = _constructorJdk9.newInstance("", "", "", "", "", "", 0);
+            } else {
+                tmp = _defaultConstructor.newInstance("", "", "", 0);
+            }
+
+            int ref = in.addRef(tmp);
             Map<String, Object> fieldValueMap = new HashMap<String, Object>();
 
             for (int i = 0; i < fieldNames.length; i++) {
@@ -121,16 +118,18 @@ public class StackTraceElementDeserializer extends AbstractDeserializer {
             }
 
             StackTraceElement obj;
-            if (fieldNames.length == 7) {
-                obj = _constructor.newInstance(
+            if (_constructorJdk9 != null) {
+                obj = _constructorJdk9.newInstance(
                     fieldValueMap.get("classLoaderName"), fieldValueMap.get("moduleName"),
                     fieldValueMap.get("moduleVersion"), fieldValueMap.get("declaringClass"),
                     fieldValueMap.get("methodName"), fieldValueMap.get("fileName"),
                     fieldValueMap.get("lineNumber"));
-            } else {
-                obj = _constructor.newInstance(
+            } else if (_defaultConstructor != null) {
+                obj = _defaultConstructor.newInstance(
                     fieldValueMap.get("declaringClass"), fieldValueMap.get("methodName"),
                     fieldValueMap.get("fileName"), fieldValueMap.get("lineNumber"));
+            } else {
+                throw new UnsupportedOperationException("no constructor for " + getType().getName() + " found");
             }
 
             in.setRef(ref, obj);
@@ -141,5 +140,23 @@ public class StackTraceElementDeserializer extends AbstractDeserializer {
         } catch (Exception e) {
             throw new IOExceptionWrapper(StackTraceElement.class.getName() + ":" + e, e);
         }
+    }
+
+    @Override
+    protected Map<String, Field> getFieldMapForSerialize(Class cl) {
+        Map<String, Field> fields = new HashMap<String, Field>();
+        for (; cl != null; cl = cl.getSuperclass()) {
+            Field[] originFields = cl.getDeclaredFields();
+            for (int i = 0; i < originFields.length; i++) {
+                Field field = originFields[i];
+                if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                } else if (fields.containsKey(field.getName()) || "format".equals(field.getName())) {
+                    continue;
+                }
+                fields.put(field.getName(), field);
+            }
+        }
+        return fields;
     }
 }

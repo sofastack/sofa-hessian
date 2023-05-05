@@ -6,6 +6,8 @@ package com.caucho.hessian.io.throwable.adapter;
 
 import com.caucho.hessian.io.throwable.ThrowableDeserializer;
 
+import java.util.Map;
+
 /**
  *
  * @author junyuan
@@ -16,5 +18,11 @@ public class EnumConstantNotPresentExceptionDeserializer extends ThrowableDeseri
         super(cl);
     }
 
-
+    @Override
+    protected Throwable instantiate(Class<?> clazz, Map<String, Object> fieldValueMap)
+            throws Exception {
+        Class enumType = (Class) fieldValueMap.remove("enumType");
+        String constantName = (String) fieldValueMap.remove("constantName");
+        return new EnumConstantNotPresentException(enumType, constantName);
+    }
 }

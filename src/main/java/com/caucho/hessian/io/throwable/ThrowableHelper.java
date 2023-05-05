@@ -8,6 +8,7 @@ import com.caucho.hessian.io.AbstractDeserializer;
 import com.caucho.hessian.io.AbstractSerializer;
 import com.caucho.hessian.io.JavaDeserializer;
 import com.caucho.hessian.io.JavaSerializer;
+import com.caucho.hessian.io.throwable.adapter.EnumConstantNotPresentExceptionDeserializer;
 import com.caucho.hessian.io.throwable.adapter.EnumConstantNotPresentExceptionSerializer;
 
 import java.util.HashMap;
@@ -31,19 +32,23 @@ public class ThrowableHelper {
         if (isLessThanJdk17) {
             return new JavaDeserializer(cl);
         }
+        if (EnumConstantNotPresentException.class.isAssignableFrom(cl)) {
+            return new EnumConstantNotPresentExceptionDeserializer(cl);
+        }
+
         return new ThrowableDeserializer(cl);
     }
 
     public static AbstractSerializer getSerializer(Class<?> cl) {
         if (isLessThanJdk17) {
-            return new JavaSerializer(cl);
+            return new ReflectThrowableSerializer(cl);
         }
 
         if (throwableSerializerMap.containsKey(cl.getName())) {
             return throwableSerializerMap.get(cl.getName());
         }
 
-        return new ThrowableSerializer();
+        return new ThrowableSerializer(cl);
     }
 
     private static final Map<String, AbstractSerializer> throwableSerializerMap = new HashMap<String, AbstractSerializer>();
@@ -51,4 +56,5 @@ public class ThrowableHelper {
         throwableSerializerMap.put(EnumConstantNotPresentException.class.getName(),
                 new EnumConstantNotPresentExceptionSerializer());
     }
+
 }

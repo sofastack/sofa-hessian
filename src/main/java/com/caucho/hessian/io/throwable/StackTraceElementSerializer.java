@@ -2,7 +2,10 @@
  * Ant Group
  * Copyright (c) 2004-2023 All Rights Reserved.
  */
-package com.caucho.hessian.io;
+package com.caucho.hessian.io.throwable;
+
+import com.caucho.hessian.io.AbstractFieldSpecificSerializer;
+import com.caucho.hessian.io.AbstractHessianOutput;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -10,6 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +23,7 @@ import java.util.logging.Logger;
  * @author junyuan
  * @version StackTraceElementSerializer.java, v 0.1 2023年04月10日 11:12 junyuan Exp $
  */
-public class StackTraceElementSerializer extends NonReflectionSerializer {
+public class StackTraceElementSerializer extends AbstractFieldSpecificSerializer {
     protected static final Logger                        log          = Logger
                                                                           .getLogger(StackTraceElementSerializer.class
                                                                               .getName());
@@ -31,21 +35,7 @@ public class StackTraceElementSerializer extends NonReflectionSerializer {
     private Map<String/*fieldName*/, Method/*getter*/> _readMethods = new HashMap<String, Method>();
 
     public StackTraceElementSerializer() {
-        Field[] originFields = _clazz.getDeclaredFields();
-        ArrayList<Field> tmp = new ArrayList();
-        for (int i = 0; i < originFields.length; i++) {
-            Field field = originFields[i];
-
-            if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-            if ("declaringClassObject".equals(field.getName()) || "format".equals(field.getName())) {
-                continue;
-            }
-            tmp.add(field);
-        }
-        _fields = new Field[tmp.size()];
-        tmp.toArray(_fields);
+        super(StackTraceElement.class);
 
         // get getter
         for (Field field : _fields) {
@@ -70,6 +60,11 @@ public class StackTraceElementSerializer extends NonReflectionSerializer {
     @Override
     protected void serializeField(AbstractHessianOutput out, Object obj, Field field)
         throws IOException {
+        if (!_readMethods.containsKey(field.getName())) {
+            out.writeNull();
+            return;
+        }
+
         // only String and int field is required to be serialized
         if (String.class.equals(field.getType())) {
             String value = null;
@@ -90,6 +85,25 @@ public class StackTraceElementSerializer extends NonReflectionSerializer {
         } else {
             out.writeNull();
         }
+    }
 
+    @Override
+    protected Field[] getFieldsForSerialize(Class cl) {
+        List<Field> fields = new ArrayList<Field>();
+        for (; cl != null; cl = cl.getSuperclass()) {
+            Field[] originFields = cl.getDeclaredFields();
+            for (int i = 0; i < originFields.length; i++) {
+                Field field = originFields[i];
+                if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
+
+                if ("format".equals(field.getName())) {
+                    continue;
+                }
+                fields.add(field);
+            }
+        }
+        return fields.toArray(new Field[0]);
     }
 }

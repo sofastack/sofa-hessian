@@ -66,8 +66,9 @@ import com.caucho.hessian.io.java8.YearMonthHandle;
 import com.caucho.hessian.io.java8.ZoneIdSerializer;
 import com.caucho.hessian.io.java8.ZoneOffsetHandle;
 import com.caucho.hessian.io.java8.ZonedDateTimeHandle;
+import com.caucho.hessian.io.throwable.StackTraceElementDeserializer;
+import com.caucho.hessian.io.throwable.StackTraceElementSerializer;
 import com.caucho.hessian.io.throwable.ThrowableHelper;
-import com.caucho.hessian.io.throwable.ThrowableSerializer;
 
 import java.io.*;
 import java.math.BigDecimal;

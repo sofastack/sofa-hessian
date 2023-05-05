@@ -6,15 +6,22 @@ package com.caucho.hessian.io;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author junyuan
- * @version NonReflectionSerializer.java, v 0.1 2023年04月10日 19:34 junyuan Exp $
+ * @version AbstractFieldSpecificSerializer.java, v 0.1 2023年04月10日 19:34 junyuan Exp $
  */
-public abstract class NonReflectionSerializer extends AbstractSerializer {
+public abstract class AbstractFieldSpecificSerializer extends AbstractSerializer {
 
     protected Field[] _fields;
+
+    public AbstractFieldSpecificSerializer(Class<?> clazz) {
+        this._fields = getFieldsForSerialize(clazz);
+    }
 
     public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {
         if (obj == null) {
@@ -77,4 +84,26 @@ public abstract class NonReflectionSerializer extends AbstractSerializer {
     }
 
     protected abstract void serializeField(AbstractHessianOutput out, Object obj, Field field) throws IOException;
+
+    /**
+     * get all fields
+     * include super class
+     * exclude transient or static
+     * @param cl
+     * @return
+     */
+    protected Field[] getFieldsForSerialize(Class cl) {
+        List<Field> fields = new ArrayList<Field>();
+        for (; cl != null; cl = cl.getSuperclass()) {
+            Field[] originFields = cl.getDeclaredFields();
+            for (int i = 0; i < originFields.length; i++) {
+                Field field = originFields[i];
+                if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
+                fields.add(field);
+            }
+        }
+        return fields.toArray(new Field[0]);
+    }
 }

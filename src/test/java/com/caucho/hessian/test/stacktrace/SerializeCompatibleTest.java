@@ -18,7 +18,7 @@ package com.caucho.hessian.test.stacktrace;
 
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
-import com.caucho.hessian.io.StackTraceElementSerializer;
+import com.caucho.hessian.io.throwable.StackTraceElementSerializer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  *
  * @author junyuan
- * @version SerializeCompatibleTest.java, v 0.1 2023年04月10日 14:52 junyuan Exp $
+ * @version SerializeCompatibleSelfTest.java, v 0.1 2023年04月10日 14:52 junyuan Exp $
  */
 public class SerializeCompatibleTest {
 
@@ -115,7 +115,7 @@ public class SerializeCompatibleTest {
 
     private byte[] serializeExceptionWrapper() throws IOException {
         // wrapped
-        com.caucho.hessian.test.throwable.ExceptionWrapper exceptionWrapper = new com.caucho.hessian.test.throwable.ExceptionWrapper();
+        com.caucho.hessian.io.throwable.ExceptionWrapper exceptionWrapper = new com.caucho.hessian.io.throwable.ExceptionWrapper();
 
         exceptionWrapper.setT(t);
 

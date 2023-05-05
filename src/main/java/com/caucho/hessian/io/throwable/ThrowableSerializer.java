@@ -5,12 +5,11 @@
 package com.caucho.hessian.io.throwable;
 
 import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.NonReflectionSerializer;
+import com.caucho.hessian.io.AbstractFieldSpecificSerializer;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,33 +20,26 @@ import java.util.List;
  * @author junyuan
  * @version ThrowableSerializer.java, v 0.1 2023年04月10日 19:30 junyuan Exp $
  */
-public class ThrowableSerializer extends NonReflectionSerializer {
+public class ThrowableSerializer extends AbstractFieldSpecificSerializer {
 
-    private final Class<Throwable> _clazz        = Throwable.class;
     protected Method               getSuppressed = null;
 
-    public ThrowableSerializer() {
-        Field[] fields = _clazz.getDeclaredFields();
-        List<Field> tmp = new ArrayList();
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-
-            if (Modifier.isTransient(field.getModifiers()) ||
-                Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-
-            tmp.add(field);
-        }
-
-        _fields = new Field[tmp.size()];
-        tmp.toArray(_fields);
+    public ThrowableSerializer(Class<?> clazz) {
+        super(clazz);
 
         try {
-            getSuppressed = _clazz.getDeclaredMethod("getSuppressed");
+            getSuppressed = clazz.getMethod("getSuppressed");
         } catch (NoSuchMethodException e) {
 
         }
+    }
+
+    @Override
+    public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {
+        // 如果需要反射操作获取 stack trace, 这里需要先 get 一下
+        ((Throwable) obj).getStackTrace();
+
+        super.writeObject(obj, out);
     }
 
     @Override
@@ -81,9 +73,10 @@ public class ThrowableSerializer extends NonReflectionSerializer {
 
             List<Throwable> throwableList;
             if (throwableArray.length == 0) {
-                throwableList = Collections.emptyList();
+                // 旧版通过反射会获取到这个类型
+                throwableList = Collections.unmodifiableList(new ArrayList<Throwable>());
             } else {
-                throwableList = Arrays.asList(throwableArray);
+                throwableList = new ArrayList<Throwable>(Arrays.asList(throwableArray));
             }
 
             out.writeObject(throwableList);

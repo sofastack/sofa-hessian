@@ -17,6 +17,10 @@ import java.lang.reflect.Field;
  */
 public class EnumConstantNotPresentExceptionSerializer extends ThrowableSerializer {
 
+    public EnumConstantNotPresentExceptionSerializer() {
+        super(EnumConstantNotPresentException.class);
+    }
+
     @Override
     protected void defaultSerializeField(AbstractHessianOutput out, Object obj, Field field)
             throws IOException {

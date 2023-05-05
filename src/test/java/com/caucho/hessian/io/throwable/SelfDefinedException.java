@@ -14,36 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.caucho.hessian.test.throwable;
-
-import java.io.Serializable;
+package com.caucho.hessian.io.throwable;
 
 /**
  *
  * @author junyuan
- * @version ExceptionWrapper.java, v 0.1 2023年04月10日 14:41 junyuan Exp $
+ * @version SelfDefinedException.java, v 0.1 2023年04月11日 10:12 junyuan Exp $
  */
-public class ExceptionWrapper implements Serializable {
-    private static final long serialVersionUID = 4065571790594438646L;
+public class SelfDefinedException extends RuntimeException {
 
-    Throwable                 t;
+    private String bizCode;
 
-    /**
-     * Getter method for property <tt>t</tt>.
-     *
-     * @return property value of t
-     */
-    public Throwable getT() {
-        return t;
-    }
+    private String bizMessage;
 
-    /**
-     * Setter method for property <tt>t</tt>.
-     *
-     * @param t  value to be assigned to property t
-     */
-    public void setT(Throwable t) {
-        this.t = t;
+    public SelfDefinedException(String bizCode, String bizMessage) {
+        this.bizCode = bizCode;
+        this.bizMessage = bizMessage;
     }
 
 }
