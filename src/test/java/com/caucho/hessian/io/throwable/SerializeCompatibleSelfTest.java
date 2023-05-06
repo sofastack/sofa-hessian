@@ -20,7 +20,6 @@ import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-//import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,8 +38,8 @@ public class SerializeCompatibleSelfTest {
     private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
 
-    private Method addSuppressed = null;
-    private Method getSuppressed = null;
+    private Method                       addSuppressed   = null;
+    private Method                       getSuppressed   = null;
     {
         try {
             addSuppressed = Throwable.class.getMethod("addSuppressed", Throwable.class);
@@ -50,7 +49,7 @@ public class SerializeCompatibleSelfTest {
         }
     }
 
-    Throwable                            t = null;
+    Throwable                            t               = null;
     {
         Throwable x = null;
         try {
@@ -59,15 +58,15 @@ public class SerializeCompatibleSelfTest {
             t = e;
         }
 
-//        t = new EnumConstantNotPresentException(MeaninglessEnum.class, "CIG");
+        t = new EnumConstantNotPresentException(MeaninglessEnum.class, "CIG");
 
-//        try {
-//            addSuppressed.invoke(t, x);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            addSuppressed.invoke(t, x);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    private static final boolean isLessThanJdk17 = isLessThanJdk17();
+    private static final boolean         isLessThanJdk17 = isLessThanJdk17();
 
     private static boolean isLessThanJdk17() {
         String javaVersion = System.getProperty("java.specification.version");
@@ -88,7 +87,7 @@ public class SerializeCompatibleSelfTest {
      * result byte should be in same with former version so as to behaving compatible
      * @throws IOException
      */
-//    @Test
+    //    @Test
     public void test_EnumConstantNotPresentExceptionSerialize() throws IOException {
         if (isLessThanJdk17) {
             // jdk 17 开始不需要执行这个, 反射受限, 执行会失败
@@ -101,7 +100,7 @@ public class SerializeCompatibleSelfTest {
 
     }
 
-//    @Test
+    //    @Test
     public void test_EnumConstantNotPresentExceptionWrapperSerialize() throws IOException {
         if (isLessThanJdk17) {
             byte[] wrapperCaseOrigin = serializeEnumConstantNotPresentExceptionWrapper(originFactory);

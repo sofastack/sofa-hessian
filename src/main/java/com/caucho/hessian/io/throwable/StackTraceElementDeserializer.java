@@ -48,6 +48,7 @@
 
 package com.caucho.hessian.io.throwable;
 
+import com.caucho.hessian.io.AbstractFieldSpecificDeserializer;
 import com.caucho.hessian.io.AbstractHessianInput;
 import com.caucho.hessian.io.IOExceptionWrapper;
 
@@ -65,11 +66,12 @@ import java.util.logging.Logger;
  * @author pangu
  */
 public class StackTraceElementDeserializer extends AbstractFieldSpecificDeserializer {
-    protected static final Logger          log     = Logger.getLogger(StackTraceElementSerializer.class.getName());
+    protected static final Logger          log                 = Logger.getLogger(StackTraceElementSerializer.class
+                                                                   .getName());
 
     private Constructor<StackTraceElement> _defaultConstructor = null;
 
-    private Constructor<StackTraceElement> _constructorJdk9 = null;
+    private Constructor<StackTraceElement> _constructorJdk9    = null;
 
     @Override
     public Class getType() {
@@ -82,11 +84,13 @@ public class StackTraceElementDeserializer extends AbstractFieldSpecificDeserial
         try {
             if (_fields.size() > 4) {
                 // available since java 9
-                _constructorJdk9 = StackTraceElement.class.getDeclaredConstructor(String.class, String.class, String.class, String.class,
+                _constructorJdk9 = StackTraceElement.class.getDeclaredConstructor(String.class, String.class,
+                    String.class, String.class,
                     String.class, String.class, int.class);
             }
             // default, only read class, method, file and line
-            _defaultConstructor = StackTraceElement.class.getDeclaredConstructor(String.class, String.class, String.class, int.class);
+            _defaultConstructor = StackTraceElement.class.getDeclaredConstructor(String.class, String.class,
+                String.class, int.class);
         } catch (Exception e) {
             log.log(Level.FINE, e.toString(), e);
         }

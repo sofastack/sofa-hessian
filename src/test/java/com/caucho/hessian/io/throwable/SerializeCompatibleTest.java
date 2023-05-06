@@ -1,6 +1,18 @@
 /*
- * Ant Group
- * Copyright (c) 2004-2023 All Rights Reserved.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.caucho.hessian.io.throwable;
 
@@ -98,9 +110,6 @@ public class SerializeCompatibleTest {
         test_EnumConstantNotPresentException(factory, factory);
     }
 
-
-
-
     private static SerializerFactory     useJdk17Factory;
     private static SerializerFactory     originFactory;
     /**
@@ -111,8 +120,8 @@ public class SerializeCompatibleTest {
     private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
 
-    private Method addSuppressed = null;
-    private Method getSuppressed = null;
+    private Method                       addSuppressed   = null;
+    private Method                       getSuppressed   = null;
     {
         try {
             addSuppressed = Throwable.class.getMethod("addSuppressed", Throwable.class);
@@ -122,7 +131,7 @@ public class SerializeCompatibleTest {
         }
     }
 
-    Throwable                            t = null;
+    Throwable                            t               = null;
     {
         Throwable x = null;
         try {
@@ -140,13 +149,15 @@ public class SerializeCompatibleTest {
         }
     }
 
-    private static final boolean isLessThanJdk17 = isLessThanJdk17();
+    private static final boolean         isLessThanJdk17 = isLessThanJdk17();
+
     private static boolean isLessThanJdk17() {
         String javaVersion = System.getProperty("java.specification.version");
         return Double.parseDouble(javaVersion) < 17;
     }
 
-    protected Object doEncodeNDecode(Object origin, SerializerFactory serializerFactory, SerializerFactory deserializerFactory) throws IOException {
+    protected Object doEncodeNDecode(Object origin, SerializerFactory serializerFactory,
+                                     SerializerFactory deserializerFactory) throws IOException {
         os.reset();
         Hessian2Output output = new Hessian2Output(os);
 
@@ -165,7 +176,8 @@ public class SerializeCompatibleTest {
      * EnumConstantNotPresentException 作为成员变量
      * @throws IOException
      */
-    private void test_EnumConstantNotPresentExceptionWrapper(SerializerFactory serialize, SerializerFactory deserialize) throws IOException {
+    private void test_EnumConstantNotPresentExceptionWrapper(SerializerFactory serialize, SerializerFactory deserialize)
+        throws IOException {
         if (isLessThanJdk17) {
             // jdk 17 开始不需要执行这个, 反射受限, 执行会失败
 
@@ -204,7 +216,7 @@ public class SerializeCompatibleTest {
             }
 
             Assert.assertTrue("one suppress is null while another is not",
-                    !(originSuppressed == null || targetSuppressed == null));
+                !(originSuppressed == null || targetSuppressed == null));
 
             Assert.assertTrue(originSuppressed.length == targetSuppressed.length);
             for (int i = 0; i < originSuppressed.length; i++) {
@@ -217,10 +229,10 @@ public class SerializeCompatibleTest {
      * EnumConstantNotPresentException 直接进行序列化
      * @throws IOException
      */
-    private void test_EnumConstantNotPresentException(SerializerFactory serialize, SerializerFactory deserialize) throws IOException {
+    private void test_EnumConstantNotPresentException(SerializerFactory serialize, SerializerFactory deserialize)
+        throws IOException {
         if (isLessThanJdk17) {
             // jdk 17 开始不需要执行这个, 反射受限, 执行会失败
-
 
             if (addSuppressed != null) {
                 addSuppress(t);
@@ -255,7 +267,7 @@ public class SerializeCompatibleTest {
             }
 
             Assert.assertTrue("one suppress is null while another is not",
-                    !(originSuppressed == null || targetSuppressed == null));
+                !(originSuppressed == null || targetSuppressed == null));
 
             Assert.assertTrue(originSuppressed.length == targetSuppressed.length);
             for (int i = 0; i < originSuppressed.length; i++) {
