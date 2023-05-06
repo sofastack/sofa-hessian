@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class ThrowableSerializer extends AbstractFieldSpecificSerializer {
 
-    protected Method               getSuppressed = null;
+    protected Method getSuppressed = null;
 
     public ThrowableSerializer(Class<?> clazz) {
         super(clazz);
@@ -95,7 +95,7 @@ public class ThrowableSerializer extends AbstractFieldSpecificSerializer {
      * @throws IOException
      */
     protected void defaultSerializeField(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException {
+        throws IOException {
         Object fieldValue = null;
         try {
             fieldValue = field.get(obj);

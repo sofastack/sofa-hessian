@@ -23,7 +23,7 @@ public class EnumConstantNotPresentExceptionSerializer extends ThrowableSerializ
 
     @Override
     protected void defaultSerializeField(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException {
+        throws IOException {
         if (!(obj instanceof EnumConstantNotPresentException)) {
             throw new UnsupportedOperationException(String.valueOf(this));
         }

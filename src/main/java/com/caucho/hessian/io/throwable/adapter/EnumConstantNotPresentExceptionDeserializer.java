@@ -20,7 +20,7 @@ public class EnumConstantNotPresentExceptionDeserializer extends ThrowableDeseri
 
     @Override
     protected Throwable instantiate(Class<?> clazz, Map<String, Object> fieldValueMap)
-            throws Exception {
+        throws Exception {
         Class enumType = (Class) fieldValueMap.remove("enumType");
         String constantName = (String) fieldValueMap.remove("constantName");
         return new EnumConstantNotPresentException(enumType, constantName);

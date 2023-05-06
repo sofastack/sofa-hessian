@@ -2,7 +2,7 @@
  * Ant Group
  * Copyright (c) 2004-2023 All Rights Reserved.
  */
-package com.caucho.hessian.io.throwable;
+package com.caucho.hessian.io;
 
 import com.caucho.hessian.io.AbstractDeserializer;
 

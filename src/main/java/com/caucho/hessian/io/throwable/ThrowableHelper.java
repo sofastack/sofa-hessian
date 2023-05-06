@@ -54,7 +54,7 @@ public class ThrowableHelper {
     private static final Map<String, AbstractSerializer> throwableSerializerMap = new HashMap<String, AbstractSerializer>();
     static {
         throwableSerializerMap.put(EnumConstantNotPresentException.class.getName(),
-                new EnumConstantNotPresentExceptionSerializer());
+            new EnumConstantNotPresentExceptionSerializer());
     }
 
 }

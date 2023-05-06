@@ -4,6 +4,7 @@
  */
 package com.caucho.hessian.io.throwable;
 
+import com.caucho.hessian.io.AbstractFieldSpecificDeserializer;
 import com.caucho.hessian.io.AbstractHessianInput;
 import com.caucho.hessian.io.HessianFieldException;
 import com.caucho.hessian.io.IOExceptionWrapper;
@@ -23,10 +24,10 @@ import java.util.Map;
  */
 public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
 
-    private final Class<?>           _type;
-    protected     Method             addSuppressed = null;
+    private final Class<?>  _type;
+    protected Method        addSuppressed = null;
 
-    private final Throwable          selfRef = new Throwable();
+    private final Throwable selfRef       = new Throwable();
 
     public ThrowableDeserializer(Class cl) {
         super(cl);
@@ -62,7 +63,7 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
     }
 
     protected Map<String, Object> readField(AbstractHessianInput in, String[] fieldNames)
-            throws IOException {
+        throws IOException {
         Map<String, Object> fieldValueMap = new HashMap<String, Object>();
         for (int i = 0; i < fieldNames.length; i++) {
             String name = fieldNames[i];
@@ -81,7 +82,7 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
     }
 
     protected Throwable instantiate(Class<?> clazz, Map<String, Object> fieldValueMap)
-            throws Exception {
+        throws Exception {
         Throwable ex = null;
         try {
             ex = doInstantiate(clazz, fieldValueMap);
@@ -97,10 +98,11 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
     }
 
     protected void fillFields(Class<?> clazz, Throwable obj, Map<String, Object> valueMap)
-            throws IOException {
-        for (String key: valueMap.keySet()) {
+        throws IOException {
+        for (String key : valueMap.keySet()) {
             Object value = valueMap.get(key);
-            if (value == null) continue;
+            if (value == null)
+                continue;
 
             if (key.equals("cause")) {
                 // 如果 cause 还未被写入, init
@@ -128,7 +130,7 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
                         continue;
                     }
                     if (addSuppressed != null) {
-                        for (Object item: listValue) {
+                        for (Object item : listValue) {
                             addSuppressed.invoke(obj, item);
                         }
                     }
@@ -147,7 +149,7 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
     }
 
     protected void fillOtherFields(Class<?> clazz, Throwable obj, String key, Object value)
-            throws IOException {
+        throws IOException {
         Field field = _fields.get(key);
         if (field == null) {
             return;
@@ -175,7 +177,7 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
      * @throws Exception
      */
     private Throwable doInstantiate(Class<?> clazz, Map<String, Object> fieldValueMap)
-            throws Exception {
+        throws Exception {
         Constructor<?> causeConstructor = null;
         Constructor<?> messageConstructor = null;
         Constructor<?> defaultConstructor = null;
@@ -183,7 +185,7 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
 
         long bestCost = Long.MAX_VALUE;
         // 只会返回public的构造方法
-        for (Constructor<?> c: clazz.getDeclaredConstructors()) {
+        for (Constructor<?> c : clazz.getDeclaredConstructors()) {
             Class<?>[] pTypes = c.getParameterTypes();
 
             if (pTypes.length == 0) {
@@ -305,7 +307,7 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
 
     private void logDeserializeError(Field field, Object value, Throwable e) throws IOException {
         String fieldName = (field.getDeclaringClass().getName()
-                            + "." + field.getName());
+            + "." + field.getName());
 
         if (e instanceof HessianFieldException)
             throw (HessianFieldException) e;
@@ -314,9 +316,9 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
 
         if (value != null)
             throw new HessianFieldException(fieldName + ": " + value.getClass().getName() + " (" + value + ")"
-                                            + " cannot be assigned to " + field.getType().getName());
+                + " cannot be assigned to " + field.getType().getName());
         else
             throw new HessianFieldException(fieldName + ": " + field.getType().getName() +
-                                            " cannot be assigned from null", e);
+                " cannot be assigned from null", e);
     }
 }

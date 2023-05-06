@@ -1,6 +1,18 @@
 /*
- * Ant Group
- * Copyright (c) 2004-2023 All Rights Reserved.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.caucho.hessian.io.throwable;
 
@@ -26,11 +38,11 @@ import java.lang.reflect.Method;
  */
 public class ThrowableJdk17SerializeTest {
 
-    private static SerializerFactory factory;
+    private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
 
-    private Method addSuppressed = null;
-    private Method getSuppressed = null;
+    private Method                       addSuppressed = null;
+    private Method                       getSuppressed = null;
     {
         try {
             addSuppressed = Throwable.class.getMethod("addSuppressed", Throwable.class);
@@ -40,7 +52,7 @@ public class ThrowableJdk17SerializeTest {
         }
     }
 
-    Throwable t = null;
+    Throwable                            t             = null;
 
     @BeforeClass
     public static void setUp() {
@@ -96,8 +108,6 @@ public class ThrowableJdk17SerializeTest {
         Throwable target = (Throwable) result;
     }
 
-
-
     protected Object doEncodeNDecode(Object origin) throws IOException {
         os.reset();
         Hessian2Output output = new Hessian2Output(os);
@@ -136,7 +146,7 @@ public class ThrowableJdk17SerializeTest {
                 return;
             }
             Assert.assertFalse("one suppress is null while another is not",
-                    originSuppressed == null || targetSuppressed == null);
+                originSuppressed == null || targetSuppressed == null);
 
             Assert.assertEquals(originSuppressed.length, targetSuppressed.length);
             for (int i = 0; i < originSuppressed.length; i++) {
@@ -148,6 +158,7 @@ public class ThrowableJdk17SerializeTest {
     }
 
     private static final boolean isLessThanJdk17 = isLessThanJdk17();
+
     private static boolean isLessThanJdk17() {
         String javaVersion = System.getProperty("java.specification.version");
         return Double.parseDouble(javaVersion) < 17;
