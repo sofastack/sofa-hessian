@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.caucho.hessian.test.stacktrace;
+package com.caucho.hessian.io.throwable;
 
 import java.io.Serializable;
 
 /**
  *
  * @author junyuan
- * @version ExceptionWrapper.java, v 0.1 2023年04月04日 15:40 junyuan Exp $
+ * @version ExceptionWrapper.java, v 0.1 2023年04月10日 14:41 junyuan Exp $
  */
 public class ExceptionWrapper implements Serializable {
     private static final long serialVersionUID = 4065571790594438646L;
@@ -45,4 +45,5 @@ public class ExceptionWrapper implements Serializable {
     public void setT(Throwable t) {
         this.t = t;
     }
+
 }
