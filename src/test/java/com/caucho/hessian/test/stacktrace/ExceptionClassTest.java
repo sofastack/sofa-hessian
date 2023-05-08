@@ -56,7 +56,6 @@ public class ExceptionClassTest {
 
         Object result = doEncodeNDecode(w);
 
-
     }
 
     protected Object doEncodeNDecode(Object origin) throws IOException {
