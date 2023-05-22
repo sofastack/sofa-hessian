@@ -180,6 +180,15 @@ public class Java8TimeSerializerTest {
     }
 
     @Test
+    public void testLocale() throws Exception {
+        if (isJava8) {
+            Class c = Class.forName("java.util.Locale");
+            Constructor constructor = c.getConstructor(String.class, String.class, String.class);
+            testJava8Time(constructor.newInstance("ja", "JP", "JP"));
+        }
+    }
+
+    @Test
     public void testCalendar() throws IOException {
         Calendar calendar = Calendar.getInstance();
         testJava8Time(calendar);
