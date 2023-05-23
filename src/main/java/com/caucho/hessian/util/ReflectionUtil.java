@@ -36,48 +36,62 @@ public class ReflectionUtil {
     }
 
     public static boolean setAccessible(Method m) {
+        m.setAccessible(true);
+        return true;
+    }
+
+    public static boolean setAccessible(Constructor c) {
+        c.setAccessible(true);
+        return true;
+    }
+
+    public static boolean setAccessible(Field f) {
+        f.setAccessible(true);
+        return true;
+    }
+
+    public static boolean trySetAccessible(Method m) {
         try {
             m.setAccessible(true);
         } catch (Throwable t) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER
-                    .debug(
-                        "failed when setting accessible on method [" + m.toString() + "], error message: " +
-                            t.getMessage(), t);
+                        .debug(
+                                "failed when setting accessible on method [" + m.toString() + "], error message: " +
+                                t.getMessage(), t);
             }
             return false;
         }
         return true;
     }
 
-    public static boolean setAccessible(Constructor c) {
+    public static boolean trySetAccessible(Constructor c) {
         try {
             c.setAccessible(true);
         } catch (Throwable t) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER
-                    .debug(
-                        "failed when setting accessible on method [" + c.toString() + "], error message: " +
-                            t.getMessage(), t);
+                        .debug(
+                                "failed when setting accessible on method [" + c.toString() + "], error message: " +
+                                t.getMessage(), t);
             }
             return false;
         }
         return true;
     }
 
-    public static boolean setAccessible(Field f) {
+    public static boolean trySetAccessible(Field f) {
         try {
             f.setAccessible(true);
         } catch (Throwable t) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER
-                    .debug(
-                        "failed when setting accessible on method [" + f.toString() + "], error message: " +
-                            t.getMessage(), t);
+                        .debug(
+                                "failed when setting accessible on method [" + f.toString() + "], error message: " +
+                                t.getMessage(), t);
             }
             return false;
         }
         return true;
     }
-
 }

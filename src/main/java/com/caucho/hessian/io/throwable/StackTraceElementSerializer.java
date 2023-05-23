@@ -83,6 +83,7 @@ public class StackTraceElementSerializer extends AbstractFieldSpecificSerializer
             }
             out.writeInt(value);
         } else {
+            log.warning("unsupported field " + field.getName() + "(" + field.getType() + "), will write null");
             out.writeNull();
         }
     }

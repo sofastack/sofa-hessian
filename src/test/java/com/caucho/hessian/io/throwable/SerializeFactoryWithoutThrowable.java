@@ -78,7 +78,7 @@ public class SerializeFactoryWithoutThrowable extends SerializerFactory {
         }
     }
 
-    public class OriginStackTraceElementDeserializer extends JavaDeserializer {
+    private class OriginStackTraceElementDeserializer extends JavaDeserializer {
         public OriginStackTraceElementDeserializer() {
             super(StackTraceElement.class);
         }
