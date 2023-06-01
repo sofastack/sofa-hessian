@@ -63,7 +63,6 @@ import com.caucho.hessian.io.java8.OffsetTimeHandle;
 import com.caucho.hessian.io.java8.PeriodHandle;
 import com.caucho.hessian.io.java8.YearHandle;
 import com.caucho.hessian.io.java8.YearMonthHandle;
-import com.caucho.hessian.io.java8.ZoneIdHandle;
 import com.caucho.hessian.io.java8.ZoneIdSerializer;
 import com.caucho.hessian.io.java8.ZoneOffsetHandle;
 import com.caucho.hessian.io.java8.ZonedDateTimeHandle;
