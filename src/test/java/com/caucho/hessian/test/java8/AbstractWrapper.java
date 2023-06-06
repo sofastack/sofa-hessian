@@ -44,6 +44,6 @@ public abstract class AbstractWrapper implements Serializable {
             return true;
         }
 
-        return super.equals(obj);
+        return false;
     }
 }
