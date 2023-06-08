@@ -56,9 +56,9 @@ public class ReflectionUtil {
         } catch (Throwable t) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER
-                        .debug(
-                                "failed when setting accessible on method [" + m.toString() + "], error message: " +
-                                t.getMessage(), t);
+                    .debug(
+                        "failed when setting accessible on method [" + m.toString() + "], error message: " +
+                            t.getMessage(), t);
             }
             return false;
         }
@@ -71,9 +71,9 @@ public class ReflectionUtil {
         } catch (Throwable t) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER
-                        .debug(
-                                "failed when setting accessible on method [" + c.toString() + "], error message: " +
-                                t.getMessage(), t);
+                    .debug(
+                        "failed when setting accessible on method [" + c.toString() + "], error message: " +
+                            t.getMessage(), t);
             }
             return false;
         }
@@ -86,9 +86,9 @@ public class ReflectionUtil {
         } catch (Throwable t) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER
-                        .debug(
-                                "failed when setting accessible on method [" + f.toString() + "], error message: " +
-                                t.getMessage(), t);
+                    .debug(
+                        "failed when setting accessible on method [" + f.toString() + "], error message: " +
+                            t.getMessage(), t);
             }
             return false;
         }
