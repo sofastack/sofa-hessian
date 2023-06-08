@@ -429,6 +429,7 @@ public class SerializerFactory extends AbstractSerializerFactory
 
         if (cl == null
             || cl == reader.getType()
+            || HessianHandle.class.isAssignableFrom(reader.getType())
             || cl.isAssignableFrom(reader.getType())) {
             return reader;
         }
