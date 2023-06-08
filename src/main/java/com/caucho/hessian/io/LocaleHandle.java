@@ -53,7 +53,7 @@ import java.util.Locale;
 /**
  * Handle for a locale object.
  */
-public class LocaleHandle implements java.io.Serializable {
+public class LocaleHandle implements HessianHandle, java.io.Serializable {
     private String value;
 
     public LocaleHandle(String locale)
