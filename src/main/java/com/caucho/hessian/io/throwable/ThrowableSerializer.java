@@ -24,9 +24,9 @@ import java.util.logging.Logger;
  */
 public class ThrowableSerializer extends AbstractFieldSpecificSerializer {
 
-    protected static final Logger log = Logger.getLogger(ThrowableSerializer.class.getName());
+    protected static final Logger log           = Logger.getLogger(ThrowableSerializer.class.getName());
 
-    protected Method getSuppressed = null;
+    protected Method              getSuppressed = null;
 
     public ThrowableSerializer(Class<?> clazz) {
         super(clazz);
@@ -99,7 +99,7 @@ public class ThrowableSerializer extends AbstractFieldSpecificSerializer {
      * @throws IOException
      */
     protected void defaultSerializeField(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException {
+        throws IOException {
         Object fieldValue = null;
         try {
             field.setAccessible(true);
