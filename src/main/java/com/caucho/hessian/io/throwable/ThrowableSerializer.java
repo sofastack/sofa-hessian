@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,6 +23,8 @@ import java.util.List;
  * @version ThrowableSerializer.java, v 0.1 2023年04月10日 19:30 junyuan Exp $
  */
 public class ThrowableSerializer extends AbstractFieldSpecificSerializer {
+
+    protected static final Logger log = Logger.getLogger(ThrowableSerializer.class.getName());
 
     protected Method getSuppressed = null;
 
@@ -95,17 +99,13 @@ public class ThrowableSerializer extends AbstractFieldSpecificSerializer {
      * @throws IOException
      */
     protected void defaultSerializeField(AbstractHessianOutput out, Object obj, Field field)
-        throws IOException {
+            throws IOException {
         Object fieldValue = null;
         try {
+            field.setAccessible(true);
             fieldValue = field.get(obj);
         } catch (IllegalAccessException e) {
-            try {
-                field.setAccessible(true);
-                fieldValue = field.get(obj);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+            log.log(Level.FINE, e.toString());
         }
         out.writeObject(fieldValue);
     }

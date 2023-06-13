@@ -141,6 +141,9 @@ public class ThrowableDeserializer extends AbstractFieldSpecificDeserializer {
             else if (key.equals("stackTrace")) {
                 obj.setStackTrace((StackTraceElement[]) value);
             }
+            else if (key.equals("detailMessage")) {
+                // 只能通过构造方法写入
+            }
             // 其他所有 field
             else {
                 fillOtherFields(clazz, obj, key, value);
