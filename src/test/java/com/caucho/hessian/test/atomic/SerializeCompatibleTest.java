@@ -19,6 +19,7 @@ package com.caucho.hessian.test.atomic;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
 import com.caucho.hessian.io.atomic.AtomicSerializer;
+import com.caucho.hessian.io.throwable.JDK17SerializeFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -46,7 +47,16 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  */
 public class SerializeCompatibleTest {
     private static SerializerFactory     factory;
+    private static SerializerFactory     useJdk17Factory;
+
     private static ByteArrayOutputStream os;
+
+    private static final boolean         isLessThanJdk17 = isLessThanJdk17();
+
+    private static boolean isLessThanJdk17() {
+        String javaVersion = System.getProperty("java.specification.version");
+        return Double.parseDouble(javaVersion) < 17;
+    }
 
     @BeforeClass
     public static void setUp() {
@@ -79,6 +89,10 @@ public class SerializeCompatibleTest {
      */
     @Test
     public void test_serialize() throws IOException, NoSuchFieldException, IllegalAccessException {
+        if (!isLessThanJdk17) {
+            return;
+        }
+
         byte[] wrappedCaseAtomic = serializeAtomicWrapper();
         byte[] unwrappedIntegerAtomic = serializeAtomicInteger();
         byte[] unwrappedBooleanAtomic = serializeAtomicBoolean();
