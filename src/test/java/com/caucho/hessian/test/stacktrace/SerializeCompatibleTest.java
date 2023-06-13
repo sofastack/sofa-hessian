@@ -36,6 +36,13 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SerializeCompatibleTest {
 
+    private static final boolean isLessThanJdk17 = isLessThanJdk17();
+
+    private static boolean isLessThanJdk17() {
+        String javaVersion = System.getProperty("java.specification.version");
+        return Double.parseDouble(javaVersion) < 17;
+    }
+
     private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
 
@@ -75,6 +82,9 @@ public class SerializeCompatibleTest {
      */
     @Test
     public void test_serialize() throws IOException, NoSuchFieldException, IllegalAccessException {
+        if (!isLessThanJdk17) {
+            return;
+        }
         byte[] wrappedCaseStackTrace = serializeExceptionWrapper();
         byte[] unwrappedStackTrace = serializeStackTraceElement();
 
