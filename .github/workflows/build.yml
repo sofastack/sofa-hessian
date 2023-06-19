@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ master, 3.x ]
+    branches: [ master, 3.x,sofaboot-4.0-support  ]
   pull_request:
-    branches: [ master, 3.x ]
+    branches: [ master, 3.x, sofaboot-4.0-support ]
 
 jobs:
   build:
