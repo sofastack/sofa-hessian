@@ -53,6 +53,8 @@ import com.alipay.hessian.ClassNameResolverBuilder;
 import com.caucho.burlap.io.BurlapRemoteObject;
 import com.caucho.hessian.io.atomic.AtomicDeserializer;
 import com.caucho.hessian.io.atomic.AtomicSerializer;
+import com.caucho.hessian.io.java17.base.JavaCurrencyDeserializer;
+import com.caucho.hessian.io.java17.base.JavaCurrencySerializer;
 import com.caucho.hessian.io.java8.DurationHandle;
 import com.caucho.hessian.io.java8.InstantHandle;
 import com.caucho.hessian.io.java8.Java8TimeSerializer;
@@ -696,6 +698,15 @@ public class SerializerFactory extends AbstractSerializerFactory
             _staticDeserializerMap.put(AtomicIntegerArray.class, new AtomicDeserializer(AtomicIntegerArray.class));
             _staticDeserializerMap.put(AtomicReferenceArray.class, new AtomicDeserializer(AtomicReferenceArray.class));
 
+        } catch (Throwable t) {
+            log.warning(String.valueOf(t.getCause()));
+        }
+
+        try {
+            JavaCurrencySerializer currencySerializer = new JavaCurrencySerializer(Currency.class);
+            JavaCurrencyDeserializer currencyDeserializer = new JavaCurrencyDeserializer();
+            _staticSerializerMap.put(Currency.class, currencySerializer);
+            _staticDeserializerMap.put(Currency.class, currencyDeserializer);
         } catch (Throwable t) {
             log.warning(String.valueOf(t.getCause()));
         }

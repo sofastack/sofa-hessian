@@ -4,7 +4,6 @@
  */
 package com.caucho.hessian.io;
 
-import com.caucho.hessian.io.AbstractDeserializer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -14,13 +13,13 @@ import java.util.Map;
 /**
  *
  * @author junyuan
- * @version AbstractFieldSpecificDeserializer.java, v 0.1 2023年05月06日 14:21 junyuan Exp $
+ * @version AbstractFieldAdaptorDeserializer.java, v 0.1 2023年05月06日 14:21 junyuan Exp $
  */
-public abstract class AbstractFieldSpecificDeserializer extends AbstractDeserializer {
+public abstract class AbstractFieldAdaptorDeserializer extends AbstractDeserializer {
 
     protected Map<String, Field> _fields;
 
-    public AbstractFieldSpecificDeserializer(Class<?> cl) {
+    public AbstractFieldAdaptorDeserializer(Class<?> cl) {
         _fields = getFieldMapForSerialize(cl);
     }
 
