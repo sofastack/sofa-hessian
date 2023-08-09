@@ -3391,7 +3391,7 @@ public class Hessian2Input
                 if (obj != null) {
                     return error("expected " + expect
                         + " at 0x" + Integer.toHexString(ch & 0xff)
-                        + " " + obj.getClass().getName() + " (" + obj + ")");
+                        + " " + obj.getClass().getName());
                 }
                 else
                     return error("expected " + expect
