@@ -4,7 +4,6 @@
  */
 package com.caucho.hessian.io;
 
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;

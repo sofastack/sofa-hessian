@@ -46,7 +46,7 @@ public class SerializeCompatibleTest {
     private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
 
-    private static final boolean isLessThanJdk17 = isLessThanJdk17();
+    private static final boolean         isLessThanJdk17 = isLessThanJdk17();
 
     private static boolean isLessThanJdk17() {
         String javaVersion = System.getProperty("java.specification.version");
@@ -122,7 +122,6 @@ public class SerializeCompatibleTest {
 
     }
 
-
     protected Object doEncodeNDecode(Object origin, SerializerFactory serializerFactory,
                                      SerializerFactory deserializerFactory) throws IOException {
         os.reset();
@@ -140,7 +139,7 @@ public class SerializeCompatibleTest {
     }
 
     private void test_JavaCurrencyWrapper(SerializerFactory serialize, SerializerFactory deserialize)
-            throws IOException {
+        throws IOException {
         if (isLessThanJdk17()) {
             CurrencyWrapper cw = new CurrencyWrapper();
             cw.setCurrency(Currency.getInstance(Locale.getDefault()));
@@ -153,7 +152,7 @@ public class SerializeCompatibleTest {
     }
 
     private void test_JavaCurrencyDirectly(SerializerFactory serialize, SerializerFactory deserialize)
-            throws IOException {
+        throws IOException {
         if (isLessThanJdk17()) {
             Currency origin = Currency.getInstance(Locale.getDefault());
 
@@ -164,7 +163,7 @@ public class SerializeCompatibleTest {
     }
 
     private void test_Serialize(SerializerFactory originFactory, SerializerFactory newFactory)
-            throws IOException {
+        throws IOException {
         CurrencyWrapper cw = new CurrencyWrapper();
         cw.setCurrency(Currency.getInstance(Locale.getDefault()));
 

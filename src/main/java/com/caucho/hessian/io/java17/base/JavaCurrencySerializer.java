@@ -24,7 +24,7 @@ public class JavaCurrencySerializer extends AbstractFieldAdaptorSerializer {
 
     @Override
     protected void serializeField(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException {
+        throws IOException {
         Currency currency = (Currency) obj;
         if ("currencyCode".equals(field.getName())) {
             String currencyCode = currency.getCurrencyCode();
