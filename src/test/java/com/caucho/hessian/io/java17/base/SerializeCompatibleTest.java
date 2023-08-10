@@ -19,10 +19,6 @@ package com.caucho.hessian.io.java17.base;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
-import com.caucho.hessian.io.throwable.ExceptionWrapper;
-import com.caucho.hessian.io.throwable.JDK17SerializeFactory;
-import com.caucho.hessian.io.throwable.MeaninglessEnum;
-import com.caucho.hessian.io.throwable.SerializeFactoryWithoutThrowable;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +26,6 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Currency;
 import java.util.Locale;
 
