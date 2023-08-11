@@ -21,7 +21,7 @@ public class JavaCurrencyDeserializer extends AbstractDeserializer {
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
         String currencyCode = in.readString();
         Currency currency = null;
-        try  {
+        try {
             // 如果该数据有问题, 保证至少塞入一个 null 作为 ref
             currency = Currency.getInstance(currencyCode);
         } finally {
