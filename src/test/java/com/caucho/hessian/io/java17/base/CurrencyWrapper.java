@@ -27,7 +27,17 @@ import java.util.Currency;
 public class CurrencyWrapper implements Serializable {
     private static final long serialVersionUID = 6738644291381453889L;
 
+    private int               cent;
+
     private Currency          currency;
+
+    public CurrencyWrapper() {
+    }
+
+    public CurrencyWrapper(Currency currency) {
+        this.cent = currency.getCurrencyCode().hashCode();
+        this.currency = currency;
+    }
 
     /**
      * Getter method for property <tt>currency</tt>.
@@ -45,5 +55,14 @@ public class CurrencyWrapper implements Serializable {
      */
     public void setCurrency(Currency currency) {
         this.currency = currency;
+    }
+
+    /**
+     * Getter method for property <tt>cent</tt>.
+     *
+     * @return property value of cent
+     */
+    public int getCent() {
+        return cent;
     }
 }

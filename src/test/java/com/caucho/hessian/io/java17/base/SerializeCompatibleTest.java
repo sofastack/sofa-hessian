@@ -26,7 +26,9 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -99,6 +101,17 @@ public class SerializeCompatibleTest {
     }
 
     /**
+     * object list
+     * @throws IOException
+     */
+    @Test
+    public void test_case_5() throws IOException {
+        if (isLessThanJdk17()) {
+            test_JavaCurrencyWrapperList(factory, factory);
+        }
+    }
+
+    /**
      * 确保 CurrencySerializer 和 JavaSerialize 序列化的产物完全一致
      * @throws IOException
      */
@@ -154,6 +167,23 @@ public class SerializeCompatibleTest {
             Object result = doEncodeNDecode(origin, serialize, deserialize);
             Assert.assertTrue(result instanceof Currency);
             Assert.assertEquals(origin, result);
+        }
+    }
+
+    private void test_JavaCurrencyWrapperList(SerializerFactory serialize, SerializerFactory deserialize)
+        throws IOException {
+        if (isLessThanJdk17()) {
+            List<CurrencyWrapper> cl = new ArrayList<CurrencyWrapper>();
+            cl.add(new CurrencyWrapper(Currency.getInstance(Locale.getAvailableLocales()[10])));
+            cl.add(new CurrencyWrapper(Currency.getInstance(Locale.getAvailableLocales()[10])));
+            cl.add(new CurrencyWrapper(Currency.getInstance(Locale.getAvailableLocales()[41])));
+
+            Object result = doEncodeNDecode(cl, serialize, deserialize);
+            Assert.assertTrue(result instanceof List);
+
+            Assert.assertEquals(cl.get(0).getCurrency(), ((CurrencyWrapper) ((List<?>) result).get(0)).getCurrency());
+            Assert.assertEquals(cl.get(1).getCurrency(), ((CurrencyWrapper) ((List<?>) result).get(1)).getCurrency());
+            Assert.assertEquals(cl.get(2).getCurrency(), ((CurrencyWrapper) ((List<?>) result).get(2)).getCurrency());
         }
     }
 
