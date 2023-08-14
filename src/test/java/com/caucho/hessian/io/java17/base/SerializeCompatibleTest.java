@@ -65,9 +65,14 @@ public class SerializeCompatibleTest {
      * 'cause' is bound to lost here as getCause may return null
      */
     @Test
-    public void test_case_1() throws IOException {
+    public void test_case_1() {
         if (isLessThanJdk17) {
-            test_JavaCurrencyWrapper(factory, originFactory);
+            try {
+                test_JavaCurrencyWrapper(factory, originFactory);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertNull(e.getMessage(), e);
+            }
         }
     }
 
@@ -77,9 +82,14 @@ public class SerializeCompatibleTest {
      * @throws IOException
      */
     @Test
-    public void test_case_2() throws IOException {
+    public void test_case_2() {
         if (isLessThanJdk17) {
-            test_JavaCurrencyWrapper(originFactory, factory);
+            try {
+                test_JavaCurrencyWrapper(originFactory, factory);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertNull(e.getMessage(), e);
+            }
         }
     }
 
@@ -88,16 +98,26 @@ public class SerializeCompatibleTest {
      * @throws IOException
      */
     @Test
-    public void test_case_3() throws IOException {
+    public void test_case_3() {
         if (isLessThanJdk17) {
-            test_JavaCurrencyDirectly(factory, originFactory);
+            try {
+                test_JavaCurrencyDirectly(factory, originFactory);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertNull(e.getMessage(), e);
+            }
         }
     }
 
     @Test
-    public void test_case_4() throws IOException {
+    public void test_case_4() {
         if (isLessThanJdk17) {
-            test_JavaCurrencyDirectly(originFactory, factory);
+            try {
+                test_JavaCurrencyDirectly(originFactory, factory);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertNull(e.getMessage(), e);
+            }
         }
     }
 
@@ -106,9 +126,14 @@ public class SerializeCompatibleTest {
      * @throws IOException
      */
     @Test
-    public void test_case_5() throws IOException {
+    public void test_case_5() {
         if (isLessThanJdk17()) {
-            test_JavaCurrencyWrapperList(factory, factory);
+            try {
+                test_JavaCurrencyWrapperList(factory, factory);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertNull(e.getMessage(), e);
+            }
         }
     }
 
@@ -117,16 +142,26 @@ public class SerializeCompatibleTest {
      * @throws IOException
      */
     @Test
-    public void test_bytes_equals() throws IOException {
+    public void test_bytes_equals() {
         if (isLessThanJdk17()) {
-            test_Serialize(originFactory, factory);
+            try {
+                test_Serialize(originFactory, factory);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertNull(e.getMessage(), e);
+            }
         }
     }
 
     @Test
-    public void test_decode_encode_jdk17() throws IOException {
+    public void test_decode_encode_jdk17() {
         if (!isLessThanJdk17()) {
-            test_JavaCurrencyWrapper(factory, factory);
+            try {
+                test_JavaCurrencyWrapper(factory, factory);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertNull(e.getMessage(), e);
+            }
         }
 
     }

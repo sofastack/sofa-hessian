@@ -18,8 +18,6 @@ package com.caucho.hessian.io.java17.base;
 
 import com.caucho.hessian.io.Deserializer;
 import com.caucho.hessian.io.HessianProtocolException;
-import com.caucho.hessian.io.JavaDeserializer;
-import com.caucho.hessian.io.JavaSerializer;
 import com.caucho.hessian.io.Serializer;
 import com.caucho.hessian.io.SerializerFactory;
 
