@@ -48,7 +48,7 @@
 
 package com.caucho.hessian.io.throwable;
 
-import com.caucho.hessian.io.AbstractFieldSpecificDeserializer;
+import com.caucho.hessian.io.AbstractFieldAdaptorDeserializer;
 import com.caucho.hessian.io.AbstractHessianInput;
 import com.caucho.hessian.io.IOExceptionWrapper;
 
@@ -65,7 +65,7 @@ import java.util.logging.Logger;
  * Deserializing a JDK 1.4 StackTraceElement
  * @author pangu
  */
-public class StackTraceElementDeserializer extends AbstractFieldSpecificDeserializer {
+public class StackTraceElementDeserializer extends AbstractFieldAdaptorDeserializer {
     protected static final Logger          log                 = Logger.getLogger(StackTraceElementSerializer.class
                                                                    .getName());
 

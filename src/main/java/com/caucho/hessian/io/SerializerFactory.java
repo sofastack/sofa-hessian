@@ -53,6 +53,8 @@ import com.alipay.hessian.ClassNameResolverBuilder;
 import com.caucho.burlap.io.BurlapRemoteObject;
 import com.caucho.hessian.io.atomic.AtomicDeserializer;
 import com.caucho.hessian.io.atomic.AtomicSerializer;
+import com.caucho.hessian.io.java17.base.JavaCurrencyDeserializer;
+import com.caucho.hessian.io.java17.base.JavaCurrencySerializer;
 import com.caucho.hessian.io.java8.DurationHandle;
 import com.caucho.hessian.io.java8.InstantHandle;
 import com.caucho.hessian.io.java8.Java8TimeSerializer;
@@ -119,6 +121,7 @@ public class SerializerFactory extends AbstractSerializerFactory
     protected ClassNameResolver                   classNameResolver          = ClassNameResolverBuilder.buildDefault();
 
     protected final static boolean                isHigherThanJdk8           = isJava8();
+    protected final static boolean                isHigherThanJdk17          = isJava17();
 
     private Map<ClassLoader, Map<String, Object>> _typeNotFoundMap           = new ConcurrentHashMap<ClassLoader, Map<String, Object>>(
                                                                                  8);
@@ -700,6 +703,10 @@ public class SerializerFactory extends AbstractSerializerFactory
             log.warning(String.valueOf(t.getCause()));
         }
 
+        if (isHigherThanJdk17) {
+            addCurrencySupport();
+        }
+
     }
 
     /**
@@ -710,6 +717,27 @@ public class SerializerFactory extends AbstractSerializerFactory
     private static boolean isJava8() {
         String javaVersion = System.getProperty("java.specification.version");
         return Double.valueOf(javaVersion) >= 1.8;
+    }
+
+    /**
+     * check if the environment is java 17 or beyond
+     *
+     * @return if on java 17
+     */
+    private static boolean isJava17() {
+        String javaVersion = System.getProperty("java.specification.version");
+        return Double.valueOf(javaVersion) >= 17;
+    }
+
+    protected static void addCurrencySupport() {
+        try {
+            JavaCurrencySerializer currencySerializer = new JavaCurrencySerializer(Currency.class);
+            JavaCurrencyDeserializer currencyDeserializer = new JavaCurrencyDeserializer();
+            _staticSerializerMap.put(Currency.class, currencySerializer);
+            _staticDeserializerMap.put(Currency.class, currencyDeserializer);
+        } catch (Throwable t) {
+            log.warning(String.valueOf(t.getCause()));
+        }
     }
 
     private static boolean isZoneId(Class cl) {

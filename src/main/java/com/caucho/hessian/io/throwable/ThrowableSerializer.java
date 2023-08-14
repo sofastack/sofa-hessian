@@ -5,7 +5,7 @@
 package com.caucho.hessian.io.throwable;
 
 import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.AbstractFieldSpecificSerializer;
+import com.caucho.hessian.io.AbstractFieldAdaptorSerializer;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * @author junyuan
  * @version ThrowableSerializer.java, v 0.1 2023年04月10日 19:30 junyuan Exp $
  */
-public class ThrowableSerializer extends AbstractFieldSpecificSerializer {
+public class ThrowableSerializer extends AbstractFieldAdaptorSerializer {
 
     protected static final Logger log           = Logger.getLogger(ThrowableSerializer.class.getName());
 

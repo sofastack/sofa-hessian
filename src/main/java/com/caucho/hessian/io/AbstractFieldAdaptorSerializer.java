@@ -13,13 +13,13 @@ import java.util.List;
 /**
  *
  * @author junyuan
- * @version AbstractFieldSpecificSerializer.java, v 0.1 2023年04月10日 19:34 junyuan Exp $
+ * @version AbstractFieldAdaptorSerializer.java, v 0.1 2023年04月10日 19:34 junyuan Exp $
  */
-public abstract class AbstractFieldSpecificSerializer extends AbstractSerializer {
+public abstract class AbstractFieldAdaptorSerializer extends AbstractSerializer {
 
     protected Field[] _fields;
 
-    public AbstractFieldSpecificSerializer(Class<?> clazz) {
+    public AbstractFieldAdaptorSerializer(Class<?> clazz) {
         this._fields = getFieldsForSerialize(clazz);
     }
 
