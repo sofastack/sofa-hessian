@@ -617,7 +617,7 @@ public class JavaDeserializer extends AbstractMapDeserializer {
             throw new HessianFieldException(fieldName + ": " + e.getMessage(), e);
 
         if (value != null)
-            throw new HessianFieldException(fieldName + ": " + value.getClass().getName() + " (" + value + ")"
+            throw new HessianFieldException(fieldName + ": " + value.getClass().getName()
                 + " cannot be assigned to " + field.getType().getName());
         else
             throw new HessianFieldException(fieldName + ": " + field.getType().getName() +
