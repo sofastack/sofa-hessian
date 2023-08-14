@@ -40,6 +40,7 @@ import java.util.Locale;
 public class SerializeCompatibleTest {
     // 把 currency 的去掉了
     private static SerializerFactory     originFactory;
+    // 把 currency 的加上
     private static SerializerFactory     factory;
     private static ByteArrayOutputStream os;
 
@@ -52,7 +53,7 @@ public class SerializeCompatibleTest {
 
     @BeforeClass
     public static void setUp() {
-        factory = new SerializerFactory();
+        factory = new SerializeFactoryWithCurrency();
         originFactory = new SerializeFactoryWithoutCurrency();
 
         os = new ByteArrayOutputStream();
