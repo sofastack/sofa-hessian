@@ -6,7 +6,6 @@ package com.caucho.hessian.io.atomic;
 
 import com.caucho.hessian.io.AbstractDeserializer;
 import com.caucho.hessian.io.AbstractHessianInput;
-import com.caucho.hessian.io.ArrayDeserializer;
 import com.caucho.hessian.io.BasicDeserializer;
 
 import java.io.IOException;
@@ -27,9 +26,8 @@ public class AtomicDeserializer extends AbstractDeserializer {
 
     private Class<?>          _type;
 
-    private BasicDeserializer intArrayDsr    = new BasicDeserializer(BasicDeserializer.INTEGER_ARRAY);
-    private BasicDeserializer longArrayDsr   = new BasicDeserializer(BasicDeserializer.LONG_ARRAY);
-    private BasicDeserializer objectArrayDsr = new BasicDeserializer(BasicDeserializer.OBJECT_ARRAY);
+    private BasicDeserializer intArrayDsr  = new BasicDeserializer(BasicDeserializer.INTEGER_ARRAY);
+    private BasicDeserializer longArrayDsr = new BasicDeserializer(BasicDeserializer.LONG_ARRAY);
 
     public AtomicDeserializer(Class<?> cl) {
         this._type = cl;
@@ -39,42 +37,62 @@ public class AtomicDeserializer extends AbstractDeserializer {
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
 
         if (AtomicInteger.class.equals(_type)) {
-            return new AtomicInteger(in.readInt());
+            AtomicInteger tmp = new AtomicInteger();
+            in.addRef(tmp);
+            tmp.set(in.readInt());
+            return tmp;
         }
         else if (AtomicBoolean.class.equals(_type)) {
-            return new AtomicBoolean(in.readInt() == 1);
+            AtomicBoolean tmp = new AtomicBoolean();
+            in.addRef(tmp);
+            tmp.set(in.readInt() == 1);
+            return tmp;
         }
         else if (AtomicLong.class.equals(_type)) {
-            return new AtomicLong(in.readLong());
+            AtomicLong tmp = new AtomicLong();
+            in.addRef(tmp);
+            tmp.set(in.readLong());
+            return tmp;
         }
         else if (AtomicReference.class.equals(_type)) {
-            return new AtomicReference(in.readObject());
+            AtomicReference tmp = new AtomicReference();
+            in.addRef(tmp);
+            tmp.set(in.readObject());
+            return tmp;
         }
         else if (AtomicIntegerArray.class.equals(_type)) {
+            AtomicIntegerArray array = null;
+            int ref = in.addRef(array);
             int[] res = (int[]) intArrayDsr.readObject(in);
             int len = res.length;
-            AtomicIntegerArray array = new AtomicIntegerArray(len);
+            array = new AtomicIntegerArray(len);
             for (int i = 0; i < len; i++) {
                 array.set(i, res[i]);
             }
+            in.setRef(ref, array);
             return array;
         }
         else if (AtomicLongArray.class.equals(_type)) {
+            AtomicLongArray array = null;
+            int ref = in.addRef(array);
             long[] res = (long[]) longArrayDsr.readObject(in);
             int len = res.length;
-            AtomicLongArray array = new AtomicLongArray(len);
+            array = new AtomicLongArray(len);
             for (int i = 0; i < len; i++) {
                 array.set(i, res[i]);
             }
+            in.setRef(ref, array);
             return array;
         }
         else if (AtomicReferenceArray.class.equals(_type)) {
+            int ref = in.addRef(null);
             Object[] res = (Object[]) in.readObject((new Object[0]).getClass());
             int len = res.length;
             AtomicReferenceArray array = new AtomicReferenceArray(len);
             for (int i = 0; i < len; i++) {
                 array.set(i, res[i]);
             }
+            in.setRef(ref, array);
             return array;
         }
 
