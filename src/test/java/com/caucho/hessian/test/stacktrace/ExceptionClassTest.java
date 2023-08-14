@@ -19,12 +19,15 @@ package com.caucho.hessian.test.stacktrace;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -56,6 +59,36 @@ public class ExceptionClassTest {
 
         Object result = doEncodeNDecode(w);
 
+    }
+
+    @Test
+    public void test_ref() throws IOException {
+        Throwable t = null;
+        try {
+            int x = 1 / 0;
+        } catch (Exception e) {
+            t = e;
+        }
+
+        ExceptionWrapper w1 = new ExceptionWrapper();
+        w1.setT(t);
+
+        ExceptionWrapper w2 = new ExceptionWrapper();
+        w2.setT(t);
+
+        List<ExceptionWrapper> l = new ArrayList<ExceptionWrapper>();
+        l.add(w1);
+        l.add(w2);
+
+        Object result = doEncodeNDecode(l);
+        Assert.assertTrue(result instanceof List);
+
+        List<ExceptionWrapper> resultInstance = (List<ExceptionWrapper>) result;
+
+        Assert.assertEquals(l.get(0).t.getMessage(), resultInstance.get(0).t.getMessage());
+        Assert.assertEquals(l.get(0).t.getStackTrace().length, resultInstance.get(0).t.getStackTrace().length);
+
+        Assert.assertEquals(l.get(1).t.getMessage(), resultInstance.get(1).t.getMessage());
     }
 
     protected Object doEncodeNDecode(Object origin) throws IOException {

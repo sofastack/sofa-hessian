@@ -27,6 +27,8 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -96,6 +98,81 @@ public class AtomicDeserializeTest {
             .get(0));
         Assert.assertEquals(atomicWrapper.getaReferenceArray().get(1), ((AtomicWrapper) actual).getaReferenceArray()
             .get(1));
+    }
+
+    @Test
+    public void test_ref() throws IOException {
+        List<AtomicWrapper> l = new ArrayList<AtomicWrapper>();
+
+        // prepare
+        AtomicInteger ai = new AtomicInteger(17);
+        AtomicBoolean ab = new AtomicBoolean(true);
+        AtomicLong al = new AtomicLong(2147483649L);
+        AtomicReference at = new AtomicReference(new Integer(1));
+        AtomicIntegerArray aia = new AtomicIntegerArray(2);
+        aia.set(0, 0);
+        aia.set(1, 1);
+        AtomicLongArray ala = new AtomicLongArray(2);
+        ala.set(0, 0L);
+        ala.set(1, 1L);
+        AtomicReferenceArray ara = new AtomicReferenceArray(2);
+        ara.set(0, new Integer(1));
+        ara.set(1, new Integer(2));
+
+        AtomicWrapper atomicWrapper1 = new AtomicWrapper();
+        atomicWrapper1.setaInteger(ai);
+        atomicWrapper1.setaBoolean(ab);
+        atomicWrapper1.setaLong(al);
+        atomicWrapper1.setaReference(at);
+        atomicWrapper1.setaIntegerArray(aia);
+        atomicWrapper1.setaLongArray(ala);
+        atomicWrapper1.setaReferenceArray(ara);
+
+        AtomicWrapper atomicWrapper2 = new AtomicWrapper();
+        atomicWrapper2.setaInteger(ai);
+        atomicWrapper2.setaBoolean(ab);
+        atomicWrapper2.setaLong(al);
+        atomicWrapper2.setaReference(at);
+        atomicWrapper2.setaIntegerArray(aia);
+        atomicWrapper2.setaLongArray(ala);
+        atomicWrapper2.setaReferenceArray(ara);
+        l.add(atomicWrapper1);
+        l.add(atomicWrapper2);
+
+        Object result = doEncodeNDecode(l);
+        Assert.assertTrue(result instanceof List);
+        List<AtomicWrapper> resultInstance = (List<AtomicWrapper>) result;
+
+        Assert.assertTrue(atomicWrapper1 instanceof AtomicWrapper);
+        AtomicWrapper actual = atomicWrapper1;
+        Assert.assertEquals(resultInstance.get(0).getaInteger().get(), actual.getaInteger().get());
+        Assert.assertEquals(resultInstance.get(0).getaBoolean().get(), actual.getaBoolean().get());
+        Assert.assertEquals(resultInstance.get(0).getaLong().get(), actual.getaLong().get());
+        Assert.assertEquals(resultInstance.get(0).getaReference().get(), actual.getaReference().get());
+
+        Assert.assertEquals(resultInstance.get(0).getaIntegerArray().get(0), actual.getaIntegerArray().get(0));
+        Assert.assertEquals(resultInstance.get(0).getaIntegerArray().get(1), actual.getaIntegerArray().get(1));
+        Assert.assertEquals(resultInstance.get(0).getaLongArray().get(0), actual.getaLongArray().get(0));
+        Assert.assertEquals(resultInstance.get(0).getaLongArray().get(1), actual.getaLongArray().get(1));
+        Assert.assertEquals(resultInstance.get(0).getaReferenceArray().get(0), actual.getaReferenceArray()
+            .get(0));
+        Assert.assertEquals(resultInstance.get(0).getaReferenceArray().get(1), actual.getaReferenceArray()
+            .get(1));
+
+        Assert.assertEquals(resultInstance.get(1).getaInteger().get(), actual.getaInteger().get());
+        Assert.assertEquals(resultInstance.get(1).getaBoolean().get(), actual.getaBoolean().get());
+        Assert.assertEquals(resultInstance.get(1).getaLong().get(), actual.getaLong().get());
+        Assert.assertEquals(resultInstance.get(1).getaReference().get(), actual.getaReference().get());
+
+        Assert.assertEquals(resultInstance.get(1).getaIntegerArray().get(0), actual.getaIntegerArray().get(0));
+        Assert.assertEquals(resultInstance.get(1).getaIntegerArray().get(1), actual.getaIntegerArray().get(1));
+        Assert.assertEquals(resultInstance.get(1).getaLongArray().get(0), actual.getaLongArray().get(0));
+        Assert.assertEquals(resultInstance.get(1).getaLongArray().get(1), actual.getaLongArray().get(1));
+        Assert.assertEquals(resultInstance.get(1).getaReferenceArray().get(0), actual.getaReferenceArray()
+            .get(0));
+        Assert.assertEquals(resultInstance.get(1).getaReferenceArray().get(1), actual.getaReferenceArray()
+            .get(1));
+
     }
 
     @Test

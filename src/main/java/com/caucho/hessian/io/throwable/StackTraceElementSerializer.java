@@ -4,7 +4,7 @@
  */
 package com.caucho.hessian.io.throwable;
 
-import com.caucho.hessian.io.AbstractFieldSpecificSerializer;
+import com.caucho.hessian.io.AbstractFieldAdaptorSerializer;
 import com.caucho.hessian.io.AbstractHessianOutput;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * @author junyuan
  * @version StackTraceElementSerializer.java, v 0.1 2023年04月10日 11:12 junyuan Exp $
  */
-public class StackTraceElementSerializer extends AbstractFieldSpecificSerializer {
+public class StackTraceElementSerializer extends AbstractFieldAdaptorSerializer {
     protected static final Logger                        log          = Logger
                                                                           .getLogger(StackTraceElementSerializer.class
                                                                               .getName());
