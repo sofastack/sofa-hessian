@@ -186,7 +186,7 @@ public class SerializeCompatibleTest {
         throws IOException {
         if (isLessThanJdk17()) {
             CurrencyWrapper cw = new CurrencyWrapper();
-            cw.setCurrency(Currency.getInstance(Locale.getDefault()));
+            cw.setCurrency(Currency.getInstance(Locale.SIMPLIFIED_CHINESE));
 
             Object result = doEncodeNDecode(cw, serialize, deserialize);
             Assert.assertTrue(result instanceof CurrencyWrapper);
@@ -198,7 +198,7 @@ public class SerializeCompatibleTest {
     private void test_JavaCurrencyDirectly(SerializerFactory serialize, SerializerFactory deserialize)
         throws IOException {
         if (isLessThanJdk17()) {
-            Currency origin = Currency.getInstance(Locale.getDefault());
+            Currency origin = Currency.getInstance(Locale.SIMPLIFIED_CHINESE);
 
             Object result = doEncodeNDecode(origin, serialize, deserialize);
             Assert.assertTrue(result instanceof Currency);
@@ -226,7 +226,7 @@ public class SerializeCompatibleTest {
     private void test_Serialize(SerializerFactory originFactory, SerializerFactory newFactory)
         throws IOException {
         CurrencyWrapper cw = new CurrencyWrapper();
-        cw.setCurrency(Currency.getInstance(Locale.getDefault()));
+        cw.setCurrency(Currency.getInstance(Locale.SIMPLIFIED_CHINESE));
 
         byte[] resultOrigin = doSerialize(cw, originFactory);
         byte[] resultNew = doSerialize(cw, factory);
