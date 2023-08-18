@@ -82,7 +82,7 @@ public class HessianSkeleton extends AbstractSkeleton {
         _service = service;
 
         if (!apiClass.isAssignableFrom(service.getClass()))
-            throw new IllegalArgumentException("Service " + service + " must be an instance of " + apiClass.getName());
+            throw new IllegalArgumentException("Service must be an instance of " + apiClass.getName());
     }
 
     /**

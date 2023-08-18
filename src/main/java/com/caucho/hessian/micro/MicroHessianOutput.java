@@ -382,7 +382,7 @@ public class MicroHessianOutput {
      */
     public void writeCustomObject(Object object)
         throws IOException {
-        throw new IOException("unexpected object: " + object);
+        throw new IOException("unexpected object: " + object.getClass().getName());
     }
 
     /**
