@@ -60,7 +60,7 @@ public class AbstractListDeserializer extends AbstractDeserializer {
         Object obj = in.readObject();
 
         if (obj != null)
-            throw error("expected list at " + obj.getClass().getName() + " (" + obj + ")");
+            throw error("expected list at " + obj.getClass().getName());
         else
             throw error("expected list at null");
     }

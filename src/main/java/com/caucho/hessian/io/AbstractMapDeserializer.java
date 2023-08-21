@@ -67,7 +67,7 @@ public class AbstractMapDeserializer extends AbstractDeserializer {
         Object obj = in.readObject();
 
         if (obj != null)
-            throw error("expected map/object at " + obj.getClass().getName() + " (" + obj + ")");
+            throw error("expected map/object at " + obj.getClass().getName());
         else
             throw error("expected map/object at null");
     }
