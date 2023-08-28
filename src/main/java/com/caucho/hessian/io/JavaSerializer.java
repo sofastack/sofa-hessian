@@ -48,6 +48,8 @@
 
 package com.caucho.hessian.io;
 
+import com.caucho.hessian.util.ReflectionUtil;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -70,8 +72,9 @@ public class JavaSerializer extends AbstractSerializer
     public JavaSerializer(Class cl)
     {
         _writeReplace = getWriteReplace(cl);
-        if (_writeReplace != null)
-            _writeReplace.setAccessible(true);
+        if (_writeReplace != null) {
+            ReflectionUtil.setAccessible(_writeReplace);
+        }
 
         ArrayList primitiveFields = new ArrayList();
         ArrayList compoundFields = new ArrayList();
@@ -86,7 +89,7 @@ public class JavaSerializer extends AbstractSerializer
                     continue;
 
                 // XXX: could parameterize the handler to only deal with public
-                field.setAccessible(true);
+                ReflectionUtil.setAccessible(field);
 
                 if (field.getType().isPrimitive() ||
                     field.getType().getName().startsWith("java.lang.") &&
