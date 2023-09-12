@@ -27,8 +27,6 @@ public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
     private final Class<?>  _type;
     protected Method        addSuppressed = null;
 
-    private final Throwable selfRef       = new Throwable();
-
     public ThrowableDeserializer(Class cl) {
         super(cl);
         _type = cl;
@@ -49,7 +47,9 @@ public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
     @Override
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
         try {
-            int ref = in.addRef(selfRef);
+            // 针对 throwable 反序列化时, 如果存在 cause 为自己的情况, 会将 cause 置空
+            // 如果 cause.getCause.getCause 多次 getCause 后还能获取到自己, 也只能置空(有损)
+            int ref = in.addRef(null);
             Map<String, Object> fieldValueMap = readField(in, fieldNames);
             Throwable obj = instantiate(_type, fieldValueMap);
             fillFields(_type, obj, fieldValueMap);
@@ -106,11 +106,6 @@ public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
 
             if (key.equals("cause")) {
                 // 如果 cause 还未被写入, init
-                if (value.equals(selfRef)) {
-                    // 如果 cause 是自己, 跳过不写
-                    continue;
-                }
-
                 if (obj.getCause() == null) {
                     try {
                         obj.initCause((Throwable) value);
