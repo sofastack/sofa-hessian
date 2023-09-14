@@ -24,8 +24,8 @@ import java.util.Map;
  */
 public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
 
-    private final Class<?>  _type;
-    protected Method        addSuppressed = null;
+    private final Class<?> _type;
+    protected Method       addSuppressed = null;
 
     public ThrowableDeserializer(Class cl) {
         super(cl);
