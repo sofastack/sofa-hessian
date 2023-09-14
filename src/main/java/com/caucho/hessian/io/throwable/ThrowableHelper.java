@@ -7,7 +7,6 @@ package com.caucho.hessian.io.throwable;
 import com.caucho.hessian.io.AbstractDeserializer;
 import com.caucho.hessian.io.AbstractSerializer;
 import com.caucho.hessian.io.JavaDeserializer;
-import com.caucho.hessian.io.JavaSerializer;
 import com.caucho.hessian.io.throwable.adapter.EnumConstantNotPresentExceptionDeserializer;
 import com.caucho.hessian.io.throwable.adapter.EnumConstantNotPresentExceptionSerializer;
 
@@ -22,14 +21,28 @@ import java.util.Map;
 public class ThrowableHelper {
 
     private static final boolean isLessThanJdk17 = isLessThanJdk17();
+    private static final boolean reflectionWorks = isReflectionWorks();
 
     private static boolean isLessThanJdk17() {
         String javaVersion = System.getProperty("java.specification.version");
         return Double.parseDouble(javaVersion) < 17;
     }
 
+    /**
+     * 判断反射在当前环境下是否可用
+     * @return
+     */
+    private static boolean isReflectionWorks() {
+        try {
+            Throwable.class.getDeclaredField("cause").setAccessible(true);
+        } catch (Throwable t) {
+            return false;
+        }
+        return true;
+    }
+
     public static AbstractDeserializer getDeserializer(Class<?> cl) {
-        if (isLessThanJdk17) {
+        if (isLessThanJdk17 || reflectionWorks) {
             return new JavaDeserializer(cl);
         }
         if (EnumConstantNotPresentException.class.isAssignableFrom(cl)) {
@@ -40,7 +53,7 @@ public class ThrowableHelper {
     }
 
     public static AbstractSerializer getSerializer(Class<?> cl) {
-        if (isLessThanJdk17) {
+        if (isLessThanJdk17 || reflectionWorks) {
             return new ReflectThrowableSerializer(cl);
         }
 
