@@ -104,7 +104,7 @@ public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
                 continue;
 
             if (key.equals("cause")) {
-                // obj 可能还未被注入 cause, 用的是默认值(如果 throwable 的实现类没有 String, Throwable 的构造方法
+                // 如果 throwable 的实现类没有 (String, Throwable) 的构造方法, 这里 obj.cause 会是默认值 this
                 // 这种情况下需要尝试注入传过来的 value
                 // 如果原值 cause 为自己, value 会为 null 走不到这里, 因为会使用 self ref, 而该 ref 默认为 null
                 // 如果原值 cause 本就为 null, 也走不到这里
