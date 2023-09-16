@@ -32,4 +32,8 @@ public class SelfDefinedException extends RuntimeException {
         this.bizMessage = bizMessage;
     }
 
+    public SelfDefinedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

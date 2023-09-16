@@ -110,6 +110,51 @@ public class SerializeCompatibleTest {
         test_EnumConstantNotPresentException(factory, factory);
     }
 
+    /**
+     * use jdk 8 reflect to encode and jdk17 non-reflect to decode
+     */
+    @Test
+    public void test_compatible_case_1() throws IOException {
+        Throwable t = null;
+        try {
+            Object x = Character.UnicodeBlock.of(13123123);
+        } catch (Throwable e) {
+            // t.cause = t
+            // t.getCause == null
+            t = e;
+        }
+
+        Object result = doEncodeNDecode(t, originFactory, useJdk17Factory);
+
+        assert result instanceof Throwable;
+
+        Throwable res = (Throwable) result;
+
+        Assert.assertNull(res.getCause());
+
+    }
+
+    @Test
+    public void test_compatible_case_2() throws IOException {
+        Throwable t = null;
+        try {
+            Object x = Character.UnicodeBlock.of(13123123);
+        } catch (Throwable e) {
+            // t.cause = t
+            // t.getCause == null
+            t = e;
+        }
+
+        Object result = doEncodeNDecode(t, useJdk17Factory, originFactory);
+
+        assert result instanceof Throwable;
+
+        Throwable res = (Throwable) result;
+
+        Assert.assertNull(res.getCause());
+
+    }
+
     private static SerializerFactory     useJdk17Factory;
     private static SerializerFactory     originFactory;
     /**
