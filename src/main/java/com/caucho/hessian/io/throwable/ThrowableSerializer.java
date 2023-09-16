@@ -19,6 +19,8 @@ import java.util.logging.Logger;
 
 /**
  *
+ * 有损, cause == this 时会传入 null
+ * @see java.lang.Throwable#getCause()
  * @author junyuan
  * @version ThrowableSerializer.java, v 0.1 2023年04月10日 19:30 junyuan Exp $
  */

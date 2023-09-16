@@ -24,10 +24,8 @@ import java.util.Map;
  */
 public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
 
-    private final Class<?>  _type;
-    protected Method        addSuppressed = null;
-
-    private final Throwable selfRef       = new Throwable();
+    private final Class<?> _type;
+    protected Method       addSuppressed = null;
 
     public ThrowableDeserializer(Class cl) {
         super(cl);
@@ -49,7 +47,8 @@ public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
     @Override
     public Object readObject(AbstractHessianInput in, String[] fieldNames) throws IOException {
         try {
-            int ref = in.addRef(selfRef);
+            // 如果用到了自已, 以 null 代替, 后续初始化时, 会初始化为自己
+            int ref = in.addRef(null);
             Map<String, Object> fieldValueMap = readField(in, fieldNames);
             Throwable obj = instantiate(_type, fieldValueMap);
             fillFields(_type, obj, fieldValueMap);
@@ -105,18 +104,17 @@ public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
                 continue;
 
             if (key.equals("cause")) {
-                // 如果 cause 还未被写入, init
-                if (value.equals(selfRef)) {
-                    // 如果 cause 是自己, 跳过不写
-                    continue;
-                }
-
-                if (obj.getCause() == null) {
-                    try {
-                        obj.initCause((Throwable) value);
-                    } catch (Exception e) {
-                        logDeserializeError(_fields.get(key), value, e);
-                    }
+                // 如果 throwable 的实现类没有 (String, Throwable) 的构造方法, 这里 obj.cause 会是默认值 this
+                // 这种情况下需要尝试注入传过来的 value
+                // 如果原值 cause 为自己, value 会为 null 走不到这里, 因为会使用 self ref, 而该 ref 默认为 null
+                // 如果原值 cause 本就为 null, 也走不到这里
+                // 如果原值 cause 为其他 throwable, 这里需要 init
+                try {
+                    obj.initCause((Throwable) value);
+                } catch (Throwable t) {
+                    // 理论上 initCause 本身不会出现异常
+                    // 这里最多出现 classCastException
+                    logDeserializeError(_fields.get(key), value, t);
                 }
             }
             else if (key.equals("suppressedExceptions")) {
@@ -218,6 +216,8 @@ public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
         String detailMessage = (String) fieldValueMap.get("detailMessage");
         Throwable cause = (Throwable) fieldValueMap.get("cause");
         if (causeConstructor != null) {
+            // 如果有 cause, 需要尽可能保证 cause 被写入
+            // 这里允许 cause 为 null, 代表传入的是 null 或者 this, 初始化是塞入 null 也符合预期
             return (Throwable) causeConstructor.newInstance(detailMessage, cause);
         }
         if (messageConstructor != null) {
