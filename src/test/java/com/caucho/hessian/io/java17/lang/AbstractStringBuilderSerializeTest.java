@@ -17,6 +17,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
+ *  <ol>
+ *    <li>确保新老两种序列化方式内容一致(由于类实现有变动, 无法保证 jdk17 和 jdk8 序列化结果完全一致)</li>
+ *    <li>确保 jdk8 下的序列化结果能被 jdk8 以及 jdk17 下的反序列化器正确解析</li>
+ *    <li>确保 jdk17 下的序列化结果能被 jdk8 以及 jdk17 下的反序列化器正确解析</li>
+ *  </ol>
+ *
  *
  * @author junyuan
  * @version AbstractStringBuilderSerializeTest.java, v 0.1 2023年10月20日 10:07 junyuan Exp $
@@ -36,7 +42,7 @@ public class AbstractStringBuilderSerializeTest {
     }
 
     @Test
-    public void compatibleTest_case1_no_warpper() {
+    public void compatibleTest_case_no_warpper() {
         StringBuilder sb = new StringBuilder();
         sb.append("test");
 
@@ -124,7 +130,6 @@ public class AbstractStringBuilderSerializeTest {
 
         Assert.assertEquals(sbw.str, sbwResult.str);
         Assert.assertEquals(sbw.str, sbwResult.stringBuilder.toString());
-
     }
 
     @Test
@@ -139,7 +144,6 @@ public class AbstractStringBuilderSerializeTest {
         StringBuilder sbResult = (StringBuilder) result;
 
         Assert.assertEquals(testData, sbResult.toString());
-
     }
 
     /**
@@ -158,7 +162,6 @@ public class AbstractStringBuilderSerializeTest {
         StringBuilder sbResult = (StringBuilder) result;
 
         Assert.assertEquals(testData, sbResult.toString());
-
     }
 
     /**
@@ -186,7 +189,6 @@ public class AbstractStringBuilderSerializeTest {
 
         Assert.assertEquals(testData, sbwResult.stringBuilder.toString());
         Assert.assertEquals(testData, sbwResult.str);
-
     }
 
     @Test
@@ -209,7 +211,21 @@ public class AbstractStringBuilderSerializeTest {
 
         Assert.assertEquals(testData, sbwResult.stringBuilder.toString());
         Assert.assertEquals(testData, sbwResult.str);
+    }
 
+    public void test_Ser8_Des17_short() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("test");
+        String testDataInHessianBytes = "79,-89,106,97,118,97,46,108,97,110,103,46,83,116,114,105,110,103,66,117,105,108,100,101,114,-110,5,99,111,117,110,116,5,118,97,108,117,101,111,-112,-108,16,116,101,115,116";
+        byte[] input = convertStringToByteArray(testDataInHessianBytes);
+
+        Object result = doDecode(input, factory);
+
+        Assert.assertTrue(result instanceof StringBuilder);
+
+        StringBuilder sbResult = (StringBuilder) result;
+
+        Assert.assertEquals(sb.toString(), sbResult.toString());
     }
 
     protected Object doEncodeNDecode(Object data, SerializerFactory ser, SerializerFactory des) throws IOException {
