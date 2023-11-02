@@ -33,7 +33,7 @@ public class StringBuilderJDK17SerializeFactory extends SerializerFactory {
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
         Serializer serializer = super.getSerializer(cl);
 
-        if ( StringBuilder.class.isAssignableFrom(cl) || StringBuffer.class.isAssignableFrom(cl) ) {
+        if (StringBuilder.class.isAssignableFrom(cl) || StringBuffer.class.isAssignableFrom(cl)) {
             serializer = new AbstractStringBuilderSerializer(cl);
         }
 
@@ -45,9 +45,9 @@ public class StringBuilderJDK17SerializeFactory extends SerializerFactory {
         Deserializer deserializer = super.getDeserializer(cl);
 
         // 只能在 jdk9 以上环境下测试
-//        if ( StringBuilder.class.isAssignableFrom(cl) || StringBuffer.class.isAssignableFrom(cl) ) {
-//            deserializer = new AbstractStringBuilderDeserializer(cl);
-//        }
+        //        if ( StringBuilder.class.isAssignableFrom(cl) || StringBuffer.class.isAssignableFrom(cl) ) {
+        //            deserializer = new AbstractStringBuilderDeserializer(cl);
+        //        }
 
         _cachedDeserializerMap.put(cl, deserializer);
         return deserializer;

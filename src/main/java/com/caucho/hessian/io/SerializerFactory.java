@@ -750,8 +750,10 @@ public class SerializerFactory extends AbstractSerializerFactory
             }
 
             if (AbstractStringBuilderDeserializer.isEnable()) {
-                _staticDeserializerMap.put(StringBuilder.class, new AbstractStringBuilderDeserializer(StringBuilder.class));
-                _staticDeserializerMap.put(StringBuffer.class, new AbstractStringBuilderDeserializer(StringBuffer.class));
+                _staticDeserializerMap.put(StringBuilder.class, new AbstractStringBuilderDeserializer(
+                    StringBuilder.class));
+                _staticDeserializerMap.put(StringBuffer.class,
+                    new AbstractStringBuilderDeserializer(StringBuffer.class));
             }
         } catch (Throwable t) {
             log.info(String.valueOf(t.getCause()));

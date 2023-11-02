@@ -35,8 +35,8 @@ public class AbstractStringBuilderSerializer extends AbstractFieldAdaptorSeriali
 
     @Override
     protected void serializeField(AbstractHessianOutput out, Object obj, Field field)
-            throws IOException {
-        if ( "value".equals(field.getName()) ) {
+        throws IOException {
+        if ("value".equals(field.getName())) {
             serializeValueArray(out, obj);
         } else {
             serializeNormalField(out, obj, field);
@@ -52,7 +52,7 @@ public class AbstractStringBuilderSerializer extends AbstractFieldAdaptorSeriali
      * @throws IOException
      */
     protected void serializeValueArray(AbstractHessianOutput out, Object obj)
-            throws IOException {
+        throws IOException {
         if (obj instanceof StringBuilder) {
             StringBuilder sb = (StringBuilder) obj;
             // 要用实际底层 value 数据的长度以保持一致

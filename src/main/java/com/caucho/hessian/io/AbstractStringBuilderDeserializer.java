@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * @version AbstractStringBuilderDeserializer.java, v 0.1 2023年10月20日 11:31 junyuan Exp $
  */
 public class AbstractStringBuilderDeserializer extends JavaDeserializer {
-    private static final Logger log = Logger.getLogger(AbstractStringBuilderDeserializer.class.getName());
+    private static final Logger  log    = Logger.getLogger(AbstractStringBuilderDeserializer.class.getName());
 
     private static final boolean ENABLE = judgeAvailability();
 
