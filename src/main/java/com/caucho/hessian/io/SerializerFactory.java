@@ -597,6 +597,12 @@ public class SerializerFactory extends AbstractSerializerFactory
         addBasic(String[].class, "[string", BasicSerializer.STRING_ARRAY);
         addBasic(Object[].class, "[object", BasicSerializer.OBJECT_ARRAY);
 
+        addToStaticMap(_staticSerializerMap, _staticDeserializerMap);
+
+    }
+
+    protected static void addToStaticMap(Map _staticSerializerMap, Map _staticDeserializerMap) {
+
         _staticSerializerMap.put(Class.class, new ClassSerializer());
         _staticDeserializerMap.put(Class.class, new ClassDeserializer());
 
@@ -605,14 +611,14 @@ public class SerializerFactory extends AbstractSerializerFactory
         _staticSerializerMap.put(BigDecimal.class, new StringValueSerializer());
         try {
             _staticDeserializerMap.put(BigDecimal.class,
-                new StringValueDeserializer(BigDecimal.class));
+                    new StringValueDeserializer(BigDecimal.class));
         } catch (Throwable e) {
         }
 
         _staticSerializerMap.put(File.class, new StringValueSerializer());
         try {
             _staticDeserializerMap.put(File.class,
-                new StringValueDeserializer(File.class));
+                    new StringValueDeserializer(File.class));
         } catch (Throwable e) {
         }
 
@@ -621,17 +627,17 @@ public class SerializerFactory extends AbstractSerializerFactory
         _staticSerializerMap.put(java.sql.Timestamp.class, new SqlDateSerializer());
 
         _staticSerializerMap.put(java.io.InputStream.class,
-            new InputStreamSerializer());
+                new InputStreamSerializer());
         _staticDeserializerMap.put(java.io.InputStream.class,
-            new InputStreamDeserializer());
+                new InputStreamDeserializer());
 
         try {
             _staticDeserializerMap.put(java.sql.Date.class,
-                new SqlDateDeserializer(java.sql.Date.class));
+                    new SqlDateDeserializer(java.sql.Date.class));
             _staticDeserializerMap.put(java.sql.Time.class,
-                new SqlDateDeserializer(java.sql.Time.class));
+                    new SqlDateDeserializer(java.sql.Time.class));
             _staticDeserializerMap.put(java.sql.Timestamp.class,
-                new SqlDateDeserializer(java.sql.Timestamp.class));
+                    new SqlDateDeserializer(java.sql.Timestamp.class));
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -646,36 +652,36 @@ public class SerializerFactory extends AbstractSerializerFactory
 
             if (isHigherThanJdk8) {
                 _staticSerializerMap.put(Class.forName("java.time.LocalTime"),
-                    Java8TimeSerializer.create(LocalTimeHandle.class));
+                        Java8TimeSerializer.create(LocalTimeHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.LocalDate"),
-                    Java8TimeSerializer.create(LocalDateHandle.class));
+                        Java8TimeSerializer.create(LocalDateHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.LocalDateTime"),
-                    Java8TimeSerializer.create(LocalDateTimeHandle.class));
+                        Java8TimeSerializer.create(LocalDateTimeHandle.class));
 
                 _staticSerializerMap.put(Class.forName("java.time.Instant"),
-                    Java8TimeSerializer.create(InstantHandle.class));
+                        Java8TimeSerializer.create(InstantHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.Duration"),
-                    Java8TimeSerializer.create(DurationHandle.class));
+                        Java8TimeSerializer.create(DurationHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.Period"),
-                    Java8TimeSerializer.create(PeriodHandle.class));
+                        Java8TimeSerializer.create(PeriodHandle.class));
 
                 _staticSerializerMap.put(Class.forName("java.time.Year"), Java8TimeSerializer.create(YearHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.YearMonth"),
-                    Java8TimeSerializer.create(YearMonthHandle.class));
+                        Java8TimeSerializer.create(YearMonthHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.MonthDay"),
-                    Java8TimeSerializer.create(MonthDayHandle.class));
+                        Java8TimeSerializer.create(MonthDayHandle.class));
 
                 _staticSerializerMap.put(Class.forName("java.time.OffsetDateTime"),
-                    Java8TimeSerializer.create(OffsetDateTimeHandle.class));
+                        Java8TimeSerializer.create(OffsetDateTimeHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.ZoneOffset"),
-                    Java8TimeSerializer.create(ZoneOffsetHandle.class));
+                        Java8TimeSerializer.create(ZoneOffsetHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.OffsetTime"),
-                    Java8TimeSerializer.create(OffsetTimeHandle.class));
+                        Java8TimeSerializer.create(OffsetTimeHandle.class));
                 _staticSerializerMap.put(Class.forName("java.time.ZonedDateTime"),
-                    Java8TimeSerializer.create(ZonedDateTimeHandle.class));
+                        Java8TimeSerializer.create(ZonedDateTimeHandle.class));
 
                 _staticSerializerMap.put(Class.forName("java.time.ZonedDateTime"),
-                    Java8TimeSerializer.create(ZonedDateTimeHandle.class));
+                        Java8TimeSerializer.create(ZonedDateTimeHandle.class));
             }
         } catch (Throwable t) {
             log.warning(String.valueOf(t.getCause()));
@@ -704,11 +710,10 @@ public class SerializerFactory extends AbstractSerializerFactory
         }
 
         if (isHigherThanJdk17) {
-            addCurrencySupport();
+            addCurrencySupport(_staticSerializerMap, _staticDeserializerMap);
         }
 
-        addAbstractStringBuilderSupport();
-
+        addAbstractStringBuilderSupport(_staticSerializerMap, _staticDeserializerMap);
     }
 
     /**
@@ -742,6 +747,17 @@ public class SerializerFactory extends AbstractSerializerFactory
         }
     }
 
+    protected static void addCurrencySupport(Map _staticSerializerMap, Map _staticDeserializerMap) {
+        try {
+            JavaCurrencySerializer currencySerializer = new JavaCurrencySerializer(Currency.class);
+            JavaCurrencyDeserializer currencyDeserializer = new JavaCurrencyDeserializer();
+            _staticSerializerMap.put(Currency.class, currencySerializer);
+            _staticDeserializerMap.put(Currency.class, currencyDeserializer);
+        } catch (Throwable t) {
+            log.warning(String.valueOf(t.getCause()));
+        }
+    }
+
     protected static void addAbstractStringBuilderSupport() {
         try {
             if (AbstractStringBuilderSerializer.isEnable()) {
@@ -754,6 +770,24 @@ public class SerializerFactory extends AbstractSerializerFactory
                     StringBuilder.class));
                 _staticDeserializerMap.put(StringBuffer.class,
                     new AbstractStringBuilderDeserializer(StringBuffer.class));
+            }
+        } catch (Throwable t) {
+            log.info(String.valueOf(t.getCause()));
+        }
+    }
+
+    protected static void addAbstractStringBuilderSupport(Map _staticSerializerMap, Map _staticDeserializerMap) {
+        try {
+            if (AbstractStringBuilderSerializer.isEnable()) {
+                _staticSerializerMap.put(StringBuilder.class, new AbstractStringBuilderSerializer(StringBuilder.class));
+                _staticSerializerMap.put(StringBuffer.class, new AbstractStringBuilderSerializer(StringBuffer.class));
+            }
+
+            if (AbstractStringBuilderDeserializer.isEnable()) {
+                _staticDeserializerMap.put(StringBuilder.class, new AbstractStringBuilderDeserializer(
+                        StringBuilder.class));
+                _staticDeserializerMap.put(StringBuffer.class,
+                        new AbstractStringBuilderDeserializer(StringBuffer.class));
             }
         } catch (Throwable t) {
             log.info(String.valueOf(t.getCause()));

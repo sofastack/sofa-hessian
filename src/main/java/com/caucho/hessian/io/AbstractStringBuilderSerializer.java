@@ -91,7 +91,7 @@ public class AbstractStringBuilderSerializer extends AbstractFieldAdaptorSeriali
     }
 
     /**
-     * 判断是否要使用该反序列化器, 当 String.value 类型不为 char[] 时需要使用
+     * 判断是否要使用该序列化器, 当 String.value 类型不为 char[] 时需要使用
      * @return
      */
     private static boolean judgeAvailability() {
