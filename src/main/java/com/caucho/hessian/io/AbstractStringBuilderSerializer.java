@@ -91,7 +91,7 @@ public class AbstractStringBuilderSerializer extends AbstractFieldAdaptorSeriali
     }
 
     /**
-     * 判断是否要使用该反序列化器, 当 String.value 类型不为 char[] 时需要使用
+     * 判断是否要使用该反序列化器, 当 String.value 类型为 byte[] 时需要使用
      * @return
      */
     private static boolean judgeAvailability() {
@@ -102,10 +102,10 @@ public class AbstractStringBuilderSerializer extends AbstractFieldAdaptorSeriali
             return false;
         }
 
-        if (char[].class.equals(field.getType())) {
-            return false;
+        if (byte[].class.equals(field.getType())) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
