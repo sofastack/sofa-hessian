@@ -68,10 +68,9 @@ public class ThrowableDeserializer extends AbstractFieldAdaptorDeserializer {
             String name = fieldNames[i];
             Field field = _fields.get(name);
             if (field == null) {
-                continue;
-            }
-
-            if (String.class.equals(field.getType())) {
+                // 未知字段, 也需要读出来
+                fieldValueMap.put(name, in.readObject());
+            } else if (String.class.equals(field.getType())) {
                 fieldValueMap.put(name, in.readString());
             } else {
                 fieldValueMap.put(name, in.readObject());

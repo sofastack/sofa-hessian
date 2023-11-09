@@ -114,7 +114,11 @@ public class StackTraceElementDeserializer extends AbstractFieldAdaptorDeseriali
                 String name = fieldNames[i];
                 Field field = _fields.get(name);
 
-                if (String.class.equals(field.getType())) {
+                // _fields 是基于当前加载的类的成员变量来创建的
+                // 如果出现当前不存在的属性也需要读出来, 但是不会使用
+                if (field == null) {
+                    fieldValueMap.put(name, in.readObject());
+                } else if (String.class.equals(field.getType())) {
                     fieldValueMap.put(name, in.readString());
                 } else if (int.class.equals(field.getType())) {
                     fieldValueMap.put(name, in.readInt());
