@@ -56,7 +56,7 @@ public class AbstractStringBuilderDeserializer extends JavaDeserializer {
             valueField = cl.getSuperclass().getDeclaredField("value");
             valueField.setAccessible(true);
         } catch (Throwable t) {
-            log.log(Level.WARNING, "get value field field", t);
+            log.log(Level.WARNING, "get value field failed", t);
             return fieldMap;
         }
 
