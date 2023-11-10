@@ -27,7 +27,7 @@ public class AbstractStringBuilderSerializer extends AbstractFieldAdaptorSeriali
             try {
                 field.setAccessible(true);
             } catch (Throwable t) {
-                log.log(Level.INFO, "unable to set field {} accessible", field.getName());
+                log.log(Level.WARNING, "unable to set field {} accessible", field.getName());
             }
         }
 
