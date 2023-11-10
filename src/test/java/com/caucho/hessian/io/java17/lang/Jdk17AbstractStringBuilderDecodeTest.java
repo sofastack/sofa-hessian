@@ -33,22 +33,19 @@ import java.io.IOException;
  */
 public class Jdk17AbstractStringBuilderDecodeTest {
     private static SerializerFactory     factory;
-    private static SerializerFactory     jdk8Factory;
     private static ByteArrayOutputStream os;
 
-    protected final static boolean       isHigherThanJdk17 = isJava17();
+    protected final static boolean       lessThanJdk17 = !isJava17();
 
     @BeforeClass
     public static void setUp() {
         factory = new SerializerFactory();
-        jdk8Factory = new StringBuilderJDK8SerializeFactory();
-
         os = new ByteArrayOutputStream();
     }
 
     @Test
     public void test_Ser8_Des17_short() throws IOException {
-        if (!isJava17()) {
+        if (lessThanJdk17) {
             System.out.println("not jdk17, skip test");
             return;
         }
@@ -65,7 +62,7 @@ public class Jdk17AbstractStringBuilderDecodeTest {
 
     @Test
     public void test_Ser8_Des17_long() throws IOException {
-        if (!isJava17()) {
+        if (lessThanJdk17) {
             System.out.println("not jdk17, skip test");
             return;
         }
@@ -82,7 +79,7 @@ public class Jdk17AbstractStringBuilderDecodeTest {
 
     @Test
     public void test_Ser8_Des17_short_wrapper() throws IOException {
-        if (!isJava17()) {
+        if (lessThanJdk17) {
             System.out.println("not jdk17, skip test");
             return;
         }
@@ -98,7 +95,7 @@ public class Jdk17AbstractStringBuilderDecodeTest {
 
     @Test
     public void test_Ser8_Des17_long_wrapper() throws IOException {
-        if (!isJava17()) {
+        if (lessThanJdk17) {
             System.out.println("not jdk17, skip test");
             return;
         }
@@ -114,7 +111,7 @@ public class Jdk17AbstractStringBuilderDecodeTest {
 
     @Test
     public void test_Ser8_Des17_short_utf16() throws IOException {
-        if (!isJava17()) {
+        if (lessThanJdk17) {
             System.out.println("not jdk17, skip test");
             return;
         }
@@ -131,7 +128,7 @@ public class Jdk17AbstractStringBuilderDecodeTest {
 
     @Test
     public void test_Ser8_Des17_long_utf16() throws IOException {
-        if (!isJava17()) {
+        if (lessThanJdk17) {
             System.out.println("not jdk17, skip test");
             return;
         }
@@ -148,12 +145,12 @@ public class Jdk17AbstractStringBuilderDecodeTest {
 
     @Test
     public void test_Ser8_Des17_short_wrapper_utf16() throws IOException {
-        if (!isJava17()) {
+        if (lessThanJdk17) {
             System.out.println("not jdk17, skip test");
             return;
         }
 
-        StringBuilderWrapper sbw = buildStringBuilderWrapper("test");
+        StringBuilderWrapper sbw = buildStringBuilderWrapper("test测试");
         String testDataInHessianBytes = "79,-56,54,99,111,109,46,99,97,117,99,104,111,46,104,101,115,115,105,97,110,46,105,111,46,106,97,118,97,49,55,46,108,97,110,103,46,83,116,114,105,110,103,66,117,105,108,100,101,114,87,114,97,112,112,101,114,-110,13,115,116,114,105,110,103,66,117,105,108,100,101,114,3,115,116,114,111,-112,79,-89,106,97,118,97,46,108,97,110,103,46,83,116,114,105,110,103,66,117,105,108,100,101,114,-110,5,99,111,117,110,116,5,118,97,108,117,101,111,-111,-106,16,116,101,115,116,-26,-75,-117,-24,-81,-107,0,0,0,0,0,0,0,0,0,0,6,116,101,115,116,-26,-75,-117,-24,-81,-107";
         byte[] input = convertStringToByteArray(testDataInHessianBytes);
 
@@ -164,7 +161,7 @@ public class Jdk17AbstractStringBuilderDecodeTest {
 
     @Test
     public void test_Ser8_Des17_long_wrapper_utf16() throws IOException {
-        if (!isJava17()) {
+        if (lessThanJdk17) {
             System.out.println("not jdk17, skip test");
             return;
         }
