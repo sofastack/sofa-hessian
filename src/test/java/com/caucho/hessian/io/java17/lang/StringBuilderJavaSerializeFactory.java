@@ -18,23 +18,23 @@ package com.caucho.hessian.io.java17.lang;
 
 import com.caucho.hessian.io.Deserializer;
 import com.caucho.hessian.io.HessianProtocolException;
+import com.caucho.hessian.io.JavaDeserializer;
+import com.caucho.hessian.io.JavaSerializer;
 import com.caucho.hessian.io.Serializer;
 import com.caucho.hessian.io.SerializerFactory;
-import com.caucho.hessian.io.AbstractStringBuilderSerializer;
 
 /**
- * 可以在 java8 环境下运行专门给 jdk17 使用的序列化器
- * 以便在 java8 下进行兼容测试
+ * java serializer only
  * @author junyuan
- * @version StringBuilderJDK17SerializeFactory.java, v 0.1 2023年05月06日 11:13 junyuan Exp $
+ * @version StringBuilderJavaSerializeFactory.java, v 0.1 2023年11月10日 14:43 junyuan Exp $
  */
-public class StringBuilderJDK17SerializeFactory extends SerializerFactory {
+public class StringBuilderJavaSerializeFactory extends SerializerFactory {
     @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
         Serializer serializer = super.getSerializer(cl);
 
         if (StringBuilder.class.isAssignableFrom(cl) || StringBuffer.class.isAssignableFrom(cl)) {
-            serializer = new AbstractStringBuilderSerializer(cl);
+            serializer = new JavaSerializer(cl);
         }
 
         return serializer;
@@ -44,12 +44,10 @@ public class StringBuilderJDK17SerializeFactory extends SerializerFactory {
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
         Deserializer deserializer = super.getDeserializer(cl);
 
-        // 只能在 jdk9 以上环境下测试
-        //        if ( StringBuilder.class.isAssignableFrom(cl) || StringBuffer.class.isAssignableFrom(cl) ) {
-        //            deserializer = new AbstractStringBuilderDeserializer(cl);
-        //        }
+        if (StringBuilder.class.isAssignableFrom(cl) || StringBuffer.class.isAssignableFrom(cl)) {
+            deserializer = new JavaDeserializer(cl);
+        }
 
-        _cachedDeserializerMap.put(cl, deserializer);
         return deserializer;
     }
 }
