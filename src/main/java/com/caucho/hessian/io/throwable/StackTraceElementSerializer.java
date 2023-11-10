@@ -90,7 +90,8 @@ public class StackTraceElementSerializer extends AbstractFieldAdaptorSerializer 
 
     @Override
     protected Field[] getFieldsForSerialize(Class cl) {
-        List<Field> fields = new ArrayList<Field>();
+        ArrayList primitiveFields = new ArrayList();
+        ArrayList compoundFields = new ArrayList();
         for (; cl != null; cl = cl.getSuperclass()) {
             Field[] originFields = cl.getDeclaredFields();
             for (int i = 0; i < originFields.length; i++) {
@@ -102,9 +103,18 @@ public class StackTraceElementSerializer extends AbstractFieldAdaptorSerializer 
                 if ("format".equals(field.getName())) {
                     continue;
                 }
-                fields.add(field);
+
+                if (field.getType().isPrimitive() ||
+                    field.getType().getName().startsWith("java.lang.") &&
+                    !field.getType().equals(Object.class))
+                    primitiveFields.add(field);
+                else
+                    compoundFields.add(field);
             }
         }
+        List<Field> fields = new ArrayList<Field>();
+        fields.addAll(primitiveFields);
+        fields.addAll(compoundFields);
         return fields.toArray(new Field[0]);
     }
 }

@@ -707,6 +707,8 @@ public class SerializerFactory extends AbstractSerializerFactory
             addCurrencySupport();
         }
 
+        addAbstractStringBuilderSupport();
+
     }
 
     /**
@@ -737,6 +739,24 @@ public class SerializerFactory extends AbstractSerializerFactory
             _staticDeserializerMap.put(Currency.class, currencyDeserializer);
         } catch (Throwable t) {
             log.warning(String.valueOf(t.getCause()));
+        }
+    }
+
+    protected static void addAbstractStringBuilderSupport() {
+        try {
+            if (AbstractStringBuilderSerializer.isEnable()) {
+                _staticSerializerMap.put(StringBuilder.class, new AbstractStringBuilderSerializer(StringBuilder.class));
+                _staticSerializerMap.put(StringBuffer.class, new AbstractStringBuilderSerializer(StringBuffer.class));
+            }
+
+            if (AbstractStringBuilderDeserializer.isEnable()) {
+                _staticDeserializerMap.put(StringBuilder.class, new AbstractStringBuilderDeserializer(
+                    StringBuilder.class));
+                _staticDeserializerMap.put(StringBuffer.class,
+                    new AbstractStringBuilderDeserializer(StringBuffer.class));
+            }
+        } catch (Throwable t) {
+            log.info(String.valueOf(t.getCause()));
         }
     }
 
