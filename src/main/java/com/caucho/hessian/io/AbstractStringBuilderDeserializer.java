@@ -47,11 +47,11 @@ public class AbstractStringBuilderDeserializer extends JavaDeserializer {
             return false;
         }
 
-        if (char[].class.equals(stringValueField.getType())) {
-            return false;
+        if (byte[].class.equals(stringValueField.getType())) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public static boolean isEnable() {
