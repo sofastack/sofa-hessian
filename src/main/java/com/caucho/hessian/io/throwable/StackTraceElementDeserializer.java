@@ -82,15 +82,14 @@ public class StackTraceElementDeserializer extends AbstractFieldAdaptorDeseriali
         super(StackTraceElement.class);
 
         try {
-            if (_fields.size() > 4) {
-                // available since java 9
-                _constructorJdk9 = StackTraceElement.class.getDeclaredConstructor(String.class, String.class,
-                    String.class, String.class,
-                    String.class, String.class, int.class);
-            }
             // default, only read class, method, file and line
             _defaultConstructor = StackTraceElement.class.getDeclaredConstructor(String.class, String.class,
                 String.class, int.class);
+            if (_fields.size() > 4) {
+                // available since java 9
+                _constructorJdk9 = StackTraceElement.class.getDeclaredConstructor(String.class, String.class,
+                    String.class, String.class, String.class, String.class, int.class);
+            }
         } catch (Exception e) {
             log.log(Level.FINE, e.toString(), e);
         }
