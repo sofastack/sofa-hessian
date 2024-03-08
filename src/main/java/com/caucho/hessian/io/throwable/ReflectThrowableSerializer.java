@@ -10,7 +10,7 @@ import com.caucho.hessian.io.JavaSerializer;
 import java.io.IOException;
 
 /**
- * use under jdk 17
+ * use under jdk < 17
  * @author junyuan
  * @version ReflectThrowableSerializer.java, v 0.1 2023年05月06日 10:46 junyuan Exp $
  */
