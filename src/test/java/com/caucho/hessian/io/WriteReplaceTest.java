@@ -70,6 +70,10 @@ public class WriteReplaceTest {
         testObject.setName("testWR");
         origin.setTestObject(testObject);
 
+        TestObjectWriteReplace wrObject = new TestObjectWriteReplace();
+        wrObject.name = "testProxy";
+        origin.setWrObject(wrObject);
+
         os.reset();
         Hessian2Output output = new Hessian2Output(os);
 
@@ -86,27 +90,53 @@ public class WriteReplaceTest {
         input.setSerializerFactory(factory);
         WrappedTestObject actual = (WrappedTestObject) input.readObject();
         Assert.assertEquals(actual.testObject.name, origin.testObject.name);
+        Assert.assertEquals(actual.wrObject.name, origin.wrObject.name);
     }
 
     private static class WrappedTestObject implements Serializable {
-        private TestObject testObject;
+        private TestObject             testObject;
+        private TestObjectWriteReplace wrObject;
 
-        /**
-         * Getter method for property <tt>testObject</tt>.
-         *
-         * @return property value of testObject
-         */
         public TestObject getTestObject() {
             return testObject;
         }
 
-        /**
-         * Setter method for property <tt>testObject</tt>.
-         *
-         * @param testObject  value to be assigned to property testObject
-         */
         public void setTestObject(TestObject testObject) {
             this.testObject = testObject;
+        }
+
+        public TestObjectWriteReplace getWrObject() {
+            return wrObject;
+        }
+
+        public void setWrObject(TestObjectWriteReplace wrObject) {
+            this.wrObject = wrObject;
+        }
+    }
+
+    // write replace to TestObjectProxy
+    private static class TestObjectWriteReplace implements Serializable {
+        private static final long serialVersionUID = 462771763706189820L;
+
+        String                    name;
+
+        Object writeReplace() {
+            TestObjectProxy o = new TestObjectProxy();
+            o.name = this.name;
+            return o;
+        }
+    }
+
+    // read resolve back to TestObjectWriteReplace
+    private static class TestObjectProxy implements Serializable {
+        private static final long serialVersionUID = 462771763706189820L;
+
+        String                    name;
+
+        Object readResolve() {
+            TestObjectWriteReplace o = new TestObjectWriteReplace();
+            o.name = this.name;
+            return o;
         }
     }
 
