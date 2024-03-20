@@ -146,14 +146,16 @@ public class JavaSerializer extends AbstractSerializer
         try {
             if (_writeReplace != null) {
                 Object repl = _writeReplace.invoke(obj, new Object[0]);
+                // for those writeReplaces that might return obj itself, no need to replace repl with obj
+                if (repl != obj) {
 
-                out.removeRef(obj);
+                    out.removeRef(obj);
 
-                out.writeObject(repl);
+                    out.writeObject(repl);
 
-                out.replaceRef(repl, obj);
-
-                return;
+                    out.replaceRef(repl, obj);
+                    return;
+                }
             }
         } catch (Exception e) {
             log.log(Level.FINE, e.toString(), e);
