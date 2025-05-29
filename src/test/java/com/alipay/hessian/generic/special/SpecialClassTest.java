@@ -25,6 +25,7 @@ import com.caucho.hessian.io.CalendarHandle;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
+import com.caucho.hessian.test.ClassEnum;
 import com.caucho.hessian.test.Color;
 import org.junit.Test;
 
@@ -262,6 +263,47 @@ public class SpecialClassTest {
         o = hin.readObject();
         assertEquals(o.getClass(), Color.class);
         assertTrue(o == Color.BLANK);
+    }
+
+    /**
+     * 检测ClassEnum的序列化情况
+     * @throws Exception
+     */
+    @Test
+    public void testClassEnum() throws IOException {
+        ClassEnum classEnum = ClassEnum.A;
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        Hessian2Output hout = new Hessian2Output(bout);
+        hout.setSerializerFactory(new SerializerFactory());
+        hout.writeObject(classEnum);
+        hout.close();
+
+        byte[] body = bout.toByteArray();
+        ByteArrayInputStream bin = new ByteArrayInputStream(body, 0, body.length);
+        Hessian2Input hin = new Hessian2Input(bin);
+        hin.setSerializerFactory(new GenericSerializerFactory());
+
+        Object o = hin.readObject();
+        assertEquals(GenericObject.class, o.getClass());
+        Object obj = GenericUtils.convertToObject(o);
+        assertEquals(obj.getClass(), ClassEnum.A.getClass());
+        assertTrue(obj == ClassEnum.A);
+
+        GenericObject col = GenericUtils.convertToGenericObject(obj);
+        bout = new ByteArrayOutputStream();
+        hout = new Hessian2Output(bout);
+        hout.setSerializerFactory(new GenericSerializerFactory());
+        hout.writeObject(col);
+        hout.close();
+
+        body = bout.toByteArray();
+        bin = new ByteArrayInputStream(body, 0, body.length);
+        hin = new Hessian2Input(bin);
+        hin.setSerializerFactory(new SerializerFactory());
+        o = hin.readObject();
+        assertEquals(o.getClass(), ClassEnum.A.getClass());
+        assertTrue(o == ClassEnum.A);
     }
 
     /**
