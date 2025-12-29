@@ -85,7 +85,7 @@ public class Hessian2Input
 
     private static Field        _detailMessageField;
 
-    private static final int    SIZE        = 256;
+    private static final int    SIZE        = 1024;
     private static final int    GAP         = 16;
 
     // factory for deserializing objects in the input stream
