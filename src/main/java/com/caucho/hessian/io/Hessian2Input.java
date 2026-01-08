@@ -2583,13 +2583,88 @@ public class Hessian2Input
                 _isLastChunk = tag == 'B';
                 _chunkLength = (read() << 8) + read();
 
-                int data;
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ByteArrayOutputStream bos = null;
+                while (!_isLastChunk) {
+                    if (bos == null) {
+                        bos = new ByteArrayOutputStream();
+                    }
+                    byte[] temp = new byte[_chunkLength];
+                    int i = 0;
 
-                while ((data = parseByte()) >= 0)
-                    bos.write(data);
+                    //处理完内存里的buffer
+                    while (_offset < _length && i < _chunkLength) {
+                        temp[i] = _buffer[_offset++];
+                        i++;
+                    }
+                    int needRead = _chunkLength - i;
+                    if (needRead > 0) {
+                        _is.read(temp, i, needRead);
+                    }
 
-                return bos.toByteArray();
+                    bos.write(temp);
+
+                    //读下一个块
+                    int code = read();
+                    switch (code) {
+                        case 'b':
+                            _isLastChunk = false;
+                            _chunkLength = (read() << 8) + read();
+                            break;
+
+                        case 'B':
+                            _isLastChunk = true;
+                            _chunkLength = (read() << 8) + read();
+                            break;
+
+                        case 0x20:
+                        case 0x21:
+                        case 0x22:
+                        case 0x23:
+                        case 0x24:
+                        case 0x25:
+                        case 0x26:
+                        case 0x27:
+                        case 0x28:
+                        case 0x29:
+                        case 0x2a:
+                        case 0x2b:
+                        case 0x2c:
+                        case 0x2d:
+                        case 0x2e:
+                        case 0x2f:
+                            _isLastChunk = true;
+                            _chunkLength = code - 0x20;
+                            break;
+
+                        default:
+                            throw expect("byte[]", code);
+                    }
+                }
+
+                byte[] res = new byte[_chunkLength];
+                int i = 0;
+
+                //处理完内存里的buffer
+                while (_offset < _length && i < _chunkLength) {
+                    res[i] = _buffer[_offset++];
+                    i++;
+                }
+                int needRead = _chunkLength - i;
+                if (needRead > 0) {
+                    _is.read(res, i, needRead);
+                }
+
+                if (bos != null) {
+                    bos.write(res);
+                    res = bos.toByteArray();
+                }
+
+                for (i = 0; i < res.length; i++) {
+                    res[i] = (byte) (res[i] & 0xff);
+                }
+
+                _chunkLength = 0;
+                return res;
             }
 
             case 0x20:
